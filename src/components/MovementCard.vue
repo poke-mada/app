@@ -8,8 +8,8 @@
         <img class="col-2" height="20px" width="20px" :src="`./assets/types/${movement.type}.png`" :alt="movement.type">
         <img class="col-2" height="20px" width="20px" :src="`./assets/categories/${movement.category}.png`" :alt="movement.category">
         <img class="col-2" height="20px" width="20px" :src="`./assets/modifiers/modifier12.png`" :alt="movement.type">
-        <span class="col-1 badge bg-info">x2</span>
-        <span class="col-1 badge bg-danger">x4</span>
+        <span class="col-1 badge bg-danger">x2</span>
+        <span class="col-3 badge bg-info" >STAB</span>
       </div>
     </div>
   </main>

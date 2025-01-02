@@ -3,8 +3,9 @@
 import {app, BrowserWindow, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
-import {Citra} from "./api/api.js";
-import {Party} from "./api/party.js";
+import {Citra} from "@/api/citra_api";
+import {Party} from "@/api/party";
+import {getGame} from "@/api/game";
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
@@ -17,8 +18,8 @@ async function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
         width: 1200,
-        height: 600,
-        icon: './src/assets/icon.png',
+        height: 675,
+        icon: './public/icons/icon.png',
         webPreferences: {
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -34,7 +35,7 @@ async function createWindow() {
     } else {
         createProtocol('app')
         // Load the index.html when not in development
-        win.loadURL('app://./index.html')
+        await win.loadURL('app://./index.html')
     }
     return win
 }
@@ -57,8 +58,6 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-    let win = await createWindow();
-    let contents = win.webContents;
     if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
         try {
@@ -67,13 +66,23 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
+    let win = await createWindow();
+    let contents = win.webContents;
 
-    win.webContents.on('dom-ready', ()=> {
+    win.webContents.on('dom-ready', async () => {
         let team = []
-        setInterval(async ()=> {
+        let enemyTeam = []
+        setInterval(async () => {
             let citra = new Citra();
-            let party = new Party(citra, 0x8CE1CE8);
-            await party.loadTeam(team, contents);
+            let game = await getGame(citra)
+            let yourParty = new Party(citra, game.partyaddress, 'you');
+            let enemyParty = new Party(citra, game.battletraineroppadd, 'enemy');
+            //let wildParty = new Party(citra, game.battlewildpartyadd, 'enemy');
+
+            await enemyParty.loadTeam(enemyTeam, contents);
+            await yourParty.loadTeam(team, contents);
+            //await wildParty.loadTeam(enemyTeam, contents);
+
             citra.socket.close();
         }, 500);
 

@@ -1,6 +1,6 @@
 <template>
   <main>
-    <img class="w-100" :src="pokemonType.image_url" alt="">
+    <img class="w-100" :src="`./assets/types/${pokemonType.name}.png` " alt="">
   </main>
 </template>
 

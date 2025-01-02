@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+import struct from 'python-struct';
+
 let BLOCK_SIZE = 56
 
 const crypt = (data, seed, i) => {
@@ -49,9 +52,8 @@ const shuffleArray = (data, sv, blockSize) => {
 };
 
 const decryptData = (encryptedData) => {
-
-    const pv = encryptedData.readUInt32LE(0);
-    const sv = ((pv >> 0xD) & 0x1F) % 24;
+    const seed = encryptedData.readUInt32LE(0);
+    const sv = ((seed >> 0xD) & 0x1F) % 24;
 
     const start = 8;
     const end = (4 * BLOCK_SIZE) + start;
@@ -59,10 +61,10 @@ const decryptData = (encryptedData) => {
     const header = encryptedData.slice(0, 8);
 
     // Blocks
-    const blocks = cryptArray(encryptedData, pv, start, end);
+    const blocks = cryptArray(encryptedData, seed, start, end);
 
     // Stats
-    const stats = cryptArray(encryptedData, pv, end, encryptedData.length);
+    const stats = cryptArray(encryptedData, seed, end, encryptedData.length);
 
     return Buffer.concat([header, shuffleArray(blocks, sv, BLOCK_SIZE), stats]);
 };

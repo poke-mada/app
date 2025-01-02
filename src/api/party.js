@@ -8,24 +8,13 @@ let SLOT_DATA_SIZE = (8 + (4 * BLOCK_SIZE))
 let STAT_DATA_OFFSET = 112
 let STAT_DATA_SIZE = 22
 
-function omitKeys(obj, keys)
-{
-    var dup = {};
-    for (var key in obj) {
-        if (keys.indexOf(key) == -1) {
-            dup[key] = obj[key];
-        }
-    }
-    return dup;
-}
-
 class Party {
-    constructor(citra, game_address) {
+    constructor(citra, game_address, team) {
+        this.team = team;
         //0x8CE1CE8 ally
         //142625392 enemy
         this.citra = citra;
         this.address = game_address;
-        this.team = [];
     }
 
     async loadTeam(oldTeam, internalSocket) {
@@ -35,21 +24,20 @@ class Party {
             let statsData = await this.citra.readMemory(read_address + SLOT_DATA_SIZE + STAT_DATA_OFFSET, STAT_DATA_SIZE);
 
             if (pokemonData && statsData) {
-                let data = Buffer.concat([pokemonData, statsData])
-                let pokemon = new Pokemon(internalSocket, data, 'you', slot)
+                let data = Buffer.concat([pokemonData, statsData]);
+                let pokemon = new Pokemon(data);
                 if (pokemon.dex_number !== 0) {
-                    let pokemonDated = omitKeys(pokemon, ['socket']);
-                    if (JSON.stringify(oldTeam[slot]) === JSON.stringify(pokemonDated)) return;
+                    if (JSON.stringify(oldTeam[slot]) === JSON.stringify(pokemon)) continue;
                     internalSocket.send('party_update', {
                         slot: slot,
-                        team: 'you',
-                        pokemon: pokemonDated
+                        team: this.team,
+                        pokemon: pokemon
                     })
-                    oldTeam[slot] = pokemonDated
+                    oldTeam[slot] = pokemon;
                 } else {
                     internalSocket.send('party_update', {
                         slot: slot,
-                        team: 'you',
+                        team: this.team,
                         pokemon: null
                     })
                 }
