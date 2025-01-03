@@ -1,10 +1,12 @@
 import {readFileSync} from 'fs'
+import path from "path";
 
 function Movement(slot, id, pp) {
     if (id === 0) return;
-
+    // eslint-disable-next-line no-undef
+    let move_data = path.join(__static, 'data', 'move_data.json');
     // eslint-disable-next-line no-unused-vars
-    let data = readFileSync('./public/data/move_data.json');
+    let data = readFileSync(move_data);
     let res = JSON.parse(data)
     let json_res = res[id];
     return {

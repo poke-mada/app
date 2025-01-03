@@ -17,33 +17,42 @@ class Party {
         this.address = game_address;
     }
 
-    async loadTeam(oldTeam, internalSocket) {
-        for (let slot = 0; slot < 6; slot++) {
-            let read_address = this.address + (slot * SLOT_OFFSET)
-            let pokemonData = await this.citra.readMemory(read_address, SLOT_DATA_SIZE);
-            let statsData = await this.citra.readMemory(read_address + SLOT_DATA_SIZE + STAT_DATA_OFFSET, STAT_DATA_SIZE);
+    async pokemonHandler(oldTeam, ipc, slot) {
+        let read_address = this.address + (slot * SLOT_OFFSET)
+        let pokemonData = await this.citra.readMemory(read_address, SLOT_DATA_SIZE);
+        let statsData = await this.citra.readMemory(read_address + SLOT_DATA_SIZE + STAT_DATA_OFFSET, STAT_DATA_SIZE);
 
-            if (pokemonData && statsData) {
-                let data = Buffer.concat([pokemonData, statsData]);
+        if (pokemonData && statsData) {
+            let data = Buffer.concat([pokemonData, statsData]);
+            try {
                 let pokemon = new Pokemon(data);
                 if (pokemon.dex_number !== 0) {
-                    if (JSON.stringify(oldTeam[slot]) === JSON.stringify(pokemon)) continue;
-                    internalSocket.send('party_update', {
+                    if (JSON.stringify(oldTeam[slot]) === JSON.stringify(pokemon)) return;
+                    ipc.reply('party_update', {
                         slot: slot,
                         team: this.team,
                         pokemon: pokemon
                     })
                     oldTeam[slot] = pokemon;
                 } else {
-                    internalSocket.send('party_update', {
+                    ipc.reply('party_update', {
                         slot: slot,
                         team: this.team,
                         pokemon: null
                     })
                 }
+                // eslint-disable-next-line no-empty
+            } catch (e) {
             }
         }
+    }
 
+    loadTeam(oldTeam, ipc) {
+        for (let slot = 0; slot < 6; slot++) {
+            setInterval(async () => {
+                await this.pokemonHandler(oldTeam, ipc, slot)
+            }, 500)
+        }
     }
 
 }

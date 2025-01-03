@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import {ipcRenderer} from "electron";
 import PokemonCard from "@/components/PokemonCard";
 
 export default {
@@ -35,13 +34,13 @@ export default {
     }
   },
   created() {
-    ipcRenderer.on('party_update', (event, data) => {
+    window.electron.onDataReceived('party_update', (event, data) => {
       if (data.team === this.team) {
-        if (this.party.team[data.slot] === data.pokemon) return;
+        if (JSON.stringify(this.party.team[data.slot]) === JSON.stringify(data.pokemon)) return;
         this.party.team[data.slot] = data.pokemon;
-        console.log(data)
       }
     })
+    window.electron.startComms()
   }
 }
 </script>

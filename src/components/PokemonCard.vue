@@ -14,7 +14,6 @@
 </template>
 
 <script>
-
 import TypeComponent from "./TypeComponent";
 
 export default {

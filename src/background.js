@@ -1,13 +1,17 @@
 'use strict'
 
-import {app, BrowserWindow, protocol} from 'electron'
+import {app, BrowserWindow, protocol, ipcMain} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
 import {Citra} from "@/api/citra_api";
 import {Party} from "@/api/party";
-import {getGame} from "@/api/game";
+// eslint-disable-next-line no-unused-vars
+import {getGame, XY} from "@/api/game";
+import path from "path";
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
+
+const citra = new Citra();
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -20,11 +24,13 @@ async function createWindow() {
         width: 1200,
         height: 675,
         icon: './public/icons/icon.png',
+        autoHideMenuBar: true,
         webPreferences: {
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-            contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION
+            contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
+            preload: path.join(__dirname, 'preload.js')
         }
     })
 
@@ -67,26 +73,18 @@ app.on('ready', async () => {
         }
     }
     let win = await createWindow();
-    let contents = win.webContents;
-
-    win.webContents.on('dom-ready', async () => {
+    ipcMain.on('open_channel', (event) => {
         let team = []
         let enemyTeam = []
-        setInterval(async () => {
-            let citra = new Citra();
-            let game = await getGame(citra)
-            let yourParty = new Party(citra, game.partyaddress, 'you');
-            let enemyParty = new Party(citra, game.battletraineroppadd, 'enemy');
-            //let wildParty = new Party(citra, game.battlewildpartyadd, 'enemy');
+        let game = XY
+        let yourParty = new Party(citra, game.partyaddress, 'you');
+        let enemyParty = new Party(citra, game.battletraineroppadd, 'enemy');
+        //let wildParty = new Party(citra, game.battlewildpartyadd, 'enemy');
 
-            await enemyParty.loadTeam(enemyTeam, contents);
-            await yourParty.loadTeam(team, contents);
-            //await wildParty.loadTeam(enemyTeam, contents);
-
-            citra.socket.close();
-        }, 500);
-
-    });
+        enemyParty.loadTeam(enemyTeam, event);
+        //await wildParty.loadTeam(enemyTeam, event);
+        yourParty.loadTeam(team, event);
+    })
     win.reload()
 
 })
@@ -96,11 +94,13 @@ if (isDevelopment) {
     if (process.platform === 'win32') {
         process.on('message', (data) => {
             if (data === 'graceful-exit') {
+                citra.socket.close()
                 app.quit()
             }
         })
     } else {
         process.on('SIGTERM', () => {
+            citra.socket.close()
             app.quit()
         })
     }

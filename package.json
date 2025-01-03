@@ -13,15 +13,13 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "electron:build": "vue-cli-service electron:build",
-    "electron:serve": "vue-cli-service electron:serve",
-    "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "electron:serve": "vue-cli-service electron:serve"
   },
+  "main": "background.js",
   "dependencies": {
     "core-js": "^3.8.3",
     "python-struct": "^1.1.3",
     "request": "^2.88.2",
-    "sqlite3": "^5.1.7",
     "vue": "^3.2.13"
   },
   "devDependencies": {
@@ -35,7 +33,8 @@
     "electron-devtools-installer": "^3.1.0",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
-    "vue-cli-plugin-electron-builder": "^2.1.1"
+    "vue-cli-plugin-electron-builder": "^2.1.1",
+    "webpack": "^5.97.1"
   },
   "eslintConfig": {
     "root": true,

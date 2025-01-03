@@ -67,7 +67,6 @@ class Citra {
                     }
                 });
             });
-
             // Esperar un poco para recibir la respuesta antes de continuar
             await new Promise(resolve => setTimeout(resolve, 1));  // Espera opcional para que el mensaje sea procesado
         }

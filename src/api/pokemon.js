@@ -3,6 +3,7 @@ import {decryptData} from "./CitraReader.js";
 import {STATICS_URL} from './poke-api.js'
 import {Movement} from "./movement.js";
 import {readFileSync} from 'fs'
+import path from "path";
 
 class Pokemon {
 
@@ -48,7 +49,8 @@ class Pokemon {
         this.sprite_back_url = STATICS_URL + `/sprites/master/sprites/pokemon/back/${this.dex_number}.png`;
         this.statusbyte = struct.unpack("<B", raw_data.subarray(0xE8, 0xE9))[0]  // Status byte
 
-        let pokedata = JSON.parse(readFileSync('./public/data/mon_data.json'));
+        // eslint-disable-next-line no-undef
+        let pokedata = JSON.parse(readFileSync(path.join(__static, 'data', 'mon_data.json')));
         let pokemon = pokedata[this.dex_number];
         this.types = pokemon.types
     }
