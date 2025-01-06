@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-import struct from 'python-struct';
 
 let BLOCK_SIZE = 56
 

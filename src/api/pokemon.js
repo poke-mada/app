@@ -6,53 +6,72 @@ import {readFileSync} from 'fs'
 import path from "path";
 
 class Pokemon {
+    cleanNickData(nickElements) {
+        let result = '';
+        for (let char of nickElements) {
+            if (char === 0) {
+                return result;
+            } else {
+                result += String.fromCharCode(char);
+            }
+        }
+
+        return result;
+    }
 
     constructor(data) {
         let raw_data = decryptData(data);
-        this.dex_number = struct.unpack("<H", raw_data.subarray(0x8, 0xA))[0]
-        if (this.dex_number === 0) return;
 
-        this.move1 = Movement(0, struct.unpack("<H", raw_data.subarray(0x5A, 0x5C))[0], struct.unpack("<B", raw_data.subarray(0x62, 0x63))[0])
-        this.move2 = Movement(1, struct.unpack("<H", raw_data.subarray(0x5C, 0x5E))[0], struct.unpack("<B", raw_data.subarray(0x63, 0x64))[0])
-        this.move3 = Movement(2, struct.unpack("<H", raw_data.subarray(0x5E, 0x60))[0], struct.unpack("<B", raw_data.subarray(0x64, 0x65))[0])
-        this.move4 = Movement(3, struct.unpack("<H", raw_data.subarray(0x60, 0x62))[0], struct.unpack("<B", raw_data.subarray(0x65, 0x66))[0])
-
-        this.form = struct.unpack("B", raw_data.subarray(0x1D, 0x1E))[0]
-        this.held_item_num = struct.unpack("<H", raw_data.subarray(0xA, 0xC))[0]
-        //this.held_item_name = items[this.held_item_num]['name']
-        this.ability_num = struct.unpack("B", raw_data.subarray(0x14, 0x15))[0]  // Ability
-        this.nature_num = struct.unpack("B", raw_data.subarray(0x1C, 0x1D))[0]   // Nature
-        this.friendship = struct.unpack("B", raw_data.subarray(0xCA, 0xCB))[0]   // Friendship
-        this.level_met = struct.unpack("<H", raw_data.subarray(0xDD, 0xDF))[0]   // Level met
-        this.level = struct.unpack("B", raw_data.subarray(0xEC, 0xED))[0]        // Current level
-        this.cur_hp = struct.unpack("<H", raw_data.subarray(0xF0, 0xF2))[0]      // Current HP
-        this.maxhp = struct.unpack("<H", raw_data.subarray(0xF2, 0xF4))[0]       // Max HP
-        this.attack = struct.unpack("<H", raw_data.subarray(0xF4, 0xF6))[0]      // Attack stat
-        this.defense = struct.unpack("<H", raw_data.subarray(0xF6, 0xF8))[0]     // Defense stat
-        this.speed = struct.unpack("<H", raw_data.subarray(0xF8, 0xFA))[0]       // Speed stat
-        this.spatk = struct.unpack("<H", raw_data.subarray(0xFA, 0xFC))[0]       // Special attack stat
-        this.spdef = struct.unpack("<H", raw_data.subarray(0xFC, 0xFE))[0]       // Special defense stat
-        this.evhp = struct.unpack("B", raw_data.subarray(0x1E, 0x1F))[0]         // HP EV
-        this.evattack = struct.unpack("B", raw_data.subarray(0x1F, 0x20))[0]     // Attack EV
-        this.evdefense = struct.unpack("B", raw_data.subarray(0x20, 0x21))[0]    // Defense EV
-        this.evspeed = struct.unpack("B", raw_data.subarray(0x21, 0x22))[0]      // Speed EV
-        this.evspatk = struct.unpack("B", raw_data.subarray(0x22, 0x23))[0]      // Special attack EV
-        this.evspdef = struct.unpack("B", raw_data.subarray(0x23, 0x24))[0]      // Special defense EV
-        let ivloc = struct.unpack("<I", raw_data.subarray(0x74, 0x78))[0]
-        this.ivhp = (ivloc >> 0) & 0x1F                                          // HP IV
-        this.ivattack = (ivloc >> 5) & 0x1F                                      // Attack IV
-        this.ivdefense = (ivloc >> 10) & 0x1F                                    // Defense IV
-        this.ivspeed = (ivloc >> 15) & 0x1F                                      // Speed IV
-        this.ivspatk = (ivloc >> 20) & 0x1F                                      // Special attack IV
-        this.ivspdef = (ivloc >> 25) & 0x1F                                      // Special defense IV
+        this.dex_number = struct.unpack("<H", raw_data.subarray(8, 10))[0]
+        if (this.dex_number === 0 || this.dex_number >= 808) return;
+        this.held_item_num = struct.unpack("<H", raw_data.subarray(10, 12))[0]
+        this.ability_num = struct.unpack("B", raw_data.subarray(20, 21))[0]  // Ability
+        this.nature_num = struct.unpack("B", raw_data.subarray(28, 29))[0]   // Nature
+        this.form = struct.unpack("B", raw_data.subarray(29, 30))[0]
+        this.evhp = struct.unpack("B", raw_data.subarray(30, 31))[0]         // HP EV
+        this.evattack = struct.unpack("B", raw_data.subarray(31, 32))[0]     // Attack EV
+        this.evdefense = struct.unpack("B", raw_data.subarray(32, 33))[0]    // Defense EV
+        this.evspeed = struct.unpack("B", raw_data.subarray(33, 34))[0]      // Speed EV
+        this.evspatk = struct.unpack("B", raw_data.subarray(34, 35))[0]      // Special attack EV
+        this.evspdef = struct.unpack("B", raw_data.subarray(35, 36))[0]      // Special defense EV
+        let mote = struct.unpack("12<H", raw_data.subarray(64, 90))
+        this.move1 = Movement(0, struct.unpack("<H", raw_data.subarray(90, 92))[0], struct.unpack("<B", raw_data.subarray(98, 99))[0])
+        this.move2 = Movement(1, struct.unpack("<H", raw_data.subarray(92, 94))[0], struct.unpack("<B", raw_data.subarray(99, 100))[0])
+        this.move3 = Movement(2, struct.unpack("<H", raw_data.subarray(94, 96))[0], struct.unpack("<B", raw_data.subarray(100, 101))[0])
+        this.move4 = Movement(3, struct.unpack("<H", raw_data.subarray(96, 98))[0], struct.unpack("<B", raw_data.subarray(101, 102))[0])
+        let ivloc = struct.unpack("<I", raw_data.subarray(116, 120))[0]
+        this.friendship = struct.unpack("B", raw_data.subarray(202, 203))[0]   // Friendship
+        this.level_met = struct.unpack("<H", raw_data.subarray(221, 223))[0]   // Level met
+        this.statusbyte = struct.unpack("<B", raw_data.subarray(232, 233))[0]  // Status byte
+        this.level = struct.unpack("B", raw_data.subarray(236, 237))[0]        // Current level
+        this.cur_hp = struct.unpack("<H", raw_data.subarray(240, 242))[0]      // Current HP
+        this.maxhp = struct.unpack("<H", raw_data.subarray(242, 244))[0]       // Max HP
+        this.attack = struct.unpack("<H", raw_data.subarray(244, 246))[0]      // Attack stat
+        this.defense = struct.unpack("<H", raw_data.subarray(246, 248))[0]     // Defense stat
+        this.speed = struct.unpack("<H", raw_data.subarray(248, 250))[0]       // Speed stat
+        this.spatk = struct.unpack("<H", raw_data.subarray(250, 252))[0]       // Special attack stat
+        this.spdef = struct.unpack("<H", raw_data.subarray(252, 254))[0]       // Special defense stat
+        this.ivhp = ivloc & 31                                                 // HP IV
+        this.ivattack = (ivloc >> 5) & 31                                      // Attack IV
+        this.ivdefense = (ivloc >> 10) & 31                                    // Defense IV
+        this.ivspeed = (ivloc >> 15) & 31                                      // Speed IV
+        this.ivspatk = (ivloc >> 20) & 31                                      // Special attack IV
+        this.ivspdef = (ivloc >> 25) & 31                                      // Special defense IV
         this.sprite_url = STATICS_URL + `/sprites/master/sprites/pokemon/${this.dex_number}.png`;
         this.sprite_back_url = STATICS_URL + `/sprites/master/sprites/pokemon/back/${this.dex_number}.png`;
-        this.statusbyte = struct.unpack("<B", raw_data.subarray(0xE8, 0xE9))[0]  // Status byte
-
+        this.mote = this.cleanNickData(mote);
         // eslint-disable-next-line no-undef
-        let pokedata = JSON.parse(readFileSync(path.join(__static, 'data', 'mon_data.json')));
+        let fileData = readFileSync(path.join(__static, 'data', 'mon_data.json')).toString();
+        let pokedata = JSON.parse(fileData);
         let pokemon = pokedata[this.dex_number];
-        this.types = pokemon.types
+        if (pokemon === undefined) {
+            console.error('failed for pokemon dex: ', this.dex_number)
+            return;
+        }
+        this.species = pokemon.name;
+        this.types = pokemon.types.map((value) => {
+            return {name: value.name.toLowerCase()}
+        })
     }
 }
 

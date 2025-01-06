@@ -1,5 +1,5 @@
-import {Citra} from "@/api/citra_api";
 import {Pokemon} from "@/api/pokemon";
+import {CitraClient} from "@/api/CitraClient";
 
 let BLOCK_SIZE = 56
 let SLOT_OFFSET = 484
@@ -9,12 +9,12 @@ let STAT_DATA_SIZE = 22
 class Game {
     constructor(name, partyaddress, battlewildpartyadd, battlewildoppadd, battletrainerpartyadd, battletraineroppadd, curoppadd, wildppadd, trainerppadd, multippadd, mongap, badgeaddress) {
         this.name = name;
-        this.partyaddress = partyaddress;
-        this.battlewildpartyadd = battlewildpartyadd;
-        this.battlewildoppadd = battlewildoppadd;
-        this.battletrainerpartyadd = battletrainerpartyadd;
-        this.battletraineroppadd = battletraineroppadd;
-        this.curoppadd = curoppadd;
+        this.partyAddress = partyaddress;
+        this.battleWildPartyAddress = battlewildpartyadd;
+        this.wildOpponentPartyAddress = battlewildoppadd;
+        this.battleTrainerPartyAddress = battletrainerpartyadd;
+        this.trainerOpponentPartyAddress = battletraineroppadd;
+        this.currentOpponentAddress = curoppadd;
         this.wildppadd = wildppadd;
         this.trainerppadd = trainerppadd;
         this.multippadd = multippadd;
@@ -22,7 +22,6 @@ class Game {
         this.badgeaddress = badgeaddress;
     }
 }
-
 export const XY = new Game(
     'X/Y',
     147725544,
@@ -49,7 +48,7 @@ export const ROZA = new Game(
     136338972,
     136359756,
     580,
-    0x8C6DDD4,
+    147250644,
 );
 export const SM = new Game(
     'Sun/Moon',
@@ -80,11 +79,12 @@ export const USUM = new Game(
     0,
 );
 
-export async function getGame(citra){
+export async function getGame(){
     let games = [XY, ROZA, SM, USUM]
+    let citra = new CitraClient();
     for (const game of games) {
         for (let slot = 0; slot < 6; slot++) {
-            let read_address = game.partyaddress + (slot * SLOT_OFFSET)
+            let read_address = game.partyAddress + (slot * SLOT_OFFSET)
             let pokemonData = await citra.readMemory(read_address, SLOT_DATA_SIZE);
             let statsData = await citra.readMemory(read_address + SLOT_DATA_SIZE + STAT_DATA_OFFSET, STAT_DATA_SIZE);
             let data = Buffer.concat([pokemonData, statsData]);
@@ -94,5 +94,6 @@ export async function getGame(citra){
             }
         }
     }
+    citra.socket.close()
     return XY;
 }

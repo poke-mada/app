@@ -1,5 +1,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
+ipcRenderer.setMaxListeners(15)
 // Exponer algunas funciones del sistema de archivos y el módulo path de manera controlada
 contextBridge.exposeInMainWorld('electron', {
 

@@ -1,17 +1,15 @@
 'use strict'
 
-import {app, BrowserWindow, protocol, ipcMain} from 'electron'
+import {app, BrowserWindow, protocol, ipcMain, dialog, nativeImage} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
-import {Citra} from "@/api/citra_api";
+import { autoUpdater } from "electron-updater"
 import {Party} from "@/api/party";
 // eslint-disable-next-line no-unused-vars
 import {getGame, XY} from "@/api/game";
 import path from "path";
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
-
-const citra = new Citra();
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -22,9 +20,10 @@ async function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
         width: 1200,
-        height: 675,
+        height: 710,
         icon: './public/icons/icon.png',
         autoHideMenuBar: true,
+        resizable: false,
         webPreferences: {
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
@@ -42,6 +41,20 @@ async function createWindow() {
         createProtocol('app')
         // Load the index.html when not in development
         await win.loadURL('app://./index.html')
+        autoUpdater.checkForUpdatesAndNotify().then((res) => {
+            res.downloadPromise.then(() => {
+                dialog.showMessageBox(win, {
+                    type: 'info',
+                    icon: nativeImage.createFromPath('./public/icon.png'),
+                    message: 'New Update Found',
+                    detail: 'A new update has been found, program will close to install it',
+                    buttons: ['Close'],
+                    defaultId: 0
+                }).then(() => {
+                    app.quit();
+                })
+            })
+        })
     }
     return win
 }
@@ -72,21 +85,16 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
+    let game = XY;
     let win = await createWindow();
-    ipcMain.on('open_channel', (event) => {
-        let team = []
-        let enemyTeam = []
-        let game = XY
-        let yourParty = new Party(citra, game.partyaddress, 'you');
-        let enemyParty = new Party(citra, game.battletraineroppadd, 'enemy');
-        //let wildParty = new Party(citra, game.battlewildpartyadd, 'enemy');
+    ipcMain.on('open_channel', async (event) => {
+        let yourParty = new Party(game, 'you');
+        let enemyParty = new Party(game, 'enemy');
 
-        enemyParty.loadTeam(enemyTeam, event);
-        //await wildParty.loadTeam(enemyTeam, event);
-        yourParty.loadTeam(team, event);
+        enemyParty.loadTeam(event);
+        yourParty.loadTeam(event);
     })
     win.reload()
-
 })
 
 // Exit cleanly on request from parent process in development mode.
@@ -94,13 +102,11 @@ if (isDevelopment) {
     if (process.platform === 'win32') {
         process.on('message', (data) => {
             if (data === 'graceful-exit') {
-                citra.socket.close()
                 app.quit()
             }
         })
     } else {
         process.on('SIGTERM', () => {
-            citra.socket.close()
             app.quit()
         })
     }

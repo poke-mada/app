@@ -21,7 +21,8 @@ module.exports = defineConfig({
         win: {
           target: 'nsis',
         },
-        icon: 'public/icons/icon.png'
+        icon: 'public/icons/icon.png',
+        publish: ['github']
       }
     }
   }
