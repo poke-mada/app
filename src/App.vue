@@ -1,19 +1,23 @@
 <template>
   <div class="container-fluid">
-      <CombatPanel team="enemy"/>
-      <div class="row" style="height: 1rem"></div>
-      <CombatPanel team="you"/>
+    <EnemyCombatPanel/>
+    <div class="row" style="height: 1rem"></div>
+    <AllyCombatPanel/>
   </div>
 </template>
 
 <script>
-import CombatPanel from './components/CombatPanel.vue'
+import AllyCombatPanel from './components/AllyCombatPanel.vue'
+import EnemyCombatPanel from './components/EnemyCombatPanel.vue'
 
 
 export default {
   name: 'App',
   components: {
-    CombatPanel
+    AllyCombatPanel,
+    EnemyCombatPanel
+  }, created() {
+    window.electron.startComms()
   }
 }
 </script>
@@ -25,13 +29,16 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
 }
+
 body {
   background-repeat: no-repeat;
   background-size: cover;
 }
+
 .img-thumbnail {
   cursor: pointer;
 }
+
 * {
   cursor: default;
 }

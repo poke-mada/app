@@ -1,16 +1,14 @@
 <template>
   <div class="alert alert-success" role="alert">
-    <img :src="type" alt="">
+    <img :src="type_image_path" v-if="movement" alt="">
     {{ movement.move_name }}
-    <div class="badge bg-success float-right" v-if="stab">STAB</div>
-    <div class="badge float-right" :class="multiplier > 1 ? 'bg-success' : 'bg-danger'" v-if="multiplier">x{{multiplier}}</div>
     <div class="badge bg-secondary float-right">{{category}}</div>
+    <div class="badge bg-success float-right" v-if="stab">STAB</div>
+    <div class="badge float-right" :class="multiplier > 1 ? 'bg-success' : 'bg-danger'" v-if="multiplier !== 1">x{{multiplier}}</div>
   </div>
 </template>
 
 <script>
-import {state} from '@/store.js';
-import {toRaw} from "vue";
 
 function appearances(coverageTypes, enemyTypes) {
   return enemyTypes.filter(item => coverageTypes.includes(item.name)).length;
@@ -23,15 +21,17 @@ export default {
       type: Object,
       required: true
     },
+    pokemon: {
+      type: Object,
+      required: false
+    },
+    enemy: {
+      type: Object,
+      required: false
+    },
   },
   computed: {
-    pokemon() {
-      return toRaw(state.selectedPokemon);
-    },
-    enemyPokemon() {
-      return toRaw(state.selectedEnemyPokemon);
-    },
-    type() {
+    type_image_path() {
       return `./assets/types/${this.movement.type}.png`;
     },
     category() {
@@ -47,13 +47,19 @@ export default {
       }
     },
     multiplier() {
-      if (!this.enemyPokemon) {
-        return ''
+      if (!this.enemy) {
+        return 1;
       }
 
-      let doubles = appearances(this.movement.coverage.double_damage_to, this.enemyPokemon.types)
-      let halves = appearances(this.movement.coverage.half_damage_to, this.enemyPokemon.types)
-      let zeroes = appearances(this.movement.coverage.no_damage_to, this.enemyPokemon.types)
+
+      if (this.category === 'Status') {
+        return 1;
+      }
+
+      let doubles = appearances(this.movement.coverage.double_damage_to, this.enemy.types)
+      let halves = appearances(this.movement.coverage.half_damage_to, this.enemy.types)
+      let zeroes = appearances(this.movement.coverage.no_damage_to, this.enemy.types)
+
       let multiplier = 1;
       if (zeroes > 0) {
         multiplier = 0;
@@ -65,21 +71,16 @@ export default {
           multiplier /= halves * 2;
         }
       }
-      if (multiplier === 1) {
-        return '';
-      }
+
       return multiplier;
     },
     stab() {
-      if (!this.pokemon || !this.pokemon.types) return '';
       try {
-        let this_type = toRaw(this.movement.type).toLowerCase();
-        if (this.pokemon.types.map((item) => item.name).includes(this_type)) {
-          return './assets/stab.png';
-        }
-        return '';
+        let this_type = this.movement.type.toLowerCase();
+        let pokemon_types = this.pokemon.types.map((item) => item.name.toLowerCase());
+        return !!pokemon_types.includes(this_type);
       } catch (e) {
-        return '';
+        return false;
       }
     }
   }

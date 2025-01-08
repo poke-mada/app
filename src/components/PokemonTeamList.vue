@@ -58,7 +58,6 @@ export default {
         this.party.team = [null, null, null, null, null, null];
       })
     }
-    window.electron.startComms()
   },
   updated() {
     if (!this.party.team[0]) {

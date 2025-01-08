@@ -10,7 +10,7 @@
       <div class="col" style="padding-right: 0;">
         <img :src="pokemon ? pokemon.sprite_url : missingno" class="card-img-top" width="130" alt="">
         <div class="float-right" v-if="pokemon">
-          <img :src="`./assets/types/${type.name}.png`" v-for="(type, i) in pokemon.types" :key="i">
+          <img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon.types" :key="i">
         </div>
       </div>
       <div class="col border-left">
@@ -38,6 +38,11 @@ export default {
     team: {
       type: String,
       required: true
+    }
+  },
+  methods: {
+    type_name(val) {
+      return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     }
   },
   data() {

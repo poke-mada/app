@@ -52,7 +52,7 @@ const shuffleArray = (data, sv, blockSize) => {
 
 const decryptData = (encryptedData) => {
     const seed = encryptedData.readUInt32LE(0);
-    const sv = ((seed >> 0xD) & 0x1F) % 24;
+    const sv = ((seed >> 13) & 31) % 24;
 
     const start = 8;
     const end = (4 * BLOCK_SIZE) + start;

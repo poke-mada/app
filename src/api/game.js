@@ -88,7 +88,7 @@ export async function getGame(){
             let pokemonData = await citra.readMemory(read_address, SLOT_DATA_SIZE);
             let statsData = await citra.readMemory(read_address + SLOT_DATA_SIZE + STAT_DATA_OFFSET, STAT_DATA_SIZE);
             let data = Buffer.concat([pokemonData, statsData]);
-            let pokemon = new Pokemon(data, slot);
+            let pokemon = new Pokemon(citra, data, slot);
             if (pokemon.dex_number >= 1 && pokemon.dex_number <= 808) {
                 return game
             }
