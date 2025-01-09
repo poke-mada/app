@@ -1,5 +1,5 @@
 <template>
-  <div class="row" style="margin-top:20px">
+  <div class="row" style="margin-top:20px" v-if="false">
     <div class="col-sm">
       <div class="row row-cols-2" v-if="this.selectedPokemon">
         <div v-for="(move, index) in this.selectedPokemon.moves" :key="index" v-show="move && move.discovered">

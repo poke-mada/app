@@ -55,6 +55,7 @@ async function createWindow() {
         width: 1200,
         height: 873,
         icon: './public/icons/icon.png',
+        title: `Mada Pokemon Tracker v${autoUpdater.currentVersion}`,
         autoHideMenuBar: true,
         resizable: false,
         webPreferences: {
@@ -73,21 +74,23 @@ async function createWindow() {
     } else {
         createProtocol('app')
         // Load the index.html when not in development
-        await win.loadURL('app://./index.html')
         autoUpdater.checkForUpdates().then((res) => {
-            dialog.showMessageBox(win, {
-                type: 'info',
-                icon: nativeImage.createFromPath('./public/icon.png'),
-                message: 'New Update Found',
-                detail: 'A new update has been found, program will close to install it',
-                buttons: ['Close'],
-                defaultId: 0
-            }).then(() => {
-                res.downloadPromise.then(() => {
-                    app.quit();
+            if (res && res.updateInfo.version) {
+                dialog.showMessageBox(win, {
+                    type: 'info',
+                    icon: nativeImage.createFromPath('./public/icon.png'),
+                    message: 'Nueva Version encontrada!',
+                    detail: `Una nueva version ${res.updateInfo.version} ha sido encontrada`,
+                    buttons: ['Close'],
+                    defaultId: 0
+                }).then(() => {
+                    res.downloadPromise.then(() => {
+                        app.quit();
+                    })
                 })
-            })
+            }
         })
+        await win.loadURL('app://./index.html')
     }
     return win
 }

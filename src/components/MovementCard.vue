@@ -75,6 +75,9 @@ export default {
       return multiplier;
     },
     stab() {
+      if (this.category === 'Status') {
+        return false;
+      }
       try {
         let this_type = this.movement.type.toLowerCase();
         let pokemon_types = this.pokemon.types.map((item) => item.name.toLowerCase());

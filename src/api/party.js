@@ -108,6 +108,8 @@ class Party {
                             }
                             this.discoveredPokemons[slot] = pokemon;
                             this.pokemonTeam[slot] = pokemon;
+                        } else {
+                            this.pokemonTeam[slot] = pokemon;
                         }
                     }
                     // eslint-disable-next-line no-empty

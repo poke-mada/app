@@ -14,7 +14,6 @@ module.exports = defineConfig({
   pluginOptions: {
     electronBuilder: {
       preload: 'src/preload.js',
-
       builderOptions: {
         appId: 'com.paramada.poke-mada',
         productName: 'PokeMada',
