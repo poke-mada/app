@@ -55,7 +55,7 @@ class CitraClient {
             // Enviar la solicitud
             this.socket.send(finalRequest, CITRA_PORT, (err) => {
                 if (err) {
-                    console.error('Game not running')
+                    console.error('RomData not running')
                 }
             });
             let replyData = await this._waitForReply(requestId).catch(() => {

@@ -1,11 +1,15 @@
 import struct from 'python-struct';
-import {decryptData} from "./CitraReader.js";
-import {STATICS_URL} from './poke-api.js'
-import {Movement} from "./movement.js";
+import {decryptData} from "./PokemonCrypt";
+import {STATICS_URL} from './poke-api'
+import {Movement} from "./movement";
 import {readFileSync} from 'fs'
 import path from "path";
 
-class Pokemon {
+export function validatePokemon(dex_number) {
+    return dex_number >= 1 && dex_number <= 808;
+}
+
+export class Pokemon {
     cleanNickData(nickElements) {
         let result = '';
         for (let char of nickElements) {
@@ -20,8 +24,8 @@ class Pokemon {
     }
 
     constructor(move_data, data) {
+        //if (data[0] === 0) return;
         let raw_data = decryptData(data);
-
         this.dex_number = struct.unpack("<H", raw_data.subarray(8, 10))[0]
         if (this.dex_number === 0 || this.dex_number >= 808) return;
         this.held_item_num = struct.unpack("<H", raw_data.subarray(10, 12))[0]
@@ -43,12 +47,11 @@ class Pokemon {
         this.moves.push(Movement(this.ability_num, 1, struct.unpack("<H", raw_data.subarray(92, 94))[0], struct.unpack("<B", raw_data.subarray(99, 100))[0], move_data));
         this.moves.push(Movement(this.ability_num, 2, struct.unpack("<H", raw_data.subarray(94, 96))[0], struct.unpack("<B", raw_data.subarray(100, 101))[0], move_data));
         this.moves.push(Movement(this.ability_num, 3, struct.unpack("<H", raw_data.subarray(96, 98))[0], struct.unpack("<B", raw_data.subarray(101, 102))[0], move_data));
-
         let ivloc = struct.unpack("<I", raw_data.subarray(116, 120))[0]
         this.friendship = struct.unpack("B", raw_data.subarray(202, 203))[0]   // Friendship
         this.level_met = struct.unpack("<H", raw_data.subarray(221, 223))[0]   // Level met
         this.statusbyte = struct.unpack("<B", raw_data.subarray(232, 233))[0]  // Status byte
-        this.level = struct.unpack("B", raw_data.subarray(236, 237))[0]        // Current level
+        this.level = struct.unpack("B", raw_data.subarray(236, 237))[0]            // Current level
         this.cur_hp = struct.unpack("<H", raw_data.subarray(240, 242))[0]      // Current HP
         this.maxhp = struct.unpack("<H", raw_data.subarray(242, 244))[0]       // Max HP
         this.attack = struct.unpack("<H", raw_data.subarray(244, 246))[0]      // Attack stat
@@ -72,6 +75,8 @@ class Pokemon {
         let pokedata = JSON.parse(fileData);
         let formdata = JSON.parse(fileformData);
         let pokemon;
+
+
         try {
             if (this.dex_number in formdata) {
                 let form = formdata[this.dex_number][this.form];
@@ -93,8 +98,8 @@ class Pokemon {
             return {name: value.name.toLowerCase()}
         })
     }
-}
 
-export {
-    Pokemon
+    isAlive() {
+        return this.cur_hp >= 0;
+    }
 }

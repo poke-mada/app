@@ -6,8 +6,9 @@ let SLOT_OFFSET = 484
 let SLOT_DATA_SIZE = (8 + (4 * BLOCK_SIZE))
 let STAT_DATA_OFFSET = 112
 let STAT_DATA_SIZE = 22
-class Game {
-    constructor(name, partyaddress, battlewildpartyadd, battlewildoppadd, battletrainerpartyadd, battletraineroppadd, curoppadd, wildppadd, trainerppadd, multippadd, mongap, badgeaddress) {
+
+export class RomData {
+    constructor(name, partyaddress, battlewildpartyadd, battlewildoppadd, battletrainerpartyadd, battletraineroppadd, curoppadd, wildppadd, trainerppadd, multippadd, mongap, badgeaddress, multi_combat_mongap) {
         this.name = name;
         this.partyAddress = partyaddress;
         this.battleWildPartyAddress = battlewildpartyadd;
@@ -20,9 +21,11 @@ class Game {
         this.multippadd = multippadd;
         this.mongap = mongap;
         this.badgeaddress = badgeaddress;
+        this.multiCombatMonGap = multi_combat_mongap;
     }
 }
-export const XY = new Game(
+
+export const XY = new RomData(
     'X/Y',
     147725544,
     142625392,
@@ -35,8 +38,9 @@ export const XY = new Game(
     136352016,
     580,
     147236512,
+    235568
 );
-export const ROZA = new Game(
+export const ROZA = new RomData(
     'OmegaRuby/AlphaSapphire',
     0x8CF727C,
     142625428,
@@ -50,7 +54,7 @@ export const ROZA = new Game(
     580,
     147250644,
 );
-export const SM = new Game(
+export const SM = new RomData(
     'Sun/Moon',
     0x34195E10,
     849782880,
@@ -64,7 +68,7 @@ export const SM = new Game(
     816,
     0,
 );
-export const USUM = new Game(
+export const USUM = new RomData(
     'UltraSun/UltraMoon',
     0x33F7FA44,
     848898144,
@@ -79,7 +83,7 @@ export const USUM = new Game(
     0,
 );
 
-export async function getGame(){
+export async function getGame() {
     let games = [XY, ROZA, SM, USUM]
     let citra = new CitraClient();
     for (const game of games) {

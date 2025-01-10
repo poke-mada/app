@@ -1,28 +1,34 @@
 <template>
-  <div class="card border-primary shadow" style="width: 19rem;margin-top:10px">
-    <div class="card-header bg-primary text-white" v-if="team === 'enemy'">
-      Pokemon enemigo
-    </div>
-    <div class="card-header bg-success text-white" v-if="team === 'you'">
-      Pokemon atacando
-    </div>
-    <div class="row" style="padding:5px">
-      <div class="col" style="padding-right: 0;">
+  <v-card type="primary" class="mt-2" border>
+    <v-alert :type="team === 'enemy' ? 'primary' : 'success'" class="p-0">
+      <v-card-title v-if="team === 'enemy'" >
+        Pokemon enemigo
+      </v-card-title>
+      <v-card-title v-if="team === 'you'" >
+        Pokemon atacando
+      </v-card-title>
+    </v-alert>
+    <v-row>
+      <v-col cols="6">
         <img :src="pokemon ? pokemon.sprite_url : missingno" class="card-img-top" width="130" alt="">
         <div class="float-right" v-if="pokemon">
-          <img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon.types" :key="i">
+          <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon.types" :key="i" width="32" inline></v-img>
         </div>
-      </div>
-      <div class="col border-left">
-        <div class="alert text-center" :class="team === 'enemy' ? 'alert-info' : 'alert-success'" style="padding:0px">
-          {{ pokemon ? pokemon.mote : '???'}}
-        </div>
+      </v-col>
+      <v-col cols="6">
+        <v-alert :type="team === 'enemy' ? 'info' : 'success'" variant="tonal" class="pb-0 pt-0 mt-1">
+          <template v-slot:prepend>
+          </template>
+          <template v-slot:text>
+            {{ pokemon ? pokemon.mote : '???' }}
+          </template>
+        </v-alert>
         <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???'}}</p>
         <p class="text-center">Nivel {{ pokemon ? pokemon.level : '???'}}</p>
         <p class="text-center">{{ pokemon ? pokemon.types.map((v) => v.name).join("/") : '???'}}</p>
-      </div>
-    </div>
-  </div>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script>

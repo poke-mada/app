@@ -65,10 +65,8 @@ function Movement(ability, slot, id, pp, move_byte_data) {
     if (forced_type) {
         let ability_data = FORCE_TYPE_ABILITIES[ability];
         if (move_type === ability_data.forced_from) {
-            console.log("awa")
             move_type = ability_data.forced_type;
         } else if (ability_data.forced_from === '*') {
-            console.log("awa2")
             move_type = ability_data.forced_type;
         }
     }
@@ -85,6 +83,7 @@ function Movement(ability, slot, id, pp, move_byte_data) {
         power: json_res.movepower,
         accuracy: json_res.moveaccuracy,
         category: json_res.movecategoryname,
+        flavor_text: json_res.falvor_text,
         coverage: coverage_data
     };
 

@@ -1,19 +1,17 @@
 'use strict'
 
-import {app, BrowserWindow, protocol, ipcMain, dialog, nativeImage} from 'electron'
+import {app, BrowserWindow, dialog, ipcMain, nativeImage, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
 import {autoUpdater} from "electron-updater"
-import {Party} from "@/api/party";
-import {XY} from "@/api/game";
+import {XY} from "@/api/romData";
 import path from "path";
 import fs from "fs";
 
-import {stopWatching, watchSave} from '@/api/saveReader'
-import WebSocket from 'ws'
 import config from 'config'
 import toml from 'toml'
 import TOML from '@iarna/toml'
+import {PokemonGame} from "./api/PokemonGame";
 
 function loadTomlConfig(win) {
     const tomlFilePath = 'config/config.toml'; // Ruta a tu archivo TOML
@@ -127,23 +125,11 @@ app.on('ready', async () => {
         }
     }
 
-    let game = XY;
-    let client = null;
-    ipcMain.on('open_channel', async (event) => {
-        if (client) {
-            client.close();
-            stopWatching(config.get("app.save_file"));
-        }
-        client = new WebSocket(SOCKET_URL).on('error', () => {
-            console.log(`error connecting to web socket ${SOCKET_URL}`)
-        });
-
-        watchSave(config.get("app.save_file"));
-
-        let yourParty = new Party(game, 'you');
-        let enemyParty = new Party(game, 'enemy');
-        enemyParty.loadTeam(null, event, yourParty);
-        yourParty.loadTeam(client, event);
+    let game = new PokemonGame(XY, SOCKET_URL);
+    ipcMain.on('open_channel', (event) => {
+        game.alreadySent = null;
+        game.stop();
+        game.startComms(event);
     });
     win.reload();
 })

@@ -69,4 +69,8 @@ const decryptData = (encryptedData) => {
 };
 
 
-export {decryptData}
+export {decryptData};
+
+export default {
+    decryptData: decryptData
+}

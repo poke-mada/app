@@ -21,9 +21,9 @@
 </template>
 
 <script>
-import PokemonPanel from './PokemonPanel'
+import PokemonPanel from '@/components/basic-comps/PokemonPanel'
+import PokemonTeamList from '@/components/basic-comps/PokemonTeamList';
 import MovementCard from './MovementCard'
-import PokemonTeamList from './PokemonTeamList';
 
 export default {
   name: "CombatPanel",
