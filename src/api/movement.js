@@ -2,7 +2,34 @@ import {readFileSync} from 'fs'
 import path from "path";
 import struct from "python-struct";
 
-function Movement(slot, id, pp, move_byte_data) {
+let FORCE_TYPE_ABILITIES = {
+    182: {
+        name: 'Pixilate',
+        forced_from: 'Normal',
+        forced_type: 'Fairy'
+    },
+    96: {
+        name: 'Normalize',
+        forced_from: '*',
+        forced_type: 'Normal'
+    },
+    184: {
+        name: 'Aerilate',
+        forced_from: 'Normal',
+        forced_type: 'Flying'
+    },
+    206: {
+        name: 'Galvanize',
+        forced_from: 'Normal',
+        forced_type: 'Electric'
+    },
+    174: {
+        name: 'Refrigerate',
+        forced_from: 'Normal',
+        forced_type: 'Ice'
+    }
+}
+function Movement(ability, slot, id, pp, move_byte_data) {
     if (id === 0) return;
 
     let move_current_pp = struct.unpack('B', move_byte_data.slice(14 * slot))[0];
@@ -31,14 +58,30 @@ function Movement(slot, id, pp, move_byte_data) {
             coverage: {}
         };
     }
-    let coverage_data = type_res[json_res.typename.toLowerCase()];
+
+    let move_type = json_res.typename;
+    let forced_type = ability.toString() in FORCE_TYPE_ABILITIES;
+
+    if (forced_type) {
+        let ability_data = FORCE_TYPE_ABILITIES[ability];
+        if (move_type === ability_data.forced_from) {
+            console.log("awa")
+            move_type = ability_data.forced_type;
+        } else if (ability_data.forced_from === '*') {
+            console.log("awa2")
+            move_type = ability_data.forced_type;
+        }
+    }
+
+
+    let coverage_data = type_res[move_type.toLowerCase()];
     return {
         discovered: move_current_pp < json_res.movepp,
         slot: slot,
         current_pp: move_current_pp,
         move_name: json_res.movename,
         max_pp: json_res.movepp,
-        type: json_res.typename,
+        type: move_type,
         power: json_res.movepower,
         accuracy: json_res.moveaccuracy,
         category: json_res.movecategoryname,

@@ -39,10 +39,10 @@ class Pokemon {
         let mote = struct.unpack("12<H", raw_data.subarray(64, 90))
         this.moves = []
 
-        this.moves.push(Movement(0, struct.unpack("<H", raw_data.subarray(90, 92))[0], struct.unpack("<B", raw_data.subarray(98, 99))[0], move_data));
-        this.moves.push(Movement(1, struct.unpack("<H", raw_data.subarray(92, 94))[0], struct.unpack("<B", raw_data.subarray(99, 100))[0], move_data));
-        this.moves.push(Movement(2, struct.unpack("<H", raw_data.subarray(94, 96))[0], struct.unpack("<B", raw_data.subarray(100, 101))[0], move_data));
-        this.moves.push(Movement(3, struct.unpack("<H", raw_data.subarray(96, 98))[0], struct.unpack("<B", raw_data.subarray(101, 102))[0], move_data));
+        this.moves.push(Movement(this.ability_num, 0, struct.unpack("<H", raw_data.subarray(90, 92))[0], struct.unpack("<B", raw_data.subarray(98, 99))[0], move_data));
+        this.moves.push(Movement(this.ability_num, 1, struct.unpack("<H", raw_data.subarray(92, 94))[0], struct.unpack("<B", raw_data.subarray(99, 100))[0], move_data));
+        this.moves.push(Movement(this.ability_num, 2, struct.unpack("<H", raw_data.subarray(94, 96))[0], struct.unpack("<B", raw_data.subarray(100, 101))[0], move_data));
+        this.moves.push(Movement(this.ability_num, 3, struct.unpack("<H", raw_data.subarray(96, 98))[0], struct.unpack("<B", raw_data.subarray(101, 102))[0], move_data));
 
         let ivloc = struct.unpack("<I", raw_data.subarray(116, 120))[0]
         this.friendship = struct.unpack("B", raw_data.subarray(202, 203))[0]   // Friendship
