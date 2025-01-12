@@ -14,8 +14,10 @@
         </template>
         <template v-slot:append>
           <v-row>
-            <v-col>
+            <v-col sm>
               <v-badge bordered :content="category" color="secondary" inline></v-badge>
+              <v-badge v-if="stab" color="success" content="STAB" bordered inline></v-badge>
+              <v-badge bordered :content="`x${this.multiplier}`" v-if="this.multiplier !== 1" :color="this.multiplier > 1 ? 'success' : 'danger'" inline></v-badge>
             </v-col>
           </v-row>
         </template>
@@ -31,20 +33,6 @@
           <v-badge v-if="movement.power === -1" color="danger" content="Power: -" inline></v-badge>
           <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy}%`" inline></v-badge>
           <v-badge v-if="movement.accuracy === -1" color="info" content="Accuracy: -" inline></v-badge>
-          <v-badge v-if="stab" color="success" content="STAB" bordered inline></v-badge>
-        </v-col>
-      </v-row>
-      <v-row v-if="enemy_data">
-        <v-col v-for="(enemy_slot, index) in this.enemy_data.selected_pokemon" :key="index" class="pr-0">
-          <div v-if="this.multiplier(enemy_data.team[enemy_slot]) !== 1">
-            <v-img :src="enemy_data.team[enemy_slot].sprite_url" width="64" aspect-ratio="1/1"></v-img>
-            <v-badge
-                bordered
-                :content="`x${this.multiplier(enemy_data.team[enemy_slot])}`"
-                :color="this.multiplier(enemy_data.team[enemy_slot]) > 1 ? 'success' : 'danger'"
-                inline
-            ></v-badge>
-          </div>
         </v-col>
       </v-row>
     </span>
@@ -58,7 +46,7 @@ function appearances(coverageTypes, enemyTypes) {
 }
 
 export default {
-  name: "MovementCard",
+  name: "SingleMovementCard",
   components: [],
   props: {
     pokemon: {
@@ -74,8 +62,10 @@ export default {
       required: false
     },
   },
-  methods: {
-    multiplier(enemy) {
+  methods: {},
+  computed: {
+    multiplier() {
+      let enemy = this.enemy_data.team[0];
       if (!enemy) {
         return 1;
       }
@@ -103,8 +93,6 @@ export default {
 
       return multiplier;
     },
-  },
-  computed: {
     type_image_path() {
       return `./assets/types/${this.movement.type}.png`;
     },

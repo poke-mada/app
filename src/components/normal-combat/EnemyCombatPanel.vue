@@ -1,36 +1,23 @@
 <template>
-  <v-row class="mt-4" v-if="false">
-    <v-col sm>
-      <v-row v-if="this.selectedPokemon">
-        <v-col cols="6" v-for="(move, index) in this.selectedPokemon.moves" :key="index">
-          <MovementCard :pokemon="this.selectedPokemon" :enemy_data="enemy_data" :movement="move" v-if="move"/>
-        </v-col>
-      </v-row>
+  <v-row class="ml-2">
+    <v-col cols="8">
+      <SinglePokemonPanel :pokemon="this.selectedPokemon" team="enemy" :team_data="data" :enemy_data="enemy_data" pk_slot="0"/>
     </v-col>
-    <v-col sm></v-col>
-  </v-row>
-  <v-row>
-    <v-col sm>
-      <PokemonPanel :pokemon="this.data.team[this.data.selected_pokemon[0]]" team="enemy"/>
-    </v-col>
-    <v-col sm></v-col>
-    <v-col sm>
-      <PokemonTeamList @pokemonSelected="selectPokemon" team="enemy" :data="this.data"/>
+    <v-col sm cols="4">
+      <PokemonTeamList team="enemy" :data="this.data" :enemy_data="enemy_data"/>
     </v-col>
   </v-row>
 </template>
 
 <script>
-import PokemonPanel from '@/components/basic-comps/PokemonPanel'
-import MovementCard from '../basic-comps/MovementCard'
+import SinglePokemonPanel from '@/components/basic-comps/SinglePokemonPanel'
 import PokemonTeamList from '@/components/basic-comps/PokemonTeamList';
 
 export default {
   name: "CombatPanel",
   components: {
     PokemonTeamList,
-    PokemonPanel,
-    MovementCard
+    SinglePokemonPanel
   },
   props: {
     data: {

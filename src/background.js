@@ -53,9 +53,8 @@ async function createWindow() {
         width: 1200,
         height: 873,
         icon: './public/icons/icon.png',
-        title: `Mada Pokemon Tracker v${autoUpdater.currentVersion}`,
+        title: `Poke Mada v${autoUpdater.currentVersion}`,
         autoHideMenuBar: true,
-        resizable: false,
         webPreferences: {
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
