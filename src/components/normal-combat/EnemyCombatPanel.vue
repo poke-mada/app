@@ -35,22 +35,11 @@ export default {
       enemyPokemon: null
     }
   },
-  created() {
-    window.electron.onDataReceived('selected_enemy', (event, data) => {
-      this.selectedPokemon = data.pokemon;
-    })
-
-    window.electron.onDataReceived('end_combat', () => {
-      this.selectedPokemon = null;
-      this.enemyPokemon = null;
-    })
+  computed: {
+    pk_slot() {
+      return this.data.selected_pokemon[0]
+    }
   },
-  mounted() {
-    this.emitter.on('select-pokemon-ally', (pokemon) => {
-      this.enemyPokemon = pokemon;
-    });
-  },
-  methods: {}
 }
 </script>
 

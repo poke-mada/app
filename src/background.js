@@ -25,7 +25,7 @@ function loadTomlConfig(win) {
         });
         let data = {
             app: {
-                websocket: 'ws://localhost:8000/',
+                websocket: 'ws://137.184.87.251:8000/',
                 save_file: save_file[0]
             }
         }

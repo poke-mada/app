@@ -2,10 +2,10 @@
   <v-card type="primary" class="mt-2" border>
     <v-alert :type="team === 'enemy' ? 'primary' : 'success'" class="p-0">
       <span v-if="team === 'enemy'">
-        Pokemon enemigo
+        PokemonTeamData enemigo
       </span>
       <span v-if="team === 'you'">
-        Pokemon atacando
+        PokemonTeamData atacando
       </span>
     </v-alert>
     <v-row class="mt-1">
@@ -19,7 +19,7 @@
           <v-col></v-col>
           <v-col sm>
             <div v-if="pokemon">
-              <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon.types" :key="i"
+              <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
                      width="32" inline></v-img>
             </div>
           </v-col>
@@ -34,7 +34,7 @@
           </template>
         </v-alert>
         <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???' }}</p>
-        <p class="text-center">{{ pokemon ? pokemon.types.map((v) => v.name).join("/") : '???' }}</p>
+        <p class="text-center">{{ pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
       </v-col>
       <v-col cols="8" v-if="team === 'you'">
         <v-row v-if="pokemon">
@@ -83,6 +83,12 @@ export default {
   computed: {
     pokemon() {
       return this.team_data.team[this.pk_slot];
+    },
+    pokemon_types() {
+      if (this.pokemon.battle_data) {
+        return this.pokemon.battle_data.types;
+      }
+      return this.pokemon.types;
     }
   },
   data() {

@@ -40,7 +40,7 @@
             <v-row>
               <v-col>
                 <div class="float-right">
-                  <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in this.selected_pokemon.types" :key="i" width="32" inline></v-img>
+                  <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i" width="32" inline></v-img>
                 </div>
               </v-col>
             </v-row>
@@ -54,7 +54,7 @@
               </template>
             </v-alert>
             <p class="text-center font-weight-bold">{{ this.selected_pokemon ? this.selected_pokemon.species : '???' }}</p>
-            <p class="text-center">{{ this.selected_pokemon ? this.selected_pokemon.types.map((v) => v.name).join("/") : '???' }}</p>
+            <p class="text-center">{{ this.selected_pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
           </v-col>
         </v-row>
         <v-row class="mt-4" v-if="team === 'enemy'">
@@ -67,7 +67,7 @@
             <v-row>
               <v-col>
                 <div class="float-right">
-                  <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in this.selected_pokemon.types" :key="i" width="32" inline></v-img>
+                  <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i" width="32" inline></v-img>
                 </div>
               </v-col>
             </v-row>
@@ -81,7 +81,7 @@
               </template>
             </v-alert>
             <p class="text-center font-weight-bold">{{ this.selected_pokemon ? this.selected_pokemon.species : '???' }}</p>
-            <p class="text-center">{{ this.selected_pokemon ? this.selected_pokemon.types.map((v) => v.name).join("/") : '???' }}</p>
+            <p class="text-center">{{ this.selected_pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
           </v-col>
         </v-row>
       </template>
@@ -123,6 +123,14 @@ export default {
       selected_pokemon: null
     }
   },
+  computed: {
+    pokemon_types() {
+      if (this.selected_pokemon.battle_data) {
+        return this.selected_pokemon.battle_data.types;
+      }
+      return this.selected_pokemon.types;
+    }
+  },
   methods: {
     selectPokemon: function (pokemon) {
       this.selected_pokemon = pokemon;
@@ -132,11 +140,6 @@ export default {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     }
   },
-  created() {
-    console.log(this.data)
-  },
-  updated() {
-  }
 }
 </script>
 

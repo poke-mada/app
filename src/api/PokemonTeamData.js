@@ -9,7 +9,7 @@ export function validatePokemon(dex_number) {
     return dex_number >= 1 && dex_number <= 808;
 }
 
-export class Pokemon {
+export class PokemonTeamData {
     cleanNickData(nickElements) {
         let result = '';
         for (let char of nickElements) {
@@ -24,10 +24,12 @@ export class Pokemon {
     }
 
     constructor(move_data, data) {
-        //if (data[0] === 0) return;
+        if (data[0] === 0) return;
         let raw_data = decryptData(data);
         this.dex_number = struct.unpack("<H", raw_data.subarray(8, 10))[0]
-        if (this.dex_number === 0 || this.dex_number >= 808) return;
+        if (this.dex_number === 0 || this.dex_number >= 808) {
+            return;
+        }
         this.held_item_num = struct.unpack("<H", raw_data.subarray(10, 12))[0]
         this.ability_num = struct.unpack("B", raw_data.subarray(20, 21))[0]  // Ability
         this.nature_num = struct.unpack("B", raw_data.subarray(28, 29))[0]   // Nature
@@ -43,22 +45,23 @@ export class Pokemon {
         let mote = struct.unpack("12<H", raw_data.subarray(64, 90))
         this.moves = []
 
-        this.moves.push(Movement(this.ability_num, 0, struct.unpack("<H", raw_data.subarray(90, 92))[0], struct.unpack("<B", raw_data.subarray(98, 99))[0], move_data));
-        this.moves.push(Movement(this.ability_num, 1, struct.unpack("<H", raw_data.subarray(92, 94))[0], struct.unpack("<B", raw_data.subarray(99, 100))[0], move_data));
-        this.moves.push(Movement(this.ability_num, 2, struct.unpack("<H", raw_data.subarray(94, 96))[0], struct.unpack("<B", raw_data.subarray(100, 101))[0], move_data));
-        this.moves.push(Movement(this.ability_num, 3, struct.unpack("<H", raw_data.subarray(96, 98))[0], struct.unpack("<B", raw_data.subarray(101, 102))[0], move_data));
-        let ivloc = struct.unpack("<I", raw_data.subarray(116, 120))[0]
-        this.friendship = struct.unpack("B", raw_data.subarray(202, 203))[0]   // Friendship
-        this.level_met = struct.unpack("<H", raw_data.subarray(221, 223))[0]   // Level met
-        this.statusbyte = struct.unpack("<B", raw_data.subarray(232, 233))[0]  // Status byte
-        this.level = struct.unpack("B", raw_data.subarray(236, 237))[0]            // Current level
-        this.cur_hp = struct.unpack("<H", raw_data.subarray(240, 242))[0]      // Current HP
-        this.maxhp = struct.unpack("<H", raw_data.subarray(242, 244))[0]       // Max HP
-        this.attack = struct.unpack("<H", raw_data.subarray(244, 246))[0]      // Attack stat
-        this.defense = struct.unpack("<H", raw_data.subarray(246, 248))[0]     // Defense stat
-        this.speed = struct.unpack("<H", raw_data.subarray(248, 250))[0]       // Speed stat
-        this.spatk = struct.unpack("<H", raw_data.subarray(250, 252))[0]       // Special attack stat
-        this.spdef = struct.unpack("<H", raw_data.subarray(252, 254))[0]       // Special defense stat
+        this.moves.push(Movement(this.ability_num, 0, raw_data.subarray(90).readUInt16LE(), raw_data.subarray(98).readUInt8(), move_data));
+        this.moves.push(Movement(this.ability_num, 1, raw_data.subarray(92).readUInt16LE(), raw_data.subarray(99).readUInt8(), move_data));
+        this.moves.push(Movement(this.ability_num, 2, raw_data.subarray(94).readUInt16LE(), raw_data.subarray(100).readUInt8(), move_data));
+        this.moves.push(Movement(this.ability_num, 3, raw_data.subarray(96).readUInt16LE(), raw_data.subarray(101).readUInt8(), move_data));
+
+        let ivloc = raw_data.subarray(116).readUint32LE()
+        this.friendship = raw_data.subarray(202).readUInt8()                   // Friendship
+        this.level_met = raw_data.subarray(221).readUInt16LE()                 // Level met
+        this.statusbyte = raw_data.subarray(232).readUInt8()                   // Status byte
+        this.level = raw_data.subarray(236).readUInt8()                        // Current level
+        this.cur_hp = raw_data.subarray(240).readUInt16LE()                    // Current HP
+        this.maxhp = raw_data.subarray(242).readUInt16LE()                     // Max HP
+        this.attack = raw_data.subarray(244).readUInt16LE()                    // Attack stat
+        this.defense = raw_data.subarray(246).readUInt16LE()                   // Defense stat
+        this.speed = raw_data.subarray(248).readUInt16LE()                     // Speed stat
+        this.spatk = raw_data.subarray(250).readUInt16LE()                     // Special attack stat
+        this.spdef = raw_data.subarray(252).readUInt16LE()                     // Special defense stat
         this.ivhp = ivloc & 31                                                 // HP IV
         this.ivattack = (ivloc >> 5) & 31                                      // Attack IV
         this.ivdefense = (ivloc >> 10) & 31                                    // Defense IV

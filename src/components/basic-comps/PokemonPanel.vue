@@ -2,10 +2,10 @@
   <v-card type="primary" class="mt-2" border>
     <v-alert :type="team === 'enemy' ? 'primary' : 'success'" class="p-0">
       <span v-if="team === 'enemy'" >
-        Pokemon enemigo
+        PokemonTeamData enemigo
       </span>
       <span v-if="team === 'you'" >
-        Pokemon atacando
+        PokemonTeamData atacando
       </span>
     </v-alert>
     <v-row>
@@ -18,7 +18,7 @@
         <v-row justify="end">
           <v-col>
             <div v-if="pokemon">
-              <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon.types" :key="i"
+              <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
                      width="32" inline></v-img>
             </div>
           </v-col>
@@ -34,7 +34,7 @@
         </v-alert>
         <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???' }}</p>
         <p class="text-center">Nivel {{ pokemon ? pokemon.level : '???'}}</p>
-        <p class="text-center">{{ pokemon ? pokemon.types.map((v) => v.name).join("/") : '???' }}</p>
+        <p class="text-center">{{ pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
         <v-btn color="teal accent-4" class="cursor-pointer" v-if="pokemon" @click="show_moves(pokemon)" text="movimientos"></v-btn>
       </v-col>
     </v-row>
@@ -69,6 +69,14 @@ export default {
     },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    },
+  },
+  computed: {
+    pokemon_types() {
+      if (this.pokemon.battle_data) {
+        return this.pokemon.battle_data.types;
+      }
+      return this.pokemon.types;
     }
   },
   data() {

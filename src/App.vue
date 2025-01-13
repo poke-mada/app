@@ -50,6 +50,7 @@ export default {
   created() {
     window.electron.onDataReceived('updated_game_data', (event, data) => {
       this.game_data = data;
+      console.log(data)
     })
     window.electron.startComms()
   }
