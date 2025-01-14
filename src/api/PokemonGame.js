@@ -3,6 +3,7 @@ import {InBattlePokemonData} from "@/api/InBattlePokemonData";
 import {CitraClient} from '@/api/CitraClient'
 import {decryptData} from "@/api/PokemonCrypt";
 import struct from "python-struct";
+import os from 'os'
 
 let SLOT_OFFSET = 484;
 let SLOT_DATA_SIZE = 332;
@@ -29,7 +30,7 @@ const TeamOwner = Object.freeze({
 
 class GameData {
     constructor(options) {
-        this.communicating = false;
+        this.is_communicating = false;
         this.combat_info = new CombatData(options.combat_info);
         this.your_data = new TeamData(options.your_data);
         this.enemy_data = new TeamData(options.enemy_data);
@@ -40,27 +41,35 @@ class GameData {
         let citra = new CitraClient();
         try {
             // eslint-disable-next-line no-constant-condition
-            while (this.communicating) {
+            while (this.is_communicating) {
                 await this.combat_info.startComms(rom, this, citra);
                 await this.your_data.startComms(rom, this, this.combat_info.addresses.ally, this.combat_info.ally_selected, citra);
                 await this.enemy_data.startComms(rom, this, this.combat_info.addresses.enemy, this.combat_info.enemy_selected, citra);
 
-                let your_team_length = this.your_data.team.filter((pokemon) => validatePokemon(pokemon.dex_number)).length
+                let your_team_length = this.your_data.team.filter((pokemon) => pokemon && validatePokemon(pokemon.dex_number)).length
                 for (let slot = 0; slot < your_team_length; slot++) {
-                    this.your_data.team[slot].battle_data = this.combat_info.ally_battle_data[slot];
+                    let pokemon = this.your_data.team[slot];
+                    if (!pokemon) continue;
+                    pokemon.battle_data = this.combat_info.ally_battle_data[slot];
                 }
 
                 let enemy_team_length = this.enemy_data.team.filter((pokemon) => pokemon && validatePokemon(pokemon.dex_number)).length
                 for (let slot = 0; slot < enemy_team_length; slot++) {
-                    this.enemy_data.team[slot].battle_data = this.combat_info.enemy_battle_data[slot];
+                    let pokemon = this.enemy_data.team[slot];
+                    if (!pokemon) continue;
+                    pokemon.battle_data = this.combat_info.enemy_battle_data[slot];
                 }
 
                 if (pokemon_game.alreadySent !== JSON.stringify(this)) {
+                    console.log(this.combat_info)
                     ipc.reply('updated_game_data', this);
                     pokemon_game.alreadySent = JSON.stringify(this);
                 }
             }
-        } finally {
+        } catch (e) {
+            console.log(e)
+        }
+        finally {
             citra.socket.close()
         }
     }
@@ -80,7 +89,6 @@ class TeamData {
         for (let slot of Object.keys(this.team)) {
             let pokemon = this.team[slot]
             if (!pokemon) {
-                this.discovered_pokemons.push(slot);
                 return slot;
             }
             if (dex_number === pokemon.dex_number) {
@@ -98,6 +106,10 @@ class TeamData {
     async startComms(rom, game_data, addresses, selected_pokemon_dex, citra) {
         await this.loadPokemonData(rom, game_data, addresses, citra);
         this.selected_pokemon = [];
+        if (!game_data.combat_info.in_combat) {
+            return;
+        }
+
         for (const dex_number of selected_pokemon_dex) {
             let slot = this.findSelectedMon(dex_number);
             this.selected_pokemon.push(slot)
@@ -113,7 +125,6 @@ class TeamData {
             let slot_address = addresses.read_address + (slot * SLOT_OFFSET)
             let pokemonData = await citra.readMemory(slot_address, SLOT_DATA_SIZE);
             let statsData = await citra.readMemory(slot_address + SLOT_DATA_SIZE, STAT_DATA_SIZE);
-
 
             if (pokemonData && statsData) {
                 let data = Buffer.concat([pokemonData, statsData]);
@@ -283,7 +294,7 @@ class CombatData {
 }
 
 export class PokemonGame {
-    constructor(rom, WEBSOCKET_URL) {
+    constructor(rom) {
         this.alreadySent = null;
         this.rom = rom;
         this.data = new GameData({
@@ -304,18 +315,18 @@ export class PokemonGame {
                 in_combat: false,
                 ally_selected: [],
                 enemy_selected: []
-            },
-            WEBSOCKET_URL: WEBSOCKET_URL
+            }
         });
     }
 
     startComms(ipc) {
-        this.data.communicating = true;
+        this.alreadySent = null;
+        this.data.is_communicating = true;
         this.data.startComms(this.rom, ipc, this).catch(() => {
         })
     }
 
     stop() {
-        this.data.communicating = false;
+        this.data.is_communicating = false;
     }
 }

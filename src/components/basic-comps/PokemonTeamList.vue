@@ -1,6 +1,6 @@
 <template>
   <v-card border class="mt-2">
-    <v-alert :type="team === 'enemy' ? 'primary' : 'success'" class="p-0">
+    <v-alert :color="team === 'enemy' ? 'primary' : 'success'" class="p-0">
       <span v-if="team === 'enemy'" >
         Equipo Enemigo
       </span>
@@ -107,7 +107,7 @@ export default {
     },
     enemy_data: {
       type: Object,
-      required: true
+      required: false
     },
     team: {
       type: String,

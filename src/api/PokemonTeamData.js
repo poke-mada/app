@@ -45,10 +45,10 @@ export class PokemonTeamData {
         let mote = struct.unpack("12<H", raw_data.subarray(64, 90))
         this.moves = []
 
-        this.moves.push(Movement(this.ability_num, 0, raw_data.subarray(90).readUInt16LE(), raw_data.subarray(98).readUInt8(), move_data));
-        this.moves.push(Movement(this.ability_num, 1, raw_data.subarray(92).readUInt16LE(), raw_data.subarray(99).readUInt8(), move_data));
-        this.moves.push(Movement(this.ability_num, 2, raw_data.subarray(94).readUInt16LE(), raw_data.subarray(100).readUInt8(), move_data));
-        this.moves.push(Movement(this.ability_num, 3, raw_data.subarray(96).readUInt16LE(), raw_data.subarray(101).readUInt8(), move_data));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 0, raw_data.subarray(90).readUInt16LE(), raw_data.subarray(98).readUInt8(), move_data));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 1, raw_data.subarray(92).readUInt16LE(), raw_data.subarray(99).readUInt8(), move_data));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 2, raw_data.subarray(94).readUInt16LE(), raw_data.subarray(100).readUInt8(), move_data));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 3, raw_data.subarray(96).readUInt16LE(), raw_data.subarray(101).readUInt8(), move_data));
 
         let ivloc = raw_data.subarray(116).readUint32LE()
         this.friendship = raw_data.subarray(202).readUInt8()                   // Friendship

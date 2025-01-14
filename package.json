@@ -6,7 +6,7 @@
   },
   "description": "This project is supposed to help you get help while playing",
   "name": "poke-mada",
-  "version": "0.1.16",
+  "version": "0.1.19",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -21,6 +21,7 @@
     "@jarboer/electron-prompt": "^2.3.7",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.7.9",
+    "compare-versions": "^6.1.1",
     "config": "^3.3.12",
     "core-js": "^3.8.3",
     "electron-prompt": "^1.7.0",

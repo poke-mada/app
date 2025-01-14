@@ -1,18 +1,25 @@
 <template>
-  <v-card type="primary" class="mt-2" border width="auto">
-    <v-alert :type="team === 'enemy' ? 'primary' : 'success'" class="p-0">
+  <v-card class="mt-2" border width="auto">
+    <v-alert :color="team === 'enemy' ? 'primary' : 'success'" class="p-0">
       <span v-if="team === 'enemy'">
-        PokemonTeamData enemigo
+        Pokemon enemigo
       </span>
       <span v-if="team === 'you'">
-        PokemonTeamData atacando
+        Pokemon atacando
       </span>
     </v-alert>
     <v-row class="mt-1" width="auto">
       <v-col cols="2">
         <v-row>
           <v-col>
-            <img :src="pokemon ? pokemon.sprite_url : missingno" @click="dialog = true" class="card-img-top" width="130" alt="">
+            <v-tooltip location="top" max-width="400">
+              <template v-slot:activator="{props}">
+                <img :src="pokemon ? pokemon.sprite_url : missingno" @click="dialog = true" class="card-img-top" width="130" alt="" v-bind="props">
+              </template>
+              <span v-if="pokemon && pokemon.coach_data">
+                {{ pokemon.coach_data.data.notes.replace('\n', '<>') }}
+              </span>
+            </v-tooltip>
           </v-col>
         </v-row>
         <v-row justify="end">

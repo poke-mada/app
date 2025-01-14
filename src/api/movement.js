@@ -29,20 +29,25 @@ let FORCE_TYPE_ABILITIES = {
         forced_type: 'Ice'
     }
 }
-function Movement(ability, slot, id, pp, move_byte_data) {
-    if (id === 0) return;
+
+function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
+    if (move_id === 0) return;
 
     let move_current_pp = struct.unpack('B', move_byte_data.slice(14 * slot))[0];
     // eslint-disable-next-line no-undef
     let move_file = path.join(__static, 'data', 'move_data.json');
     // eslint-disable-next-line no-undef
+    let special_move_file = path.join(__static, 'data', 'special_move_data.json');
+    // eslint-disable-next-line no-undef
     let type_file = path.join(__static, 'data', 'type_data.json');
     // eslint-disable-next-line no-unused-vars
     let move_data = readFileSync(move_file);
     let type_data = readFileSync(type_file);
+    let special_move_bytes = readFileSync(special_move_file);
     let res = JSON.parse(move_data)
     let type_res = JSON.parse(type_data)
-    let json_res = res[id];
+    let special_move_data = JSON.parse(special_move_bytes)
+    let json_res = res[move_id];
     if (json_res === undefined) {
         return {
             discovered: false,
@@ -61,6 +66,13 @@ function Movement(ability, slot, id, pp, move_byte_data) {
 
     let move_type = json_res.typename;
     let forced_type = ability.toString() in FORCE_TYPE_ABILITIES;
+
+    if (move_id in special_move_data) {
+        let special_move = special_move_data[move_id];
+        if (item_held in special_move) {
+            move_type = special_move[item_held];
+        }
+    }
 
     if (forced_type) {
         let ability_data = FORCE_TYPE_ABILITIES[ability];

@@ -1,5 +1,6 @@
 'use strict'
 
+import { compareVersions } from 'compare-versions';
 import {app, BrowserWindow, dialog, ipcMain, nativeImage, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
@@ -12,6 +13,7 @@ import config from 'config'
 import toml from 'toml'
 import TOML from '@iarna/toml'
 import {PokemonGame} from "./api/PokemonGame";
+import {watchSave} from "@/api/saveReader";
 
 function loadTomlConfig(win) {
     const tomlFilePath = 'config/config.toml'; // Ruta a tu archivo TOML
@@ -25,7 +27,7 @@ function loadTomlConfig(win) {
         });
         let data = {
             app: {
-                websocket: 'ws://137.184.87.251:8000/',
+                host_url: 'https://pokemon.para-mada.com',
                 save_file: save_file[0]
             }
         }
@@ -69,23 +71,24 @@ async function createWindow() {
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
         //if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
+        let new_version = null;
         createProtocol('app')
         // Load the index.html when not in development
-        autoUpdater.checkForUpdates().then((res) => {
-            if (res && res.updateInfo.version) {
-                dialog.showMessageBox(win, {
-                    type: 'info',
-                    icon: nativeImage.createFromPath('./public/icon.png'),
-                    message: 'Nueva Version encontrada!',
-                    detail: `Una nueva version ${res.updateInfo.version} ha sido encontrada`,
-                    buttons: ['Close'],
-                    defaultId: 0
-                }).then(() => {
-                    res.downloadPromise.then(() => {
-                        app.quit();
-                    })
+        autoUpdater.checkForUpdatesAndNotify().then((res) => {
+            let is_updateVersion = compareVersions(autoUpdater.currentVersion.toString(), res.updateInfo.version.toString()) < 0;
+            if (res && is_updateVersion) {
+                new_version = res.updateInfo.version.toString();
+                res.downloadPromise.then(() => {
+                    app.quit();
                 })
             }
+        })
+
+        autoUpdater.on('download-progress', (progress_object) => {
+            win.webContents.send('update-progress', {
+                progress: progress_object.percent,
+                version: new_version
+            });
         })
         await win.loadURL('app://./index.html')
     }
@@ -113,7 +116,7 @@ app.on('ready', async () => {
     let win = await createWindow();
     const tomlConfig = loadTomlConfig(win);
     config.util.extendDeep(config, tomlConfig);
-    let SOCKET_URL = config.get('app.websocket');
+    let HOST_URL = config.get('app.host_url');
 
     if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
@@ -123,13 +126,12 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
-
-    let game = new PokemonGame(XY, SOCKET_URL);
+    let game = new PokemonGame(XY);
     ipcMain.on('open_channel', (event) => {
-        game.alreadySent = null;
         game.stop();
-        game.startComms(event);
+        game.startComms(event, HOST_URL);
     });
+    watchSave(HOST_URL, config.get("app.save_file"))
     win.reload();
 })
 
