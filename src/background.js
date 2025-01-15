@@ -1,6 +1,6 @@
 'use strict'
 
-import { compareVersions } from 'compare-versions';
+import {compareVersions} from 'compare-versions';
 import {app, BrowserWindow, dialog, ipcMain, nativeImage, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
@@ -13,7 +13,7 @@ import config from 'config'
 import toml from 'toml'
 import TOML from '@iarna/toml'
 import {PokemonGame} from "./api/PokemonGame";
-import {watchSave} from "@/api/saveReader";
+import {session} from "@/store";
 
 function loadTomlConfig(win) {
     const tomlFilePath = 'config/config.toml'; // Ruta a tu archivo TOML
@@ -27,7 +27,6 @@ function loadTomlConfig(win) {
         });
         let data = {
             app: {
-                host_url: 'https://pokemon.para-mada.com',
                 save_file: save_file[0]
             }
         }
@@ -74,22 +73,6 @@ async function createWindow() {
         let new_version = null;
         createProtocol('app')
         // Load the index.html when not in development
-        autoUpdater.checkForUpdatesAndNotify().then((res) => {
-            let is_updateVersion = compareVersions(autoUpdater.currentVersion.toString(), res.updateInfo.version.toString()) < 0;
-            if (res && is_updateVersion) {
-                new_version = res.updateInfo.version.toString();
-                res.downloadPromise.then(() => {
-                    app.quit();
-                })
-            }
-        })
-
-        autoUpdater.on('download-progress', (progress_object) => {
-            win.webContents.send('update-progress', {
-                progress: progress_object.percent,
-                version: new_version
-            });
-        })
         await win.loadURL('app://./index.html')
     }
     return win
@@ -116,7 +99,7 @@ app.on('ready', async () => {
     let win = await createWindow();
     const tomlConfig = loadTomlConfig(win);
     config.util.extendDeep(config, tomlConfig);
-    let HOST_URL = config.get('app.host_url');
+    let SAVE_FILE_PATH = config.get("app.save_file");
 
     if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
@@ -126,12 +109,40 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
+
+
     let game = new PokemonGame(XY);
-    ipcMain.on('open_channel', (event) => {
+    ipcMain.on('open_channel', (ipc) => {
+        if (!process.env.WEBPACK_DEV_SERVER_URL) {
+            let new_version = null;
+            autoUpdater.checkForUpdatesAndNotify().then((res) => {
+                let is_updateVersion = compareVersions(autoUpdater.currentVersion.toString(), res.updateInfo.version.toString()) < 0;
+                if (res && is_updateVersion) {
+                    new_version = res.updateInfo.version.toString();
+                    res.downloadPromise.then(() => {
+                        app.quit();
+                    })
+                }
+            });
+
+            autoUpdater.on('download-progress', (progress_object) => {
+                win.webContents.send('update-progress', {
+                    progress: progress_object.percent,
+                    version: new_version
+                });
+            });
+        }
         game.stop();
-        game.startComms(event, HOST_URL);
+        game.startComms(ipc, SAVE_FILE_PATH);
     });
-    watchSave(HOST_URL, config.get("app.save_file"))
+
+    ipcMain.on('download_save', (ipc, trainer_name) => {
+        session.get(`/saves/${trainer_name}`).then((response) => {
+            const downloadFolder = process.env.USERPROFILE + "/Downloads";
+            fs.writeFileSync(downloadFolder + '/' + trainer_name, response.data)
+        })
+    })
+
     win.reload();
 })
 

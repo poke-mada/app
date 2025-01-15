@@ -1,3 +1,6 @@
+/* eslint-disable no-undef */
+// noinspection JSUnresolvedVariable
+
 import struct from 'python-struct';
 import {decryptData} from "./PokemonCrypt";
 import {STATICS_URL} from './poke-api'
@@ -33,9 +36,7 @@ export class PokemonTeamData {
         this.held_item_num = struct.unpack("<H", raw_data.subarray(10, 12))[0]
         this.ability_num = struct.unpack("B", raw_data.subarray(20, 21))[0]  // Ability
         this.nature_num = struct.unpack("B", raw_data.subarray(28, 29))[0]   // Nature
-
         this.form = struct.unpack("B", raw_data.subarray(29, 30))[0]         // FORM: mega, mega-x, mega-y, alola...
-
         this.evhp = struct.unpack("B", raw_data.subarray(30, 31))[0]         // HP EV
         this.evattack = struct.unpack("B", raw_data.subarray(31, 32))[0]     // Attack EV
         this.evdefense = struct.unpack("B", raw_data.subarray(32, 33))[0]    // Defense EV
@@ -69,16 +70,22 @@ export class PokemonTeamData {
         this.ivspatk = (ivloc >> 20) & 31                                      // Special attack IV
         this.ivspdef = (ivloc >> 25) & 31                                      // Special defense IV
         this.sprite_url = STATICS_URL + `/sprites/master/sprites/pokemon/${this.dex_number}.png`;
-        this.sprite_back_url = STATICS_URL + `/sprites/master/sprites/pokemon/back/${this.dex_number}.png`;
         this.mote = this.cleanNickData(mote);
-        // eslint-disable-next-line no-undef
-        let fileData = readFileSync(path.join(__static, 'data', 'mon_data.json')).toString();
-        // eslint-disable-next-line no-undef
-        let fileformData = readFileSync(path.join(__static, 'data', 'pokemon_forms.json')).toString();
-        let pokedata = JSON.parse(fileData);
-        let formdata = JSON.parse(fileformData);
+        let mon_data_file = readFileSync(path.join(__static, 'data', 'mon_data.json')).toString();
+        let pokemon_forms_data_file = readFileSync(path.join(__static, 'data', 'pokemon_forms.json')).toString();
+        let item_data_file = readFileSync(path.join(__static, 'data', 'item_data.json')).toString();
+        let ability_data_file = readFileSync(path.join(__static, 'data', 'ability_data.json')).toString();
+        let nature_data_file = readFileSync(path.join(__static, 'data', 'nature_data.json')).toString();
+        let item_data = JSON.parse(item_data_file);
+        let ability_data = JSON.parse(ability_data_file);
+        let nature_data = JSON.parse(nature_data_file);
+        let pokedata = JSON.parse(mon_data_file);
+        let formdata = JSON.parse(pokemon_forms_data_file);
         let pokemon;
 
+        this.ability_name = ability_data[this.ability_num].name;
+        this.nature_name = nature_data[this.nature_num].name;
+        this.item_name = item_data[this.held_item_num].name;
 
         try {
             if (this.dex_number in formdata) {

@@ -1,8 +1,8 @@
 <template>
   <v-tooltip location="bottom">
     <template v-slot:activator="{props}">
-      <v-img :src="pokemon ? pokemon.sprite_url : missingno" width="70"
-             @click="$emit('click', pokemon)" v-bind="props" class="cursor-pointer"></v-img>
+      <img :src="pokemon ? pokemon.sprite_url : missingno" width="70" alt=""
+           @click="$emit('click', pokemon)" v-bind="props" class="cursor-pointer"/>
     </template>
     {{ pokemon ? pokemon.mote : '' }}
   </v-tooltip>

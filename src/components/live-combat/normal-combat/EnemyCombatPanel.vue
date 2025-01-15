@@ -1,7 +1,7 @@
 <template>
   <v-row class="ml-2">
     <v-col cols="8">
-      <SinglePokemonPanel :pokemon="this.selectedPokemon" team="enemy" :team_data="data" :enemy_data="enemy_data" pk_slot="0"/>
+      <SinglePokemonPanel :pokemon="this.selectedPokemon" team="enemy" :team_data="data" :enemy_data="enemy_data" :pk_slot="this.data.selected_pokemon[0]"/>
     </v-col>
     <v-col sm cols="4">
       <PokemonTeamList team="enemy" :data="this.data" :enemy_data="enemy_data"/>

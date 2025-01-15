@@ -1,6 +1,8 @@
+/* eslint-disable no-undef */
+// noinspection JSUnresolvedVariable
+
 import {readFileSync} from 'fs'
 import path from "path";
-import struct from "python-struct";
 
 let FORCE_TYPE_ABILITIES = {
     182: {
@@ -33,22 +35,18 @@ let FORCE_TYPE_ABILITIES = {
 function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
     if (move_id === 0) return;
 
-    let move_current_pp = struct.unpack('B', move_byte_data.slice(14 * slot))[0];
-    // eslint-disable-next-line no-undef
-    let move_file = path.join(__static, 'data', 'move_data.json');
-    // eslint-disable-next-line no-undef
-    let special_move_file = path.join(__static, 'data', 'special_move_data.json');
-    // eslint-disable-next-line no-undef
-    let type_file = path.join(__static, 'data', 'type_data.json');
-    // eslint-disable-next-line no-unused-vars
-    let move_data = readFileSync(move_file);
-    let type_data = readFileSync(type_file);
-    let special_move_bytes = readFileSync(special_move_file);
-    let res = JSON.parse(move_data)
-    let type_res = JSON.parse(type_data)
-    let special_move_data = JSON.parse(special_move_bytes)
-    let json_res = res[move_id];
-    if (json_res === undefined) {
+    let move_current_pp = move_byte_data.slice(14 * slot).readUInt8();
+
+    let move_data_file = readFileSync(path.join(__static, 'data', 'move_data.json'));
+    let type_data_file = readFileSync(path.join(__static, 'data', 'type_data.json'));
+    let special_move_data_file = readFileSync(path.join(__static, 'data', 'special_move_data.json'));
+
+    let move_data = JSON.parse(move_data_file);
+    let type_data = JSON.parse(type_data_file);
+    let special_move_data = JSON.parse(special_move_data_file);
+
+    let move = move_data[move_id];
+    if (!move) {
         return {
             discovered: false,
             slot: slot,
@@ -60,11 +58,15 @@ function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
             power: 0,
             accuracy: 0,
             category: '',
-            coverage: {}
+            coverage_data: {
+                double_damage_to: [],
+                half_damage_to: [],
+                no_damage_to: []
+            }
         };
     }
 
-    let move_type = json_res.typename;
+    let move_type = move.typename;
     let forced_type = ability.toString() in FORCE_TYPE_ABILITIES;
 
     if (move_id in special_move_data) {
@@ -84,19 +86,19 @@ function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
     }
 
 
-    let coverage_data = type_res[move_type.toLowerCase()];
+    let coverage_data = type_data[move_type.toLowerCase()];
     return {
-        discovered: move_current_pp < json_res.movepp,
+        discovered: move_current_pp < move.movepp,
         slot: slot,
         current_pp: move_current_pp,
-        move_name: json_res.movename,
-        max_pp: json_res.movepp,
+        move_name: move.movename,
+        max_pp: move.movepp,
         type: move_type,
-        power: json_res.movepower,
-        accuracy: json_res.moveaccuracy,
-        category: json_res.movecategoryname,
-        flavor_text: json_res.falvor_text,
-        coverage: coverage_data
+        power: move.movepower,
+        accuracy: move.moveaccuracy,
+        category: move.movecategoryname,
+        flavor_text: move.falvor_text,
+        coverage_data: coverage_data
     };
 
 }

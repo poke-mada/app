@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html lang="">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-</head>
-<body style="background-image: url('./assets/kalos.png'); min-height: 814px">
-<div id="app" class="h-100">
-    <v-app>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0">
+        <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+        <style>
+            body {
+                background: url('./assets/kalos.png') no-repeat center center;
+            }
 
-    </v-app>
-</div>
-<!-- built files will be auto injected -->
-</body>
+            html, body {
+                margin: 0;
+                height: 100vh;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app">
+        </div>
+    </body>
 </html>

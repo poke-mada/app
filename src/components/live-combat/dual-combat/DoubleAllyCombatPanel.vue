@@ -31,28 +31,6 @@ export default {
     }
   },
   methods: {
-    selectPokemon1(pokemon) {
-      this.$emit('selected_pokemon', {
-        slot: 1,
-        pokemon: pokemon
-      })
-    },
-    selectPokemon2(pokemon) {
-      this.$emit('selected_pokemon', {
-        slot: 0,
-        pokemon: pokemon
-      })
-    },
-    deselect_pokemon1() {
-      this.$emit('deselect_pokemon', {
-        slot: 1
-      })
-    },
-    deselect_pokemon2() {
-      this.$emit('deselect_pokemon', {
-        slot: 0
-      })
-    },
   },
   data() {
     return {

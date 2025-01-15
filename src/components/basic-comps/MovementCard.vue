@@ -35,8 +35,8 @@
         </v-col>
       </v-row>
       <v-row v-if="enemy_data">
-        <v-col v-for="(enemy_slot, index) in this.enemy_data.selected_pokemon" :key="index" class="pr-0">
-          <div v-if="this.multiplier(enemy_data.team[enemy_slot]) !== 1">
+        <v-col sm v-for="(enemy_slot, index) in this.enemy_data.selected_pokemon" :key="index" class="pr-0">
+          <div v-if="this.category !== 'Status'">
             <v-img :src="enemy_data.team[enemy_slot].sprite_url" width="64" aspect-ratio="1/1"></v-img>
             <v-badge
                 bordered
@@ -79,15 +79,16 @@ export default {
       if (!enemy) {
         return 1;
       }
+      let enemy_types = this.pokemon_types(enemy);
 
 
       if (this.category === 'Status') {
         return 1;
       }
 
-      let doubles = appearances(this.movement.coverage.double_damage_to, enemy.types)
-      let halves = appearances(this.movement.coverage.half_damage_to, enemy.types)
-      let zeroes = appearances(this.movement.coverage.no_damage_to, enemy.types)
+      let doubles = appearances(this.movement.coverage_data.double_damage_to, enemy_types)
+      let halves = appearances(this.movement.coverage_data.half_damage_to, enemy_types)
+      let zeroes = appearances(this.movement.coverage_data.no_damage_to, enemy_types)
 
       let multiplier = 1;
       if (zeroes > 0) {
@@ -103,6 +104,12 @@ export default {
 
       return multiplier;
     },
+    pokemon_types(pokemon) {
+      if (pokemon.battle_data) {
+        return pokemon.battle_data.types;
+      }
+      return pokemon.types;
+    }
   },
   computed: {
     type_image_path() {

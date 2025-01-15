@@ -88,6 +88,7 @@ export default {
   },
   computed: {
     pokemon() {
+      console.log(this.pk_slot)
       return this.team_data.team[this.pk_slot];
     },
     pokemon_types() {
