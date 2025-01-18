@@ -10,3 +10,7 @@ if (DEV) {
 export const session = axios.create({
     baseURL: HOST_URL
 })
+
+export const SERVER_URL = HOST_URL;
+
+export const IS_DEV = DEV;

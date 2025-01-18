@@ -4,7 +4,7 @@ import {compareVersions} from 'compare-versions';
 import {app, BrowserWindow, dialog, ipcMain, nativeImage, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
-import {autoUpdater} from "electron-updater"
+import {autoUpdater} from "electron-updater";
 import {XY} from "@/api/romData";
 import path from "path";
 import fs from "fs";
@@ -70,7 +70,6 @@ async function createWindow() {
         await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
         //if (!process.env.IS_TEST) win.webContents.openDevTools()
     } else {
-        let new_version = null;
         createProtocol('app')
         // Load the index.html when not in development
         await win.loadURL('app://./index.html')
@@ -137,11 +136,36 @@ app.on('ready', async () => {
     });
 
     ipcMain.on('download_save', (ipc, trainer_name) => {
-        session.get(`/saves/${trainer_name}`).then((response) => {
-            const downloadFolder = process.env.USERPROFILE + "/Downloads";
-            fs.writeFileSync(downloadFolder + '/' + trainer_name, response.data)
+        session.get(`/last_save/${trainer_name}`, {
+            responseType: 'arraybuffer'
+        }).then((response) => {
+            const save_path = path.join(process.env.HOMEDRIVE, process.env.HOMEPATH, "Downloads", trainer_name)
+            const fileData = Buffer.from(response.data, 'binary');
+            fs.writeFile(save_path, fileData, () => {
+                win.webContents.send('notify', {
+                    message: 'Archivo de guardado descargado con éxito!\r\na la carpeta de descargas'
+                })
+            })
         })
     })
+
+    ipcMain.on('showdown-combat', async (ipc, data) => {
+        let enemy_trainer = await session.get(`/trainer/${data.enemy_trainer}/`, {
+            params: {
+                localization: 'en'
+            }
+        }).then((response) => response.data);
+        let your_trainer = await session.get(`/trainer/${data.your_trainer}/`, {
+            params: {
+                localization: 'en'
+            }
+        }).then((response) => response.data);
+
+        ipc.reply('showdown-data', {
+            enemy_trainer,
+            your_trainer
+        })
+    });
 
     win.reload();
 })

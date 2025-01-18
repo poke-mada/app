@@ -8,14 +8,17 @@
         <template v-slot:text>
           <v-row>
             <v-col cols="12">
-              {{ movement.move_name }}
+              {{ movement.name }}
             </v-col>
           </v-row>
         </template>
         <template v-slot:append>
           <v-row>
-            <v-col>
+            <v-col sm>
               <v-badge bordered :content="category" color="secondary" inline></v-badge>
+              <v-badge v-if="stab" color="success" content="STAB" bordered inline></v-badge>
+              <v-badge bordered :content="`x${this.multiplier}`" v-if="this.category !== 'Status' && this.enemy_data"
+                       :color="this.multiplier > 1 ? 'success' : this.multiplier < 1 ? 'error' : 'info'" inline></v-badge>
             </v-col>
           </v-row>
         </template>
@@ -27,26 +30,10 @@
           {{ movement.flavor_text }}
         </v-col>
         <v-col cols="12">
-          <v-badge v-if="movement.power !== -1" color="danger" :content="`Power: ${movement.power}`" inline></v-badge>
-          <v-badge v-if="movement.power === -1" color="danger" content="Power: -" inline></v-badge>
-          <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy}%`"
-                   inline></v-badge>
+          <v-badge v-if="movement.power !== -1" color="error" :content="`Power: ${movement.power}`" inline></v-badge>
+          <v-badge v-if="movement.power === -1" color="error" content="Power: -" inline></v-badge>
+          <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy}%`" inline></v-badge>
           <v-badge v-if="movement.accuracy === -1" color="info" content="Accuracy: -" inline></v-badge>
-          <v-badge v-if="stab" color="success" content="STAB" bordered inline></v-badge>
-        </v-col>
-      </v-row>
-      <v-row v-if="enemy_data">
-        <v-col sm v-for="(enemy_slot, index) in enemy_data.selected_pokemon" :key="index" class="pr-0">
-          <div v-if="category !== 'Status'">
-            <v-img :src="enemy_data.team[enemy_slot].sprite_url" width="64" aspect-ratio="1/1"></v-img>
-            <v-badge
-                bordered
-                v-if="multiplier(enemy_data.team[enemy_slot]) !== null"
-                :content="`x${multiplier(enemy_data.team[enemy_slot])}`"
-                :color="multiplier(enemy_data.team[enemy_slot]) > 1 ? 'success' : multiplier(enemy_data.team[enemy_slot]) < 1 ? 'error' : 'info'"
-                inline
-            ></v-badge>
-          </div>
         </v-col>
       </v-row>
     </span>
@@ -56,11 +43,11 @@
 <script>
 
 function appearances(coverageTypes, enemyTypes) {
-  return enemyTypes.filter(item => item.name && coverageTypes.includes(item.name.toLowerCase())).length;
+  return enemyTypes.filter(item => coverageTypes.includes(item.name.toLowerCase())).length;
 }
 
 export default {
-  name: "MovementCard",
+  name: "SingleMovementCard",
   components: [],
   props: {
     pokemon: {
@@ -77,19 +64,28 @@ export default {
     },
   },
   methods: {
-    multiplier(enemy) {
+    pokemon_types(pokemon) {
+      if (pokemon.battle_data) {
+        return pokemon.battle_data.types;
+      }
+      return pokemon.types;
+    }
+  },
+  computed: {
+    multiplier() {
+      if (!this.enemy_data) {
+        return 1;
+      }
+      let enemy = this.enemy_data.team[this.enemy_data.selected_pokemon];
       if (!enemy) {
-        return null;
+        return 1;
       }
-      let enemy_types = this.pokemon_types(enemy);
-      if (!enemy_types) {
-        return null;
-      }
+
 
       if (this.category === 'Status') {
-        return null;
+        return 1;
       }
-
+      let enemy_types = this.pokemon_types(enemy);
       let doubles = appearances(this.movement.coverage_data.double_damage_to, enemy_types)
       let halves = appearances(this.movement.coverage_data.half_damage_to, enemy_types)
       let zeroes = appearances(this.movement.coverage_data.no_damage_to, enemy_types)
@@ -108,16 +104,8 @@ export default {
 
       return multiplier;
     },
-    pokemon_types(pokemon) {
-      if (pokemon.battle_data) {
-        return pokemon.battle_data.types;
-      }
-      return pokemon.types;
-    }
-  },
-  computed: {
     type_image_path() {
-      return `./assets/types/${this.movement.type}.png`;
+      return `./assets/types/${this.movement.move_type}.png`;
     },
     category() {
       switch (this.movement.category) {

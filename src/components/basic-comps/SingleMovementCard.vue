@@ -17,8 +17,8 @@
             <v-col sm>
               <v-badge bordered :content="category" color="secondary" inline></v-badge>
               <v-badge v-if="stab" color="success" content="STAB" bordered inline></v-badge>
-              <v-badge bordered :content="`x${this.multiplier}`" v-if="this.category !== 'Status'"
-                       :color="this.multiplier > 1 ? 'success' : 'danger'" inline></v-badge>
+              <v-badge bordered :content="`x${this.multiplier}`" v-if="this.category !== 'Status' && this.enemy_data"
+                       :color="this.multiplier > 1 ? 'success' : this.multiplier < 1 ? 'error' : 'info'" inline></v-badge>
             </v-col>
           </v-row>
         </template>
@@ -30,8 +30,8 @@
           {{ movement.flavor_text }}
         </v-col>
         <v-col cols="12">
-          <v-badge v-if="movement.power !== -1" color="danger" :content="`Power: ${movement.power}`" inline></v-badge>
-          <v-badge v-if="movement.power === -1" color="danger" content="Power: -" inline></v-badge>
+          <v-badge v-if="movement.power !== -1" color="error" :content="`Power: ${movement.power}`" inline></v-badge>
+          <v-badge v-if="movement.power === -1" color="error" content="Power: -" inline></v-badge>
           <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy}%`" inline></v-badge>
           <v-badge v-if="movement.accuracy === -1" color="info" content="Accuracy: -" inline></v-badge>
         </v-col>
@@ -43,7 +43,7 @@
 <script>
 
 function appearances(coverageTypes, enemyTypes) {
-  return enemyTypes.filter(item => coverageTypes.includes(item.name.toLowerCase())).length;
+  return enemyTypes.filter(item => item.name && coverageTypes.includes(item.name.toLowerCase())).length;
 }
 
 export default {
@@ -74,18 +74,21 @@ export default {
   computed: {
     multiplier() {
       if (!this.enemy_data) {
-        return 1;
+        return null;
       }
       let enemy = this.enemy_data.team[this.enemy_data.selected_pokemon];
       if (!enemy) {
-        return 1;
-      }
-
-
-      if (this.category === 'Status') {
-        return 1;
+        return null;
       }
       let enemy_types = this.pokemon_types(enemy);
+      if (!enemy_types) {
+        return null;
+      }
+
+      if (this.category === 'Status') {
+        return null;
+      }
+
       let doubles = appearances(this.movement.coverage_data.double_damage_to, enemy_types)
       let halves = appearances(this.movement.coverage_data.half_damage_to, enemy_types)
       let zeroes = appearances(this.movement.coverage_data.no_damage_to, enemy_types)

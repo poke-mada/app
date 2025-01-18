@@ -8,7 +8,7 @@
         <template v-slot:text>
           <v-row>
             <v-col cols="12">
-              {{ movement.move_name }}
+              {{ movement.name }}
             </v-col>
           </v-row>
         </template>
@@ -36,8 +36,8 @@
         </v-col>
       </v-row>
       <v-row v-if="enemy_data">
-        <v-col sm v-for="(enemy_slot, index) in enemy_data.selected_pokemon" :key="index" class="pr-0">
-          <div v-if="category !== 'Status'">
+        <v-col sm v-for="(enemy_slot, index) in enemies" :key="index" class="pr-0">
+          <div v-if="category !== 'Status' && enemy_data.team[enemy_slot]">
             <v-img :src="enemy_data.team[enemy_slot].sprite_url" width="64" aspect-ratio="1/1"></v-img>
             <v-badge
                 bordered
@@ -56,7 +56,9 @@
 <script>
 
 function appearances(coverageTypes, enemyTypes) {
-  return enemyTypes.filter(item => item.name && coverageTypes.includes(item.name.toLowerCase())).length;
+  let lowered_enemy_types = enemyTypes.map((item) => item.name.toLowerCase());
+  let filtered = lowered_enemy_types.filter(item => coverageTypes.includes(item));
+  return filtered.length;
 }
 
 export default {
@@ -67,12 +69,20 @@ export default {
       type: Object,
       required: true
     },
+    is_selected: {
+      type: Boolean,
+      required: false
+    },
     movement: {
       type: Object,
       required: true
     },
     enemy_data: {
       type: Object,
+      required: false
+    },
+    forced_type: {
+      type: String,
       required: false
     },
   },
@@ -90,9 +100,9 @@ export default {
         return null;
       }
 
-      let doubles = appearances(this.movement.coverage_data.double_damage_to, enemy_types)
-      let halves = appearances(this.movement.coverage_data.half_damage_to, enemy_types)
-      let zeroes = appearances(this.movement.coverage_data.no_damage_to, enemy_types)
+      let doubles = appearances(this.movement.double_damage_to, enemy_types)
+      let halves = appearances(this.movement.half_damage_to, enemy_types)
+      let zeroes = appearances(this.movement.no_damage_to, enemy_types)
 
       let multiplier = 1;
       if (zeroes > 0) {
@@ -116,8 +126,21 @@ export default {
     }
   },
   computed: {
+    enemies() {
+      console.log(this.enemy_data)
+      if (this.is_selected) {
+        return this.enemy_data.selected_pokemon
+      }
+      return [0,1,2,3,4,5]
+    },
+    move_type() {
+      if (this.forced_type) {
+        return this.forced_type
+      }
+      return this.movement.move_type
+    },
     type_image_path() {
-      return `./assets/types/${this.movement.type}.png`;
+      return `./assets/types/${this.move_type}.png`;
     },
     category() {
       switch (this.movement.category) {

@@ -10,9 +10,13 @@
     <DoubleAllyCombatPanel :data="game_data.your_data" :enemy_data="game_data.enemy_data"/>
   </v-row>
   <v-row v-if="game_data && game_data.combat_info.combat_type === 'HORDE'">
-    <v-card>
-      <v-alert color="danger">WIP</v-alert>
-    </v-card>
+    <v-row>
+      <v-col>
+        <v-card>
+          <v-alert color="danger">WIP</v-alert>
+        </v-card>
+      </v-col>
+    </v-row>
   </v-row>
   <v-row v-if="game_data && game_data.combat_info.combat_type === 'TRIPLE' && false">
     <EnemyCombatPanel :data="game_data.enemy_data" :enemy_data="game_data.your_data"/>
@@ -42,9 +46,8 @@ export default {
       required: true
     }
   },
-  data() {
-    return {
-    }
+  updated() {
+    console.log(this.game_data)
   }
 }
 </script>

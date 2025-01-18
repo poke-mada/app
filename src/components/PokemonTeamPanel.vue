@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import VerticalPokemonTeamList from '@/components/basic-comps/VerticalPokemonTeamList';
-import PokemonDetailPanel from '@/components/basic-comps/PokemonDetailPanel';
+import VerticalPokemonTeamList from '@/components/offline-app/api-comps/VerticalPokemonTeamList';
+import PokemonDetailPanel from '@/components/offline-app/api-comps/PokemonDetailPanel';
 import {session} from "@/store";
 
 export default {
@@ -24,10 +24,15 @@ export default {
     trainer_name: {
       type: String,
       required: true
+    },
+    active: {
+      type: Boolean,
+      required: false
     }
   },
   data() {
     return {
+      interval: 0,
       selected_pokemon: null,
       team_data: {
         team: [null, null, null, null, null, null]
@@ -37,15 +42,27 @@ export default {
   methods: {
     select_pokemon(pokemon) {
       this.selected_pokemon = pokemon;
+      console.log(pokemon)
     },
   },
   created() {
-    setInterval(() => {
-      session.get(`/team_for_coach/${this.trainer_name}`).then((json_res) => {
-        this.team_data.team = json_res.data.team;
+    session.get(`/trainer/${this.trainer_name}/`).then((response) => {
+      this.team_data.team = response.data.current_team.team;
+    }).catch(() => {
+    })
+  },
+
+  mounted() {
+    this.interval = setInterval(() => {
+      if (!this.active) return;
+      session.get(`/trainer/${this.trainer_name}/`).then((response) => {
+        this.team_data.team = response.data.current_team.team;
       }).catch(() => {
       })
-    }, 500)
+    }, 5000)
+  },
+  unmounted() {
+    clearInterval(this.interval)
   }
 }
 </script>

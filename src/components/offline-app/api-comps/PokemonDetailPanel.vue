@@ -34,11 +34,11 @@
           </v-alert>
           <p class="text-left font-weight-bold">{{ pokemon.species }}</p>
           <p class="text-left">Nivel <strong>{{ pokemon.level }}</strong></p>
-          <p class="text-left">HP: <strong>{{ pokemon.cur_hp }}/{{ pokemon.maxhp }}</strong></p>
+          <p class="text-left">HP: <strong>{{ pokemon.cur_hp }}/{{ pokemon.max_hp }}</strong></p>
           <p class="text-left">Ataque: <strong>{{ pokemon.attack }}</strong></p>
           <p class="text-left">Defensa: <strong>{{ pokemon.defense }}</strong></p>
-          <p class="text-left">Ataque Especial: <strong>{{ pokemon.spatk }}</strong></p>
-          <p class="text-left">Defensa Especial: <strong>{{ pokemon.spdef }}</strong></p>
+          <p class="text-left">Ataque Especial: <strong>{{ pokemon.special_attack }}</strong></p>
+          <p class="text-left">Defensa Especial: <strong>{{ pokemon.special_defense }}</strong></p>
           <p class="text-left">Velocidad: <strong>{{ pokemon.speed }}</strong></p>
           <p class="text-left">{{ pokemon_types.map((v) => v.name).join("/") }}</p>
         </v-col>
@@ -47,12 +47,12 @@
         <v-col cols="6">
           <p class="text-left">Naturaleza: <strong>{{ pokemon.nature_name }}</strong></p>
           <p class="text-left">Habilidad: <strong>{{ pokemon.ability_name }}</strong></p>
-          <p class="text-left">Objeto: <strong>{{ pokemon.item_name }}</strong></p>
+          <p class="text-left">Objeto: <strong>{{ pokemon.held_item_name }}</strong></p>
         </v-col>
       </v-row>
       <v-row>
         <v-col cols="6" v-for="(move, index) in pokemon.moves" :key="index">
-          <MovementCard :enemy_data="enemy_data" :pokemon="pokemon" :movement="move" v-if="move"/>
+          <MovementCard :enemy_data="enemy_data" :pokemon="pokemon" :movement="move" v-if="move" :forced_type="get_forced_type(move)"/>
         </v-col>
       </v-row>
     </div>
@@ -60,7 +60,8 @@
 </template>
 
 <script>
-import MovementCard from "@/components/basic-comps/MovementCard";
+import MovementCard from "./MovementCard";
+import {FORCE_TYPE_ABILITIES, SPECIAL_MOVES} from '@/data/force_type_data'
 
 export default {
   name: "PokemonCard",
@@ -79,6 +80,28 @@ export default {
     }
   },
   methods: {
+    get_forced_type(movement) {
+      let forced_type = this.pokemon.ability.toString() in FORCE_TYPE_ABILITIES;
+      let move_type = movement.move_type;
+
+
+      if (forced_type) {
+        let ability_data = FORCE_TYPE_ABILITIES[this.pokemon.ability];
+        if (move_type === ability_data.forced_from) {
+          move_type = ability_data.forced_type;
+        } else if (ability_data.forced_from === '*') {
+          move_type = ability_data.forced_type;
+        }
+      }
+
+      if (movement.index in SPECIAL_MOVES) {
+        let special_move = SPECIAL_MOVES[movement.index];
+        if (this.pokemon.item_held in special_move) {
+          move_type = special_move[this.pokemon.item_held];
+        }
+      }
+      return move_type;
+    },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     },

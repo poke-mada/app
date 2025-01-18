@@ -31,7 +31,7 @@ export const watchSave = function (FILE_NAME) {
         formData.append('file', fs.createReadStream(FILE_NAME), {
             filename: trainer_name
         });
-        session.post(`/uploadfile`, formData, {
+        session.post(`/upload_save/`, formData, {
             headers: {
                 ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
             },

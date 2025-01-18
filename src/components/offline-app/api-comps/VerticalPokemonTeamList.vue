@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import PokemonCard from "@/components/basic-comps/PokemonCard";
+import PokemonCard from "./PokemonCard";
 
 export default {
   name: "VerticalPokemonTeamList",

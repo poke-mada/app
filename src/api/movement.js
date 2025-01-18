@@ -3,34 +3,7 @@
 
 import {readFileSync} from 'fs'
 import path from "path";
-
-let FORCE_TYPE_ABILITIES = {
-    182: {
-        name: 'Pixilate',
-        forced_from: 'Normal',
-        forced_type: 'Fairy'
-    },
-    96: {
-        name: 'Normalize',
-        forced_from: '*',
-        forced_type: 'Normal'
-    },
-    184: {
-        name: 'Aerilate',
-        forced_from: 'Normal',
-        forced_type: 'Flying'
-    },
-    206: {
-        name: 'Galvanize',
-        forced_from: 'Normal',
-        forced_type: 'Electric'
-    },
-    174: {
-        name: 'Refrigerate',
-        forced_from: 'Normal',
-        forced_type: 'Ice'
-    }
-}
+import {FORCE_TYPE_ABILITIES} from '@/data/force_type_data'
 
 function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
     if (move_id === 0) return;
@@ -67,7 +40,6 @@ function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
     }
 
     let move_type = move.typename;
-    let forced_type = ability.toString() in FORCE_TYPE_ABILITIES;
 
     if (move_id in special_move_data) {
         let special_move = special_move_data[move_id];
@@ -76,6 +48,7 @@ function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
         }
     }
 
+    let forced_type = ability.toString() in FORCE_TYPE_ABILITIES;
     if (forced_type) {
         let ability_data = FORCE_TYPE_ABILITIES[ability];
         if (move_type === ability_data.forced_from) {
