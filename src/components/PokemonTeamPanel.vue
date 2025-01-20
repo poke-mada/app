@@ -1,9 +1,9 @@
 <template>
   <v-row>
-    <v-col cols="3">
+    <v-col md="4" sm="12" xs="12" lg="2">
       <VerticalPokemonTeamList @select_pokemon="select_pokemon" team="you" :data="team_data"/>
     </v-col>
-    <v-col>
+    <v-col md="8" sm="12" xs="12" lg="10">
       <PokemonDetailPanel :pokemon="selected_pokemon" v-if="selected_pokemon"/>
     </v-col>
   </v-row>
@@ -12,7 +12,7 @@
 <script>
 import VerticalPokemonTeamList from '@/components/offline-app/api-comps/VerticalPokemonTeamList';
 import PokemonDetailPanel from '@/components/offline-app/api-comps/PokemonDetailPanel';
-import {session} from "@/store";
+import {session} from "@/stores";
 
 export default {
   name: "PokemonTeamPanel",
@@ -21,10 +21,6 @@ export default {
     PokemonDetailPanel
   },
   props: {
-    trainer_name: {
-      type: String,
-      required: true
-    },
     active: {
       type: Boolean,
       required: false
@@ -41,21 +37,17 @@ export default {
   },
   methods: {
     select_pokemon(pokemon) {
-      this.selected_pokemon = pokemon;
-      console.log(pokemon)
+      this.selected_pokemon = this.team_data.team[pokemon];
     },
   },
-  created() {
-    session.get(`/trainer/${this.trainer_name}/`).then((response) => {
+  mounted() {
+    session.get(`/api/trainers/get_trainer/`).then((response) => {
       this.team_data.team = response.data.current_team.team;
     }).catch(() => {
     })
-  },
-
-  mounted() {
     this.interval = setInterval(() => {
       if (!this.active) return;
-      session.get(`/trainer/${this.trainer_name}/`).then((response) => {
+      session.get(`/api/trainers/get_trainer/`).then((response) => {
         this.team_data.team = response.data.current_team.team;
       }).catch(() => {
       })

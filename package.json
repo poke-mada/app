@@ -6,7 +6,7 @@
   },
   "description": "This project is supposed to help you get help while playing",
   "name": "poke-mada",
-  "version": "0.2.0",
+  "version": "0.2.7",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -18,8 +18,10 @@
   "main": "background.js",
   "dependencies": {
     "@iarna/toml": "^2.2.5",
+    "@jamescoyle/vue-icon": "^0.1.2",
     "@jarboer/electron-prompt": "^2.3.7",
     "@mdi/font": "^7.4.47",
+    "@mdi/js": "^7.4.47",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.7.9",
     "compare-versions": "^6.1.1",

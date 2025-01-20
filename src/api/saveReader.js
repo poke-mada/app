@@ -1,7 +1,8 @@
 import fs from 'fs'
 
 import FormData from 'form-data';
-import {session} from "@/store";
+import {session} from '@/stores/backend'
+import {IS_DEV} from "@/stores/constants";
 
 
 export function getSaveName(FILE_PATH) {
@@ -31,11 +32,15 @@ export const watchSave = function (FILE_NAME) {
         formData.append('file', fs.createReadStream(FILE_NAME), {
             filename: trainer_name
         });
+        if (IS_DEV) {
+            console.log('upload faked')
+            return;
+        }
         session.post(`/upload_save/`, formData, {
             headers: {
                 ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
             },
-        }).then(() => console.log('succeeded')).catch(() => console.error('failed'))
+        }).then(() => console.log('succeeded')).catch((err) => console.error(err))
     })
 }
 export const stopWatching = function (FILE_NAME) {

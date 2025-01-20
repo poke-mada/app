@@ -1,53 +1,37 @@
 <template>
-  <v-card border>
+  <v-card type="primary" class="mt-2" border>
     <template v-slot:title>
-      <v-alert :color="team === 'enemy' ? 'primary' : 'success'" class="p-0">
-      <span v-if="team === 'enemy'">
+      <v-alert color="primary" class="p-0">
         Pokemon enemigo
-      </span>
-        <span v-if="team === 'you'">
-        Pokemon atacando
-      </span>
       </v-alert>
     </template>
     <template v-slot:text>
       <v-row class="mt-0">
-        <v-col cols="2">
+        <v-col cols="6">
           <v-row>
             <v-spacer/>
-            <v-col>
+            <v-col class="w-100">
               <v-img :src="pokemon ? pokemon.sprite_url : missingno" width="96"/>
             </v-col>
           </v-row>
-          <v-row>
-            <v-col>
-              <div v-if="pokemon">
-                <v-img v-for="(type, i) in pokemon_types" :key="i"
-                       :src="`./assets/types/${type_name(type.name)}.png`"
-                       width="32" inline/>
-              </div>
-            </v-col>
+          <v-row class="w-100" justify="end" v-if="pokemon">
+            <v-img v-for="(type, i) in pokemon_types" :key="i"
+                   :src="`./assets/types/${type_name(type.name)}.png`"
+                   width="32" max-width="32"/>
           </v-row>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="6">
           <v-row>
             <v-spacer/>
             <v-col class="text-center">
-            <span class="justify-center mote" :class="team === 'enemy' ? 'info' : 'success'">
-              {{ pokemon ? pokemon.mote : '???' }}
-            </span>
+              <span class="justify-center mote" :class="team === 'enemy' ? 'info' : 'success'">
+                {{ pokemon ? pokemon.mote : '???' }}
+              </span>
             </v-col>
             <v-spacer/>
           </v-row>
           <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???' }}</p>
           <p class="text-center">{{ pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
-        </v-col>
-        <v-col cols="8" v-if="team === 'you'">
-          <v-row v-if="pokemon">
-            <v-col cols="6" v-for="(move, index) in pokemon.moves" :key="index">
-              <MovementCard :pokemon="pokemon" :enemy_data="enemy_data" :movement="move" v-if="move"/>
-            </v-col>
-          </v-row>
         </v-col>
       </v-row>
     </template>
@@ -56,14 +40,11 @@
 
 
 <script>
-import MovementCard from "@/components/basic-comps/MovementCard";
 
 export default {
   name: "PokemonCard",
   emits: [],
-  components: {
-    MovementCard
-  },
+  components: {},
   props: {
     team: {
       type: String,
@@ -93,9 +74,9 @@ export default {
     },
     pokemon_types() {
       if (this.pokemon.battle_data) {
-        return this.pokemon.battle_data.types;
+        return this.pokemon.battle_data.types.filter((item) => !!item.name);
       }
-      return this.pokemon.types;
+      return this.pokemon.types.filter((item) => !!item);
     }
   },
   data() {

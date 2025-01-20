@@ -11,34 +11,31 @@
     <v-row class="mt-1">
       <v-col cols="2">
         <v-row>
+          <v-spacer/>
           <v-col>
-            <v-tooltip location="top">
-              <template v-slot:activator="{props}">
-                <img :src="pokemon ? pokemon.sprite_url : missingno" @click="dialog = true" class="card-img-top"
-                     width="130" alt="" v-bind="props">
-              </template>
-              <span v-if="pokemon && pokemon.coach_data && pokemon.coach_data.data" v-html="pokemon.coach_data.data.notes.replace('\\n', '<br/>')"/>
-            </v-tooltip>
+            <v-img :src="pokemon ? pokemon.sprite_url : missingno" class="card-img-top" width="130"/>
           </v-col>
         </v-row>
-        <v-row justify="end">
-          <v-col></v-col>
+        <v-row>
           <v-col sm>
             <div v-if="pokemon">
-              <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
-                     width="32" inline></v-img>
+              <v-img v-for="(type, i) in pokemon_types" :key="i"
+                     :src="`./assets/types/${type_name(type.name)}.png`"
+                     width="32" inline/>
             </div>
           </v-col>
         </v-row>
       </v-col>
       <v-col cols="2">
-        <v-alert :type="team === 'enemy' ? 'info' : 'success'" variant="tonal" class="pb-0 pt-0 mt-1">
-          <template v-slot:prepend>
-          </template>
-          <template v-slot:text>
-            {{ pokemon ? pokemon.mote : '???' }}
-          </template>
-        </v-alert>
+        <v-row>
+          <v-spacer/>
+          <v-col class="text-center">
+              <span class="justify-center mote" :class="team === 'enemy' ? 'info' : 'success'">
+                {{ pokemon ? pokemon.mote : '???' }}
+              </span>
+          </v-col>
+          <v-spacer/>
+        </v-row>
         <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???' }}</p>
         <p class="text-center">{{ pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
       </v-col>
@@ -88,14 +85,13 @@ export default {
   },
   computed: {
     pokemon() {
-      console.log(this.pk_slot)
       return this.team_data.team[this.pk_slot];
     },
     pokemon_types() {
       if (this.pokemon.battle_data) {
-        return this.pokemon.battle_data.types;
+        return this.pokemon.battle_data.types.filter((item) => !!item.name);
       }
-      return this.pokemon.types;
+      return this.pokemon.types.filter((item) => !!item);
     }
   },
   data() {
@@ -108,5 +104,18 @@ export default {
 </script>
 
 <style scoped>
+.mote {
+  border-radius: 10px;
+  padding: .2rem 1rem;
+}
 
+.success {
+  background-color: rgba(76, 175, 80, 0.8);
+  color: white;
+}
+
+.info {
+  background-color: rgba(33, 150, 243, 0.8);
+  color: white;
+}
 </style>

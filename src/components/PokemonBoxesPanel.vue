@@ -1,3 +1,4 @@
+<!--suppress JSUnresolvedVariable -->
 <template>
   <v-row>
     <v-col cols="12">
@@ -12,8 +13,9 @@
         <div class="pa-4">
           <v-row justify="space-between">
             <v-col>
-              <v-autocomplete label="Cajas" :items="this.box_data.boxes" item-value="box_number" item-title="box_identifier"
-                        v-model="selected_box"></v-autocomplete>
+              <v-autocomplete label="Cajas" :items="this.box_data.selectable_boxes" item-value="box_number"
+                              item-title="box_identifier"
+                              v-model="selected_box" @update:modelValue="open_box"></v-autocomplete>
             </v-col>
             <v-spacer></v-spacer>
             <v-col>
@@ -21,11 +23,18 @@
             </v-col>
             <v-spacer></v-spacer>
             <v-col>
-              <v-autocomplete label="Entrenadores" :items="trainers" item-value="name" item-title="streamer_name"
-                        v-model="selected_trainer" @update:modelValue="open_box"></v-autocomplete>
+              <v-autocomplete label="Entrenadores" :items="trainers" item-value="id" item-title="streamer_name"
+                              v-model="selected_trainer" @update:modelValue="selected_box = 0;open_box();"></v-autocomplete>
             </v-col>
           </v-row>
-          <v-row v-if="box_data.boxes[this.selected_box]">
+          <v-row v-if="loading_box" class="w-100 h-100" justify="center" align="center">
+            <v-col>
+              <v-progress-linear indeterminate height="25">
+                Loading...
+              </v-progress-linear>
+            </v-col>
+          </v-row>
+          <v-row v-if="box_data.box && !loading_box">
             <v-col cols="2" v-for="(slot, index) in [...Array(30)].keys()" :key="index"
                    style="border: 1px solid #CACACACA">
               <v-row>
@@ -47,7 +56,7 @@
   <v-dialog v-model="pokemon_team_display">
     <v-row>
       <v-col cols="3">
-        <VerticalPokemonTeamList team="you" :data="{team: box_data.team}" @select_pokemon="select_pokemon_team"/>
+        <VerticalPokemonTeamList team="you" :data="{team: this.box_data.team}" @select_pokemon="select_pokemon_team"/>
       </v-col>
       <v-col>
         <PokemonDetailPanel v-if="selected_pokemon" :pokemon="selected_pokemon"/>
@@ -57,7 +66,7 @@
 </template>
 
 <script>
-import {session} from '@/store'
+import {session} from "@/stores";
 import PokemonCard from "@/components/offline-app/api-comps/PokemonCard";
 import PokemonDetailPanel from "@/components/offline-app/api-comps/PokemonDetailPanel";
 import VerticalPokemonTeamList from "@/components/offline-app/api-comps/VerticalPokemonTeamList";
@@ -70,8 +79,8 @@ export default {
     PokemonDetailPanel
   },
   props: {
-    trainer_name: {
-      type: String,
+    trainer_id: {
+      type: Number,
       required: true
     },
     active: {
@@ -81,15 +90,16 @@ export default {
   },
   data() {
     return {
-      selected_trainer: this.trainer_name,
+      loading_box: true,
+      selected_trainer: this.trainer_id,
       trainers: [],
       display_box_detail: false,
       pokemon_team_display: false,
       selected_box: 0,
       selected_pokemon: null,
       box_data: {
+        selectable_boxes: [],
         team: [null, null, null, null, null, null],
-        boxes: []
       }
     }
   },
@@ -98,29 +108,45 @@ export default {
       this.trainers = response.data
     });
   },
-  created() {
-    session.get('/api/trainers/list_trainers/').then((response) => {
-      this.trainers = response.data
-    });
-    session.get(`/boxes/${this.selected_trainer}/`).then((response) => {
-      this.box_data.boxes = response.data
-    }).catch(() => {
-    })
-    session.get(`/trainer/${this.selected_trainer}/`).then((response) => {
-      this.box_data.team = response.data.current_team.team
-    }).catch(() => {
-    })
+  async mounted() {
+    await this.load_trainers();
+    await this.load_boxes();
+    await this.open_box();
   },
   methods: {
-    open_box() {
-      session.get(`/boxes/${this.selected_trainer}/`).then((response) => {
-        this.box_data.boxes = response.data
-      }).catch(() => {
-      })
-      session.get(`/trainer/${this.selected_trainer}/`).then((response) => {
-        this.box_data.team = response.data.current_team.team
-      }).catch(() => {
-      })
+    async load_trainer_team() {
+      if (!this.selected_box) {
+        return;
+      }
+      const response = await session.get(`/api/trainers/${this.selected_trainer}/`);
+      this.box_data.team = response.data.current_team.team
+    },
+    async load_trainers() {
+      const response = await session.get('/api/trainers/list_trainers/');
+      this.trainers = response.data;
+    },
+    async load_boxes() {
+      if (!this.selected_box) {
+        return;
+      }
+      const response = await session.get(`/api/trainers/${this.selected_trainer}/list_boxes/`);
+      this.box_data.selectable_boxes = response.data;
+    },
+    async open_box() {
+      if (!this.selected_box) {
+        return;
+      }
+      this.loading_box = true;
+      const config = {
+        params: {
+          box: this.selected_box
+        }
+      };
+      const response = await session.get(`/api/trainers/${this.selected_trainer}/box/`, config);
+
+      this.box_data.box = response.data;
+      this.loading_box = false;
+      await this.load_trainer_team();
     },
     select_pokemon(pokemon) {
       if (pokemon) {
@@ -128,11 +154,11 @@ export default {
         this.selected_pokemon = pokemon;
       }
     },
-    get_box(box_index) {
-      return this.box_data.boxes[box_index]
+    get_box() {
+      return this.box_data.box;
     },
     get_slot(slot) {
-      const box = this.get_box(this.selected_box);
+      const box = this.get_box();
       const slots = box.slots;
       const filtered = slots.filter((value) => value.slot === slot);
       if (filtered) {
@@ -141,7 +167,7 @@ export default {
       return null;
     },
     select_pokemon_team(pokemon) {
-      this.selected_pokemon = pokemon;
+      this.selected_pokemon = this.box_data.team[pokemon];
     },
   },
 }

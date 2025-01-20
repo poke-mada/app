@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import {session} from "@/store";
+import {session} from "@/stores";
 
 export default {
   name: "CoachingSelectionPanel",

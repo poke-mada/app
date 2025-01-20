@@ -7,20 +7,23 @@
     </template>
     <template v-slot:text>
       <v-row class="p-1">
-        <v-col v-for="(pokemon, i) in this.data.team.slice(0,3)" :key="i">
-          <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)"/>
-        </v-col>
-      </v-row>
-      <v-row class="p-1 pt-0">
-        <v-col v-for="(pokemon, i) in this.data.team.slice(3,6)" :key="i">
-          <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)"/>
+        <v-col cols="4" v-for="(pokemon, i) in this.data.team" :key="i">
+          <v-row>
+            <v-col>
+              <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)"/>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </template>
   </v-card>
 
   <v-dialog v-model="display">
-    <PokemonDetailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data"/>
+    <v-row class="w-100" justify="center">
+      <v-col sm="12" xs="12" md="6" lg="6">
+        <PokemonDetailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data"/>
+      </v-col>
+    </v-row>
   </v-dialog>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="mt-2" border width="auto">
+  <v-card border>
     <template v-slot:title>
       <v-alert :color="team === 'enemy' ? 'primary' : 'success'" class="p-0">
       <span v-if="team === 'enemy'">
@@ -11,38 +11,50 @@
       </v-alert>
     </template>
     <template v-slot:text>
-      <v-row class="mt-1" width="auto">
+      <v-row class="mt-0">
         <v-col cols="2">
-          <v-row>
-            <v-col>
-              <v-tooltip location="top" max-width="400">
+          <v-row class="w-100" justify="center">
+            <v-col >
+              <v-tooltip location="top">
                 <template v-slot:activator="{props}">
-                  <img :src="pokemon ? pokemon.sprite_url : missingno" @click="dialog = true" class="cursor-pointer"
-                       width="130" alt="" v-bind="props">
+                  <img :src="pokemon ? pokemon.sprite_url : missingno"
+                         @click="dialog = true"
+                         class="cursor-pointer"
+                         content-class="cursor-pointer"
+                         width="96"
+                         max-width="96"
+                         v-bind="props"/>
                 </template>
-                <span v-if="pokemon && pokemon.notes" v-html="pokemon.notes.replace('\r\n', '<br/>')">
-              </span>
+                <template v-slot:default>
+                  <span v-if="pokemon && pokemon.notes"
+                        v-html="pokemon.notes.replace('\r\n', '<br/>')">
+                  </span>
+                </template>
               </v-tooltip>
             </v-col>
           </v-row>
-          <v-row justify="end">
-            <v-col></v-col>
-            <v-col sm>
+          <v-row class="w-100" justify="end" align="end">
+            <v-col>
               <div v-if="pokemon">
                 <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
                        width="32" inline></v-img>
+              </div>
+              <div v-if="!pokemon">
+                <v-img :src="missingno" width="32" inline></v-img>
               </div>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="2">
-          <v-alert :type="team === 'enemy' ? 'info' : 'success'" variant="tonal" class="pb-0 pt-0 mt-1">
-            <template v-slot:prepend>
-            </template>
-            <template v-slot:text>
-              {{ pokemon ? pokemon.mote : '???' }}
-            </template>
-          </v-alert>
+          <v-row>
+            <v-spacer/>
+            <v-col class="text-center">
+              <span class="justify-center mote" :class="team === 'enemy' ? 'info' : 'success'">
+                {{ pokemon ? pokemon.mote : '???' }}
+              </span>
+            </v-col>
+            <v-spacer/>
+          </v-row>
           <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???' }}</p>
           <p class="text-center">{{ pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
           <p class="text-center"><strong>Item:</strong> {{ pokemon ? pokemon.held_item_name : '???' }}</p>
@@ -68,11 +80,11 @@
   </v-card>
   <v-dialog v-model="dialog">
     <v-row>
-      <v-spacer/>
-      <v-col sm>
+      <v-spacer @click="dialog = false"/>
+      <v-col xs="12" sm="12" md="4">
         <VerticalPokemonTeamList :data="team_data" :team="team" @select_pokemon="select_pokemon"/>
       </v-col>
-      <v-spacer/>
+      <v-spacer @click="dialog = false"/>
     </v-row>
   </v-dialog>
 </template>
@@ -146,13 +158,9 @@ export default {
   computed: {
     pokemon() {
       let pokemon = this.team_data.team[this.team_slot_selected];
-      console.log(pokemon)
       return pokemon;
     },
     pokemon_types() {
-      if (this.pokemon.battle_data) {
-        return this.pokemon.battle_data.types;
-      }
       return this.pokemon.types;
     }
   },
@@ -167,5 +175,18 @@ export default {
 </script>
 
 <style scoped>
+.mote {
+  border-radius: 10px;
+  padding: .2rem 1rem;
+}
 
+.success {
+  background-color: rgba(76, 175, 80, 0.8);
+  color: white;
+}
+
+.info {
+  background-color: rgba(33, 150, 243, 0.8);
+  color: white;
+}
 </style>

@@ -29,9 +29,15 @@
           </v-row>
         </v-col>
         <v-col cols="6">
-          <v-alert type="info" variant="tonal" class="pb-0 pt-0 mt-1" :text="pokemon.mote">
-            <template v-slot:prepend></template>
-          </v-alert>
+          <v-row>
+            <v-spacer/>
+            <v-col class="text-center">
+              <span class="justify-center mote" :class="team === 'enemy' ? 'info' : 'success'">
+                {{ pokemon ? pokemon.mote : '???' }}
+              </span>
+            </v-col>
+            <v-spacer/>
+          </v-row>
           <p class="text-left font-weight-bold">{{ pokemon.species }}</p>
           <p class="text-left">Nivel <strong>{{ pokemon.level }}</strong></p>
           <p class="text-left">HP: <strong>{{ pokemon.cur_hp }}/{{ pokemon.maxhp }}</strong></p>
@@ -101,4 +107,18 @@ export default {
 </script>
 
 <style scoped>
+.mote {
+  border-radius: 10px;
+  padding: .2rem 1rem;
+}
+
+.success {
+  background-color: rgba(76, 175, 80, 0.8);
+  color: white;
+}
+
+.info {
+  background-color: rgba(33, 150, 243, 0.8);
+  color: white;
+}
 </style>

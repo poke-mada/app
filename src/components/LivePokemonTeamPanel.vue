@@ -1,9 +1,9 @@
 <template>
   <v-row>
-    <v-col cols="3">
+    <v-col md="4" sm="12" xs="12" lg="2">
       <VerticalPokemonTeamList @select_pokemon="select_pokemon" team="you" :data="team_data"/>
     </v-col>
-    <v-col>
+    <v-col md="8" sm="12" xs="12" lg="10">
       <PokemonDetailPanel :pokemon="selected_pokemon" v-if="selected_pokemon"/>
     </v-col>
   </v-row>
@@ -31,8 +31,8 @@ export default {
     }
   },
   methods: {
-    select_pokemon(pokemon) {
-      this.selected_pokemon = pokemon;
+    select_pokemon(slot) {
+      this.selected_pokemon = this.team_data.team[slot];
     },
   },
 }

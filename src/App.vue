@@ -1,6 +1,6 @@
 <template>
   <v-container fluid>
-    <MainAppComponent :live_trainer_name="trainer_name" :game_data="game_data" :inlive="game_data !== null"/>
+    <MainAppComponent :live_trainer_name="trainer_name" :game_data="game_data" :inlive="inlive"/>
     <UpdateDialog :update_data="update_data" v-if="update_dialog"/>
   </v-container>
 </template>
@@ -18,6 +18,7 @@ export default {
   },
   data() {
     return {
+      inlive: false,
       game_data: null,
       trainer_name: 'MARYBLOG',
       update_dialog: false,
@@ -30,24 +31,11 @@ export default {
   created() {
     window.electron.onDataReceived('updated_game_data', async (event, data) => {
       this.game_data = data;
-      // for (let slot = 0; slot < this.game_data.your_data.team.length; slot++) {
-      //   let mote = this.game_data.your_data.team[slot].mote;
-      //   await session.get(`/notes/${this.trainer_name}/${mote}/`).then((response) => {
-      //     if (response.status === 200) {
-      //       let coach_data = response.data
-      //       if (coach_data) {
-      //         this.game_data.your_data.team[slot].coach_data = coach_data;
-      //       } else {
-      //         this.game_data.your_data.team[slot].coach_data = {
-      //           data: {
-      //             notes: ''
-      //           }
-      //         }
-      //       }
-      //     }
-      //   }).catch(()=>{
-      //   })
-      // }
+      this.inlive = true;
+    });
+    window.electron.onDataReceived('stop-comms', async () => {
+      this.game_data = null;
+      this.inlive = false;
     });
     window.electron.onDataReceived('update-progress', (event, data) => {
       if (!this.update_dialog) {

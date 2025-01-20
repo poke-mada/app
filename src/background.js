@@ -13,7 +13,7 @@ import config from 'config'
 import toml from 'toml'
 import TOML from '@iarna/toml'
 import {PokemonGame} from "./api/PokemonGame";
-import {session} from "@/store";
+import {session} from "@/stores/backend";
 
 function loadTomlConfig(win) {
     const tomlFilePath = 'config/config.toml'; // Ruta a tu archivo TOML

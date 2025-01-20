@@ -1,21 +1,23 @@
 <template>
-  <v-tooltip location="top">
+  <v-tooltip location="top" v-model="display_tooltip">
     <template v-slot:activator="{ props }">
-      <v-alert v-bind="props" class="mb-2 w-100 pl-1" :icon="type_image_path">
+      <v-alert v-bind="props" class="mb-2 w-100 pl-1" :icon="type_image_path" @click="display_tooltip = !display_tooltip">
         <template v-slot:prepend>
           <v-img :src="type_image_path" v-if="movement" width="32" inline></v-img>
         </template>
         <template v-slot:text>
           <v-row>
             <v-col cols="12">
-              {{ movement.name }}
+              <span class="text-caption">
+                {{ movement.name }}
+              </span>
             </v-col>
           </v-row>
         </template>
         <template v-slot:append>
           <v-row>
             <v-col>
-              <v-badge bordered :content="category" color="secondary" inline></v-badge>
+              <v-badge class="text-caption" bordered :content="category" color="secondary" inline></v-badge>
             </v-col>
           </v-row>
         </template>
@@ -27,18 +29,21 @@
           {{ movement.flavor_text }}
         </v-col>
         <v-col cols="12">
-          <v-badge v-if="movement.power !== -1" color="danger" :content="`Power: ${movement.power}`" inline></v-badge>
-          <v-badge v-if="movement.power === -1" color="danger" content="Power: -" inline></v-badge>
-          <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy}%`"
+          <v-badge class="text-caption" v-if="movement.power !== -1" color="danger"
+                   :content="`Power: ${movement.power}`" inline></v-badge>
+          <v-badge class="text-caption" v-if="movement.power === -1" color="danger" content="Power: -" inline></v-badge>
+          <v-badge class="text-caption" v-if="movement.accuracy !== -1" color="info"
+                   :content="`Accuracy: ${movement.accuracy}%`"
                    inline></v-badge>
-          <v-badge v-if="movement.accuracy === -1" color="info" content="Accuracy: -" inline></v-badge>
-          <v-badge v-if="stab" color="success" content="STAB" bordered inline></v-badge>
+          <v-badge class="text-caption" v-if="movement.accuracy === -1" color="info" content="Accuracy: -"
+                   inline></v-badge>
+          <v-badge class="text-caption" v-if="stab" color="success" content="STAB" bordered inline></v-badge>
         </v-col>
       </v-row>
       <v-row v-if="enemy_data">
-        <v-col sm v-for="(enemy_slot, index) in enemies" :key="index" class="pr-0">
+        <v-col cols="2" v-for="(enemy_slot, index) in enemies" :key="index">
           <div v-if="category !== 'Status' && enemy_data.team[enemy_slot]">
-            <v-img :src="enemy_data.team[enemy_slot].sprite_url" width="64" aspect-ratio="1/1"></v-img>
+            <v-img :src="enemy_data.team[enemy_slot].sprite_url" width="64" aspect-ratio="1/1"/>
             <v-badge
                 bordered
                 v-if="multiplier(enemy_data.team[enemy_slot]) !== null"
@@ -127,11 +132,10 @@ export default {
   },
   computed: {
     enemies() {
-      console.log(this.enemy_data)
       if (this.is_selected) {
         return this.enemy_data.selected_pokemon
       }
-      return [0,1,2,3,4,5]
+      return [0, 1, 2, 3, 4, 5]
     },
     move_type() {
       if (this.forced_type) {
@@ -159,12 +163,17 @@ export default {
         return false;
       }
       try {
-        let this_type = this.movement.type.toLowerCase();
-        let pokemon_types = this.pokemon.types.map((item) => item.name.toLowerCase());
+        let this_type = this.movement.move_type.toLowerCase();
+        let pokemon_types = this.pokemon_types(this.pokemon).map((item) => item.name.toLowerCase());
         return !!pokemon_types.includes(this_type);
       } catch (e) {
         return false;
       }
+    }
+  },
+  data() {
+    return {
+      display_tooltip: false
     }
   }
 }

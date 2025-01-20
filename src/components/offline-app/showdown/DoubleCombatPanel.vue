@@ -1,24 +1,21 @@
 <template>
   <v-row>
-    <v-col sm cols="8">
+    <v-col sm="12" xs="12" md="6">
       <DualPokemonPanel :pk_slot="0" :team="team" :team_data="this.data" :enemy_data="enemy_data" @selected_pokemon="select_pokemon"/>
-      <DualPokemonPanel :pk_slot="1" :team="team" :team_data="this.data" :enemy_data="enemy_data" @selected_pokemon="select_pokemon"/>
     </v-col>
-    <v-col sm cols="4">
-      <PokemonTeamList :team="team" :data="this.data" :enemy_data="enemy_data" :trainer_name="trainer_name"/>
+    <v-col sm="12" xs="12" md="6">
+      <DualPokemonPanel :pk_slot="1" :team="team" :team_data="this.data" :enemy_data="enemy_data" @selected_pokemon="select_pokemon"/>
     </v-col>
   </v-row>
 </template>
 
 <script>
 import DualPokemonPanel from '@/components/offline-app/api-comps/DualPokemonPanel'
-import PokemonTeamList from '@/components/offline-app/api-comps/PokemonTeamList';
 
 export default {
   name: "CombatPanel",
   emits: ['selected_pokemon'],
   components: {
-    PokemonTeamList,
     DualPokemonPanel
   },
   props: {
