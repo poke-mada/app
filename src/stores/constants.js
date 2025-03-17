@@ -5,5 +5,6 @@ if (DEV) {
 } else {
     BASE_URL = 'https://pokemon.para-mada.com';
 }
+
 export const SERVER_URL = BASE_URL;
 export const IS_DEV = DEV;

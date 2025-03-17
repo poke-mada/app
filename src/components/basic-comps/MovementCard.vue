@@ -1,3 +1,4 @@
+<!--suppress JSVoidFunctionReturnValueUsed -->
 <template>
   <v-tooltip location="top">
     <template v-slot:activator="{ props }">
@@ -29,21 +30,19 @@
         <v-col cols="12">
           <v-badge v-if="movement.power !== -1" color="danger" :content="`Power: ${movement.power}`" inline></v-badge>
           <v-badge v-if="movement.power === -1" color="danger" content="Power: -" inline></v-badge>
-          <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy}%`"
-                   inline></v-badge>
+          <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy * accuracy_multiplier}%`" inline></v-badge>
           <v-badge v-if="movement.accuracy === -1" color="info" content="Accuracy: -" inline></v-badge>
-          <v-badge v-if="stab" color="success" content="STAB" bordered inline></v-badge>
         </v-col>
       </v-row>
       <v-row v-if="enemy_data">
-        <v-col sm v-for="(enemy_slot, index) in enemy_data.selected_pokemon" :key="index" class="pr-0">
-          <div v-if="category !== 'Status'">
-            <v-img :src="enemy_data.team[enemy_slot].sprite_url" width="64" aspect-ratio="1/1"></v-img>
+        <v-col sm v-for="(enemy_dex, index) in enemy_data.selected_pokemon" :key="index" class="pr-0">
+          <div v-if="category !== 'Status' && get_enemy_pokemon(enemy_dex)">
+            <v-img :src="get_enemy_pokemon(enemy_dex).sprite_url" width="64" aspect-ratio="1/1" />
             <v-badge
                 bordered
-                v-if="multiplier(enemy_data.team[enemy_slot]) !== null"
-                :content="`x${multiplier(enemy_data.team[enemy_slot])}`"
-                :color="multiplier(enemy_data.team[enemy_slot]) > 1 ? 'success' : multiplier(enemy_data.team[enemy_slot]) < 1 ? 'error' : 'info'"
+                v-if="multiplier(get_enemy_pokemon(enemy_dex)) !== null"
+                :content="`x${multiplier(get_enemy_pokemon(enemy_dex))}`"
+                :color="multiplier(get_enemy_pokemon(enemy_dex)) > 1 ? 'success' : multiplier(get_enemy_pokemon(enemy_dex)) < 1 ? 'error' : 'info'"
                 inline
             ></v-badge>
           </div>
@@ -77,24 +76,57 @@ export default {
     },
   },
   methods: {
+    get_pokemon_boost(stat) {
+      if (!this.pokemon) {
+        return 0;
+      }
+      if (this.pokemon.battle_data) {
+        return this.pokemon.battle_data.boosts[stat];
+      }
+      if (this.pokemon.boosts) {
+        return this.pokemon.boosts[stat];
+      }
+      return 0;
+    },
+    get_stat_offensive_multiplier(stat) {
+      let simplifier = 2;
+      let base = simplifier + Math.abs(stat)
+      if (stat < 1) {
+        return simplifier / base;
+      }
+      return base / simplifier;
+    },
+    get_stat_strategical_multiplier(stat) {
+      let simplifier = 3;
+      let base = simplifier + Math.abs(stat)
+      if (stat < 1) {
+        return simplifier / base;
+      }
+      return base / simplifier;
+    },
     multiplier(enemy) {
+      let multiplier = 1;
+      let stab_multiplier = this.stab ? 1.5 : 1;
+      let offensive_boost = this.get_pokemon_boost(this.category === 'Especial' ? 'special_attack' : 'attack');
+      let boost_multiplier = this.get_stat_offensive_multiplier(offensive_boost);
+
       if (!enemy) {
-        return null;
+        return multiplier * stab_multiplier * boost_multiplier;
       }
       let enemy_types = this.pokemon_types(enemy);
       if (!enemy_types) {
-        return null;
+        return multiplier * stab_multiplier * boost_multiplier;
       }
 
       if (this.category === 'Status') {
         return null;
       }
 
+
       let doubles = appearances(this.movement.coverage_data.double_damage_to, enemy_types)
       let halves = appearances(this.movement.coverage_data.half_damage_to, enemy_types)
       let zeroes = appearances(this.movement.coverage_data.no_damage_to, enemy_types)
 
-      let multiplier = 1;
       if (zeroes > 0) {
         multiplier = 0;
       } else {
@@ -106,13 +138,16 @@ export default {
         }
       }
 
-      return multiplier;
+      return multiplier * stab_multiplier * boost_multiplier;
     },
     pokemon_types(pokemon) {
       if (pokemon.battle_data) {
         return pokemon.battle_data.types;
       }
       return pokemon.types;
+    },
+    get_enemy_pokemon(dex_number) {
+      return this.enemy_data.team.filter(enemy => enemy && enemy.dex_number.toString() === dex_number.toString())[0]
     }
   },
   computed: {
@@ -142,6 +177,10 @@ export default {
       } catch (e) {
         return false;
       }
+    },
+    accuracy_multiplier() {
+      let accuracy = this.get_pokemon_boost('accuracy');
+      return this.get_stat_strategical_multiplier(accuracy);
     }
   }
 }

@@ -27,3 +27,5 @@ pnpm-debug.log*
 config/*
 app.log
 error.log
+*.log
+dumps/*

@@ -1,44 +1,13 @@
 'use strict'
 
-import {compareVersions} from 'compare-versions';
-import {app, BrowserWindow, dialog, ipcMain, nativeImage, protocol} from 'electron'
+import {app, BrowserWindow, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
 import {autoUpdater} from "electron-updater";
-import {XY} from "@/api/romData";
 import path from "path";
-import fs from "fs";
 
-import config from 'config'
-import toml from 'toml'
-import TOML from '@iarna/toml'
-import {PokemonGame} from "./api/PokemonGame";
-import {session} from "@/stores/backend";
-
-function loadTomlConfig(win) {
-    const tomlFilePath = 'config/config.toml'; // Ruta a tu archivo TOML
-    if (!fs.existsSync(tomlFilePath)) {
-        let save_file = dialog.showOpenDialogSync(win, {
-            title: 'Selecciona tu archivo de guardado',
-            icon: nativeImage.createFromPath('./public/icon.png'),
-            properties: ['openFile'],
-            message: 'Archivos de guardado',
-            defaultPath: path.join(process.env.APPDATA, '\\Citra\\sdmc\\Nintendo 3DS\\00000000000000000000000000000000\\00000000000000000000000000000000\\title\\00040000\\00055e00\\data\\00000001')
-        });
-        let data = {
-            app: {
-                save_file: save_file[0]
-            }
-        }
-        const stringed = TOML.stringify(data);
-        fs.mkdirSync('config')
-        fs.writeFile(tomlFilePath, stringed, console.log)
-        return toml.parse(stringed); // Parseamos el contenido TOML
-    } else {
-        const tomlContent = fs.readFileSync(tomlFilePath, 'utf-8');
-        return toml.parse(tomlContent); // Parseamos el contenido TOML
-    }
-}
+import {declareGlobalConfig} from "@/stores/back_constants";
+import {registerEvents} from "@/api/handlers/events";
 
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -54,9 +23,10 @@ async function createWindow() {
         width: 1200,
         height: 873,
         icon: './public/icons/icon.png',
-        title: `Poke Mada v${autoUpdater.currentVersion}`,
+        title: `Dedsafio Pokemon`,
         autoHideMenuBar: true,
         webPreferences: {
+            devTools: !app.isPackaged,
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -86,20 +56,17 @@ app.on('window-all-closed', () => {
     }
 })
 
-app.on('activate', () => {
+app.on('activate', async () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
-    if (BrowserWindow.getAllWindows().length === 0) createWindow()
+    if (BrowserWindow.getAllWindows().length === 0) await createWindow()
 })
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
     let win = await createWindow();
-    const tomlConfig = loadTomlConfig(win);
-    config.util.extendDeep(config, tomlConfig);
-    let SAVE_FILE_PATH = config.get("app.save_file");
-
+    declareGlobalConfig('window', win);
     if (isDevelopment && !process.env.IS_TEST) {
         // Install Vue Devtools
         try {
@@ -108,65 +75,7 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
-
-
-    let game = new PokemonGame(XY);
-    ipcMain.on('open_channel', (ipc) => {
-        if (!process.env.WEBPACK_DEV_SERVER_URL) {
-            let new_version = null;
-            autoUpdater.checkForUpdatesAndNotify().then((res) => {
-                let is_updateVersion = compareVersions(autoUpdater.currentVersion.toString(), res.updateInfo.version.toString()) < 0;
-                if (res && is_updateVersion) {
-                    new_version = res.updateInfo.version.toString();
-                    res.downloadPromise.then(() => {
-                        app.quit();
-                    })
-                }
-            });
-
-            autoUpdater.on('download-progress', (progress_object) => {
-                win.webContents.send('update-progress', {
-                    progress: progress_object.percent,
-                    version: new_version
-                });
-            });
-        }
-        game.stop();
-        game.startComms(ipc, SAVE_FILE_PATH);
-    });
-
-    ipcMain.on('download_save', (ipc, trainer_name) => {
-        session.get(`/last_save/${trainer_name}`, {
-            responseType: 'arraybuffer'
-        }).then((response) => {
-            const save_path = path.join(process.env.HOMEDRIVE, process.env.HOMEPATH, "Downloads", trainer_name)
-            const fileData = Buffer.from(response.data, 'binary');
-            fs.writeFile(save_path, fileData, () => {
-                win.webContents.send('notify', {
-                    message: 'Archivo de guardado descargado con éxito!\r\na la carpeta de descargas'
-                })
-            })
-        })
-    })
-
-    ipcMain.on('showdown-combat', async (ipc, data) => {
-        let enemy_trainer = await session.get(`/trainer/${data.enemy_trainer}/`, {
-            params: {
-                localization: 'en'
-            }
-        }).then((response) => response.data);
-        let your_trainer = await session.get(`/trainer/${data.your_trainer}/`, {
-            params: {
-                localization: 'en'
-            }
-        }).then((response) => response.data);
-
-        ipc.reply('showdown-data', {
-            enemy_trainer,
-            your_trainer
-        })
-    });
-
+    registerEvents();
     win.reload();
 })
 

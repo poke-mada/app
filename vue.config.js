@@ -15,8 +15,8 @@ module.exports = defineConfig({
     electronBuilder: {
       preload: 'src/preload.js',
       builderOptions: {
-        appId: 'com.paramada.poke-mada',
-        productName: 'PokeMada',
+        appId: 'com.paramada.dedsafio',
+        productName: 'Dedsafio Pokemon',
         win: {
           target: 'nsis',
         },

@@ -1,40 +1,32 @@
 <template>
-  <v-card border class="mt-2">
-    <v-alert :color="team === 'enemy' ? 'primary' : 'success'" class="p-0">
-      <span v-if="team === 'enemy'" >
-        Equipo Enemigo
-      </span>
-      <span v-if="team === 'you'" >
-        Tu Equipo
-      </span>
-    </v-alert>
-    <v-row class="p-1">
-      <v-col v-for="(pokemon, i) in this.data.team.slice(0,3)" :key="i">
-        <PokemonCard :pokemon="pokemon && pokemon.discovered ? pokemon : null" @click="selectPokemon(pokemon)"/>
-      </v-col>
-    </v-row>
-    <v-row class="p-1 pt-0">
-      <v-col v-for="(pokemon, i) in this.data.team.slice(3,6)" :key="i">
-        <PokemonCard :pokemon="pokemon && pokemon.discovered ? pokemon : null" @click="selectPokemon(pokemon)"/>
-      </v-col>
-    </v-row>
+  <v-card border class="mt-0">
+    <template v-slot:text>
+      <v-alert :color="computed_color" :text="computed_text" class="pa-0 text-center">
+        <template v-slot:prepend></template>
+        <template v-slot:append></template>
+        <template v-slot:close></template>
+      </v-alert>
+      <v-row class="p-1">
+        <v-col cols="4" v-for="(pokemon, i) in this.data.team" :key="i">
+          <v-row>
+            <v-col>
+              <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon, i)" :selected="!this.force_plain && this.selected_slot === i"/>
+            </v-col>
+          </v-row>
+        </v-col>
+      </v-row>
+    </template>
   </v-card>
-
-  <v-dialog v-model="display">
-    <PokemonDetailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data"/>
-  </v-dialog>
 </template>
 
 <script>
 import PokemonCard from "@/components/basic-comps/PokemonCard";
-import PokemonDetailPanel from "@/components/basic-comps/PokemonDetailPanel";
 
 export default {
   name: "PokemonTeamList",
   emits: ["pokemonSelected"],
   components: {
-    PokemonCard,
-    PokemonDetailPanel
+    PokemonCard
   },
   props: {
     data: {
@@ -48,6 +40,14 @@ export default {
     team: {
       type: String,
       required: true
+    },
+    trainer_name: {
+      type: String,
+      required: false
+    },
+    force_plain: {
+      type: Boolean,
+      required: false
     }
   },
   data() {
@@ -55,24 +55,40 @@ export default {
       party: {
         team: [null, null, null, null, null, null]
       },
+      selected_slot: null,
       display: false,
       selected_pokemon: null
     }
   },
   computed: {
     pokemon_types() {
-      if (this.selected_pokemon.battle_data) {
-        return this.selected_pokemon.battle_data.types;
-      }
       return this.selected_pokemon.types;
+    },
+    computed_color() {
+      if (this.team === 'enemy') {
+        return 'error';
+      }
+      return 'success';
+    },
+    computed_text() {
+      if (!this.trainer_name) {
+        if (this.team === 'you') {
+          return 'Tu equipo';
+        }
+        else if (this.team === 'enemy') {
+          return 'Equipo enemigo';
+        }
+        else if (this.team === 'ally') {
+          return 'Equipo aliado';
+        }
+      }
+      return `Equipo de ${this.trainer_name}`
     }
   },
   methods: {
-    selectPokemon: function (pokemon) {
-      this.selected_pokemon = pokemon;
-      if (this.team === 'you') {
-        this.display = true;
-      }
+    selectPokemon: function (pokemon, slot) {
+      this.$emit('pokemon_selected', pokemon)
+      this.selected_slot = slot;
     },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);

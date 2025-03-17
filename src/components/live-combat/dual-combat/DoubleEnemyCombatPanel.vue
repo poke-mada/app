@@ -1,8 +1,8 @@
 <template>
   <v-row>
     <v-col sm cols="8">
-      <DualPokemonPanel pk_slot="0" team="enemy" :team_data="this.data" :enemy_data="enemy_data"/>
-      <DualPokemonPanel pk_slot="1" team="enemy" :team_data="this.data" :enemy_data="enemy_data"/>
+      <DualPokemonPanel pk_dex="0" team="enemy" :team_data="this.data" :enemy_data="enemy_data"/>
+      <DualPokemonPanel pk_dex="1" team="enemy" :team_data="this.data" :enemy_data="enemy_data"/>
     </v-col>
     <v-col sm cols="4">
       <PokemonTeamList team="enemy" :data="this.data" :enemy_data="enemy_data"/>

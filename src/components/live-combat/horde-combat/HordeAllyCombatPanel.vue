@@ -1,5 +1,5 @@
 <template>
-  <DualPokemonPanel pk_slot="0" team="you" :team_data="this.data" :enemy_data="enemy_data"/>
+  <DualPokemonPanel :pk_dex="this.team_data.selected_pokemon[0]" team="you" :team_data="this.team_data" :enemy_data="enemy_data"/>
 </template>
 
 <script>
@@ -11,7 +11,7 @@ export default {
     DualPokemonPanel
   },
   props: {
-    data: {
+    team_data: {
       type: Object,
       required: true
     },

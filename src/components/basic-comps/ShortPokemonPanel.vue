@@ -42,7 +42,7 @@
 <script>
 
 export default {
-  name: "PokemonCard",
+  name: "ShortPokemonPanel",
   emits: [],
   components: {},
   props: {
@@ -64,13 +64,30 @@ export default {
     }
   },
   methods: {
+    get_imposter_pokemon(dex_number) {
+      if (!dex_number) {
+        return null;
+      }
+      return this.enemy_data.team.filter(pokemon => pokemon && pokemon.dex_number.toString() === dex_number.toString())[0]
+    },
+    get_imposter_pokemon_data(dex_number) {
+      return this.enemy_data.team_data.filter(pokemon => pokemon && pokemon.dex_number.toString() === dex_number.toString())[0]
+    },
+    get_pokemon(dex_number) {
+      return this.team_data.team.filter(pokemon => pokemon && pokemon.dex_number.toString() === dex_number.toString())[0]
+    },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     }
   },
   computed: {
     pokemon() {
-      return this.team_data.team[this.pk_slot];
+      if (!this.team_data.team.map(pokemon => pokemon.dex_number).includes(this.pk_slot)) {
+        // noinspection UnnecessaryLocalVariableJS
+        const imposter = this.get_imposter_pokemon(this.pk_slot); // TODO: esto tambien cambiaria los stat boosts, ashuda
+        return imposter;
+      }
+      return this.get_pokemon(this.pk_slot);
     },
     pokemon_types() {
       if (this.pokemon.battle_data) {

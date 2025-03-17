@@ -56,7 +56,7 @@
 import ShortPokemonPanel from '@/components/basic-comps/ShortPokemonPanel';
 
 export default {
-  name: "CombatPanel",
+  name: "HordeCombatPanel",
   components: {
     ShortPokemonPanel,
   },
