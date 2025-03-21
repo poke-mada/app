@@ -29,3 +29,4 @@ app.log
 error.log
 *.log
 dumps/*
+combat_logs/
