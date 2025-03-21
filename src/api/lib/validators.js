@@ -2,6 +2,11 @@ export function validatePokemonData(pokemon) {
     return pokemon.maxhp <= 999 && pokemon.dex_number >= 1 && pokemon.dex_number <= 808 && pokemon.level <= 100;
 }
 
+export function validatePokemonSaveData(pokemon) {
+    console.log(pokemon)
+    return pokemon.dex_number >= 1 && pokemon.dex_number <= 808 && pokemon.level <= 100;
+}
+
 export function validateBattleData(pokemon) {
     return pokemon.stats.max_hp <= 999 &&
         pokemon.dex_number >= 1 &&

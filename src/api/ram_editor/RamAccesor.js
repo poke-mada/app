@@ -1,5 +1,6 @@
 import {CitraClient, InBattlePokemonData} from "@/api/ram_editor";
-import {RAM_ROM, RAM_ROM as rom} from '@/stores/back_constants'
+import {RAM_ROM as rom, RAM_ROM2 as rom2} from '@/stores/back_constants'
+import {decryptPokemonData, encryptData, updateChecksum} from "@/api/lib/PokemonCrypt";
 
 export const CombatType = Object.freeze({
     OFF: "OFF",
@@ -79,9 +80,11 @@ export async function modifyPokemonBattleData(slot = 0, boosts, citra = new Citr
     let combat_data_address = rom.getBattleDataAddress(CombatEnv.TRAINER);
     let slot_address = combat_data_address + (slot * rom.mongap);
     let mon_data = await citra.readMemory(slot_address, rom.slot_data_size);
-    let pokemon = new InBattlePokemonData(rom, mon_data);
+    let pokemon = new InBattlePokemonData(mon_data);
 
     for (const [boost, modifier] of Object.entries(boosts)) {
+        console.log(pokemon);
+        console.log(boost);
         pokemon.boosts[boost] += modifier;
     }
 
@@ -89,6 +92,15 @@ export async function modifyPokemonBattleData(slot = 0, boosts, citra = new Citr
 }
 
 export async function modifyPokemonData(slot, newData, citra = new CitraClient()) {
-    const slot_address = RAM_ROM.getBattleDataAddress()
-    await citra.writeMemory(slot_address, pokemon.toWrittableBytes())
+    let slot_address = rom2.getTeamSlotAddress(slot);
+    let oldData = await citra.readMemory(slot_address, rom2.player_team_data.slot_data_size);
+    let decryptedData = decryptPokemonData(Buffer.concat([oldData, Buffer.alloc(22)]));
+
+    decryptedData.writeUint8(newData.ability, rom2.pokemon_data.ability)
+    const newChecksum = updateChecksum(decryptedData);
+
+    decryptedData.writeUint16LE(newChecksum, rom2.pokemon_data.checksum)
+    const encData = encryptData(decryptedData).subarray(0, 232);
+
+    await citra.writeMemory(slot_address, encData)
 }

@@ -12,9 +12,8 @@ import {
     modifyPokemonData,
     setPokemon
 } from "@/api/ram_editor/RamAccesor";
-import {addPokemon} from "@/api/save_editor/SaveAccesor";
+import {addPokemonSaveData, clearPokemonSaveData, modifyPokemonSaveData} from "@/api/save_editor/SaveAccesor";
 import {SavePokemon} from "@/api/save_editor/SavePokemon";
-import {mainGameLoop} from '@/api/handlers/game/Loop'
 import {PokemonGame} from "@/api/handlers/PokemonGame";
 
 function downloadSaveEvent(ipc, trainer_name) {
@@ -62,10 +61,9 @@ async function inventoryModificationEvent(data) {
 }
 
 async function pokemonModificationEvent(ipc, data) {
-    console.log('pokemon data modification')
-    console.log(data)
-    let citra = new CitraClient();
+    const pokemonData = fs.readFileSync('E:\\pkhex\\pkmn\\charmeleon.ek6');
     if (data.level === 'ram') {
+        const citra = new CitraClient();
         switch (data.effect) {
             case 'boosts':
                 await modifyPokemonBattleData(data.slot, data.boosts, citra);
@@ -75,12 +73,24 @@ async function pokemonModificationEvent(ipc, data) {
                 break;
             case 'edit':
                 await modifyPokemonData(data.slot, data.new_data, citra)
-                //await modifyPokemonSaveData(data.slot, data.new_data)
+                break;
+            case 'add':
+                //await addPokemonData(pokemonData, citra)
                 break;
         }
     } else if (data.level === 'save') {
-        let pokemonData = fs.readFileSync('E:\\pkhex\\pkmn\\charmeleon.ek6');
-        addPokemon(pokemonData)
+        switch (data.effect) {
+            case 'clean':
+                clearPokemonSaveData(data.slot)
+                break;
+            case 'edit':
+                modifyPokemonSaveData(data.slot, data.new_data);
+                break;
+            case 'add':
+            default:
+                addPokemonSaveData(pokemonData)
+                break;
+        }
     }
 }
 

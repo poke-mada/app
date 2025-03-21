@@ -1,5 +1,5 @@
 import {SAVE_ROM} from "@/stores/back_constants";
-import {validatePokemonData} from '@/api/lib/validators';
+import {validatePokemonSaveData} from '@/api/lib/validators';
 import {SavePokemon} from '@/api/save_editor/SavePokemon';
 import {logger} from "@/api/handlers/logging";
 
@@ -9,7 +9,7 @@ export default {
             let address = SAVE_ROM.getTeamSlotAddress(slot)
             let pokemonData = saveData.subarray(address, address + SAVE_ROM.team_data.slot_length);
             const pokemon = new SavePokemon(pokemonData);
-            if (!validatePokemonData(pokemon)) {
+            if (!validatePokemonSaveData(pokemon)) {
                 return slot;
             }
         }

@@ -67,7 +67,7 @@ export class RomData {
     }
 
     getTeamSlotAddress(slot) {
-        return this.player_team_data.address + (this.player_team_data.slot_length * slot);
+        return this.player_team_data.address + (this.player_team_data.slot_offset * slot);
     }
 
     getCombatFrontalMon(slot) {
@@ -90,11 +90,7 @@ export class RomData {
         return truncateBuffer(messageBytes).toString('utf16le')
     }
 }
-let a = 147725544 - 147726028;
-// if game=="X/Y":
-// itmdl=[147236508,9952,10208,10640,11016,12616,0x67E852C]   #70F62C #67E892C xy trainers
-// elif game=="OmegaRuby/AlphaSapphire":
-// itmdl=[147250640,9952,10208,10640,11024,12624] #reverse-berries,meds,tms,keys,items
+
 export const XY = Object.freeze(new RomData(
     {
         item_data: {
@@ -108,12 +104,15 @@ export const XY = Object.freeze(new RomData(
         },
         player_team_data: {
             pp_address: 0x820430C,
-            address: 147725544,
+            address: 0x8CE1CE8,
             slot_offset: 484,
             slot_data_size: 232,
             stat_data_size: 22
         },
-        pokemon_data: {},
+        pokemon_data: {
+            checksum: 0x6,
+            ability: 0x14,
+        },
         pokemon_battle_data: {
             dex_number: 0x4,
             battle_slot: 0x11,

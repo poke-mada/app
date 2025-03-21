@@ -39,15 +39,16 @@ export const XY = new SaveData(
         slot_length: 260
     },
     {
+        checksum: 0x6,
         dex_number: 0x8,
         form: 0x1D,
         held_item: 0xA,
         ability_num: 0x14,
         nature_num: 0x1C,
-        level: 0x74,
+        level: 0xEC,
         stat_data: {
-            curent_hp: 0x78,
-            max_hp: 0x7A,
+            curent_hp: 0xF0,
+            max_hp: 0xF2,
         },
         ev_hp: 0x1E,
         ev_attack: 0x1F,

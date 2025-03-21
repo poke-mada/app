@@ -14,7 +14,8 @@ export class SavePokemon {
         this.ability_num = decryptedData.subarray(SAVE_ROM.pokemon_data.ability_num).readUInt8();
         this.nature_num = decryptedData.subarray(SAVE_ROM.pokemon_data.nature_num).readUInt8();
         this.level = decryptedData.subarray(SAVE_ROM.pokemon_data.level).readUInt8();
-        this.max_hp = decryptedData.subarray(SAVE_ROM.pokemon_data.max_hp).readUInt16LE()                     // Max HP
+
+        this.max_hp = decryptedData.subarray(SAVE_ROM.pokemon_data.max_hp).readUInt16LE();                     // Max HP
 
         this.ev_hp = decryptedData.subarray(SAVE_ROM.pokemon_data.ev_hp).readUInt8();
         this.ev_attack = decryptedData.subarray(SAVE_ROM.pokemon_data.ev_attack).readUInt8();
