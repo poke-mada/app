@@ -1,3 +1,5 @@
+import {truncateBuffer} from "@/api/ram_editor/RamData";
+
 export class SaveData {
     constructor(name, trainer_data, box_data, team_data, pokemon_data, items_address, badge_address) {
         this.name = name;
@@ -17,7 +19,6 @@ export class SaveData {
     getTeamSlotAddress(slot) {
         return this.team_data.party_address + (this.team_data.slot_length * slot);
     }
-
 }
 
 export const XY = new SaveData(
@@ -77,5 +78,7 @@ export const XY = new SaveData(
                 pp: 0x65,
             }
         ],
-    }
+    },
+    {},
+    0xC
 )

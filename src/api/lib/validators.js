@@ -3,7 +3,6 @@ export function validatePokemonData(pokemon) {
 }
 
 export function validatePokemonSaveData(pokemon) {
-    console.log(pokemon)
     return pokemon.dex_number >= 1 && pokemon.dex_number <= 808 && pokemon.level <= 100;
 }
 

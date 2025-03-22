@@ -75,7 +75,7 @@ export class PokemonTeamData {
         this.ivspeed = (ivloc >> 15) & 0b11111                                      // Speed IV
         this.ivspatk = (ivloc >> 20) & 0b11111                                      // Special attack IV
         this.ivspdef = (ivloc >> 25) & 0b11111                                      // Special defense IV
-        this.sprite_url = STATICS_URL + `/sprites/master/sprites/pokemon/${this.dex_number}.png`;
+        this.sprite_url = `${STATICS_URL}/sprites/master/sprites/pokemon/${this.dex_number}.png`;
         let pokemon;
 
         let ability;

@@ -12,9 +12,17 @@ import {
     modifyPokemonData,
     setPokemon
 } from "@/api/ram_editor/RamAccesor";
-import {addPokemonSaveData, clearPokemonSaveData, modifyPokemonSaveData} from "@/api/save_editor/SaveAccesor";
+import {
+    addPokemonSaveData,
+    clearPokemonSaveData,
+    modifyPokemonSaveData,
+    serializeSaveData
+} from "@/api/save_editor/SaveAccesor";
 import {SavePokemon} from "@/api/save_editor/SavePokemon";
 import {PokemonGame} from "@/api/handlers/PokemonGame";
+import {WebSocketServer} from 'ws';
+
+export const socket = new WebSocketServer({port: 8081});
 
 function downloadSaveEvent(ipc, trainer_name) {
     session.get(`/last_save/${trainer_name}`, {
@@ -51,6 +59,16 @@ async function openMainChannel(ipc) {
             });
         });
     }
+
+    socket.on('connection', event => {
+        event.on('message', function message(data) {
+            switch (data.toString()) {
+                case 'request_data':
+                    event.send(JSON.stringify(serializeSaveData()))
+                    break;
+            }
+        });
+    });
     await game.startComms(ipc);
 }
 

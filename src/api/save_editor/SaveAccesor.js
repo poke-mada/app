@@ -7,6 +7,8 @@ import FormData from "form-data";
 import {session} from "@/stores/backend";
 import {decryptPokemonData, encryptData, get_string, getSaveChecksum, updateChecksum} from "@/api/lib/PokemonCrypt";
 import {SavePokemon} from "@/api/save_editor/SavePokemon";
+import {socket} from "@/api/handlers/events";
+
 
 const PokemonLocations = Object.freeze({
     BOXES: 'BOXES',
@@ -63,38 +65,77 @@ export function getSaveName() {
     return get_string(original_thrash_nick);
 }
 
+export function serializeSaveData() {
+    const saveData = readSaveBytes();
+    const badges = saveData.subarray(0x04200, 17216).subarray(SAVE_ROM.badge_address).readUInt8();
+    const pokemon1 = SaveTeam.getPokemonAt(saveData, 0);
+    const pokemon2 = SaveTeam.getPokemonAt(saveData, 1);
+    const pokemon3 = SaveTeam.getPokemonAt(saveData, 2);
+    const pokemon4 = SaveTeam.getPokemonAt(saveData, 3);
+    const pokemon5 = SaveTeam.getPokemonAt(saveData, 4);
+    const pokemon6 = SaveTeam.getPokemonAt(saveData, 5);
+
+    return {
+        "gym1": (badges & (1 << 0)) !== 0,
+        "gym2": (badges & (1 << 1)) !== 0,
+        "gym3": (badges & (1 << 2)) !== 0,
+        "gym4": (badges & (1 << 3)) !== 0,
+        "gym5": (badges & (1 << 4)) !== 0,
+        "gym6": (badges & (1 << 5)) !== 0,
+        "gym7": (badges & (1 << 6)) !== 0,
+        "gym8": (badges & (1 << 7)) !== 0,
+        "deathCount": 12,
+        "team": [
+            pokemon1 !== null ? pokemon1.toOverlayData() : null,
+            pokemon2 !== null ? pokemon2.toOverlayData() : null,
+            pokemon3 !== null ? pokemon3.toOverlayData() : null,
+            pokemon4 !== null ? pokemon4.toOverlayData() : null,
+            pokemon5 !== null ? pokemon5.toOverlayData() : null,
+            pokemon6 !== null ? pokemon6.toOverlayData() : null
+        ]
+    };
+}
+
 export function watchSave() {
+    console.log("wenas")
     if (!fs.existsSync(SAVE_FILE)) {
         console.log(SAVE_FILE)
         console.log('file cannot be read')
         return;
     }
     let trainer_name = getSaveName()
-    fs.watchFile(SAVE_FILE, {
-        bigint: true,
-        persistent: false,
-        interval: 1000
-    }, () => {
-        const formData = new FormData();
-        formData.append('file', fs.createReadStream(SAVE_FILE), {
-            filename: trainer_name
-        });
-        if (IS_DEV) {
-            console.log('upload faked')
-            return;
-        }
-        if (GLOBAL_CONFIG.win !== undefined) {
-            GLOBAL_CONFIG.win.webContents.executeJavaScript('localStorage.getItem("api_token");', true)
-                .then(result => {
-                    session.post(`/upload_save/`, formData, {
-                        headers: {
-                            Authorization: `Token ${result}`,
-                            ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
-                        },
-                    }).then(() => console.log('succeeded')).catch((err) => console.error(err))
-                });
-        }
-    })
+    socket.on('connection', event => {
+        fs.watchFile(SAVE_FILE, {
+            bigint: true,
+            persistent: false,
+            interval: 1000
+        }, () => {
+            console.log('WATCHING FILE')
+            const serializedSave = serializeSaveData();
+            console.log(serializedSave)
+            event.send(JSON.stringify(serializedSave));
+
+            const formData = new FormData();
+            formData.append('file', fs.createReadStream(SAVE_FILE), {
+                filename: trainer_name
+            });
+            if (IS_DEV) {
+                console.log('upload faked')
+                return;
+            }
+            if (GLOBAL_CONFIG.win !== undefined) {
+                GLOBAL_CONFIG.win.webContents.executeJavaScript('localStorage.getItem("api_token");', true)
+                    .then(result => {
+                        session.post(`/upload_save/`, formData, {
+                            headers: {
+                                Authorization: `Token ${result}`,
+                                ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
+                            },
+                        }).then(() => console.log('succeeded')).catch((err) => console.error(err))
+                    });
+            }
+        })
+    });
 }
 
 export const stopWatching = function (FILE_NAME) {
@@ -107,7 +148,6 @@ export const stopWatching = function (FILE_NAME) {
 }
 
 export function modifyPokemonSaveData(slot, new_data) {
-    console.log(``)
     console.log(`modifying save slot #${slot}`)
     let saveData = readSaveBytes();
 
@@ -115,9 +155,7 @@ export function modifyPokemonSaveData(slot, new_data) {
     const oldData = saveData.subarray(slotAddress, slotAddress + SAVE_ROM.team_data.slot_length);
 
     const pokemonData = decryptPokemonData(oldData);
-    console.log(new_data)
 
-    console.log(pokemonData)
     pokemonData.set([new_data.ability], SAVE_ROM.pokemon_data.ability_num)
 
     const newChecksum = updateChecksum(pokemonData);
@@ -125,11 +163,6 @@ export function modifyPokemonSaveData(slot, new_data) {
     checksum.writeUint16LE(newChecksum)
     pokemonData.set(checksum, SAVE_ROM.pokemon_data.checksum)
     const encData = encryptData(pokemonData).subarray(0, 232);
-
-    console.log(pokemonData)
-    console.log('============')
-    console.log(encData.length)
-    console.log(encData)
 
     const newData = SaveTeam.writePokemon(saveData, encData, slot)
     const created = writeSaveBytes(newData);

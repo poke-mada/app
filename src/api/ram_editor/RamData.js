@@ -112,6 +112,7 @@ export const XY = Object.freeze(new RomData(
         pokemon_data: {
             checksum: 0x6,
             ability: 0x14,
+            pid: 0x18,
         },
         pokemon_battle_data: {
             dex_number: 0x4,

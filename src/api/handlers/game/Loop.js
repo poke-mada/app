@@ -17,7 +17,6 @@ let citraInstances = {}
 
 async function searchNewGameInstance(uuid) {
     const citras = Object.values(citraInstances)
-    console.log(citras)
     try {
         // eslint-disable-next-line no-constant-condition
         while (true) {
@@ -27,7 +26,6 @@ async function searchNewGameInstance(uuid) {
                 oldCitra.clearQueue()
                 const available = await oldCitra.test();
                 if (available) {
-                    console.log('awa')
                     citraInstances[uuid] = oldCitra;
                     return oldCitra;
                 }
@@ -65,7 +63,6 @@ function anythingChanged() {
 }
 
 export function stopAll() {
-    console.log('stopping')
     alreadyRunning = {}
 }
 
@@ -113,7 +110,6 @@ export async function mainGameLoop(ipc) {
                 ipc.reply('updated_game_data', GAME_DATA);
             }
         } catch (e) {
-            console.log('something failed, check logs')
             logger.error(e.message);
             logger.error(e.stack);
         }
