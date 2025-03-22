@@ -8,8 +8,7 @@ export class SavePokemon {
     constructor(pokemonData) {
         const decryptedData = decryptPokemonData(pokemonData);
         this.decryptedData = decryptedData;
-
-
+        this.pid = decryptedData.subarray(SAVE_ROM.pokemon_data.pid).readUInt16LE();
         this.dex_number = decryptedData.subarray(SAVE_ROM.pokemon_data.dex_number).readUInt16LE();
         this.form = decryptedData.subarray(SAVE_ROM.pokemon_data.form).readUInt8();
         this.held_item_num = decryptedData.subarray(SAVE_ROM.pokemon_data.held_item).readUInt8();

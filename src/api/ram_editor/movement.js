@@ -27,7 +27,28 @@ function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
                 double_damage_to: [],
                 half_damage_to: [],
                 no_damage_to: []
-            }
+            },
+            moves: [
+                {
+                    id: 0x5A,
+                    pp: 0x62
+                },
+                {
+                    id: 0x5C,
+                    pp: 0x63
+                },
+                {
+                    id: 0x5E,
+                    pp: 0x64
+                },
+                {
+                    id: 0x60,
+                    pp: 0x65
+                }
+            ],
+            status: 0xE8,
+            current_hp: 0xF0,
+            max_hp: 0xF2
         };
     }
 

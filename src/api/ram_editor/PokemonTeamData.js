@@ -6,6 +6,7 @@ import {STATICS_URL} from '@/api/lib/poke-api'
 import {Movement} from "@/api/ram_editor/movement";
 import {MON_DATA, ITEM_DATA, ABILITY_DATA, NATURE_DATA, POKEMON_FORMS_DATA} from '@/data/mon_data';
 import {truncateBuffer} from "@/api/ram_editor/RamData";
+import {RAM_ROM2} from "@/stores/back_constants";
 
 export class PokemonTeamData {
     cleanNickData(nickElements) {
@@ -25,7 +26,7 @@ export class PokemonTeamData {
         this.battle_data = newBattleData;
     }
 
-    constructor(move_data, data, debug=false) {
+    constructor(move_data, data) {
         if (data[0] === 0) return;
         let raw_data = decryptPokemonData(data);
         this.dex_number = raw_data.subarray(8, 10).readUInt16LE()
@@ -33,12 +34,12 @@ export class PokemonTeamData {
         if (this.dex_number === 0 || this.dex_number >= 808) {
             return;
         }
-        if (debug) {
-            console.log(this.dex_number)
-        }
+
+        this.pid = raw_data.subarray(RAM_ROM2.pokemon_data.pid)
         this.held_item_num = raw_data.subarray(10).readUInt16LE()
         this.ability_num = raw_data.subarray(20).readUInt8()  // Ability
         this.nature_num = raw_data.subarray(28).readUInt8()   // Nature
+
         this.form = raw_data.subarray(29).readUInt8()         // FORM: mega, mega-x, mega-y, alola...
         this.evhp = raw_data.subarray(30).readUInt8()         // HP EV
         this.evattack = raw_data.subarray(31).readUInt8()     // Attack EV
