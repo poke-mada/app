@@ -113,7 +113,29 @@ export const XY = Object.freeze(new RomData(
             slot_data_size: 232,
             stat_data_size: 22
         },
+<<<<<<< Updated upstream
         pokemon_data: {},
+=======
+        pokemon_data: {
+            checksum: 0x6,
+            ability: 0x14,
+            pid: 0x18,
+            held_item: 0xA,
+            nature: 0x1C,
+            form: 0x1D,
+            ev_hp: 0x1E,
+            ev_attack: 0x1F,
+            ev_defense: 0x20,
+            ev_speed: 0x21,
+            ev_special_attack: 0x22,
+            ev_special_defense: 0x23,
+            mote: {
+                address: 0x40,
+                length: 26
+            },
+            ivs: 0x74
+        },
+>>>>>>> Stashed changes
         pokemon_battle_data: {
             dex_number: 0x4,
             battle_slot: 0x11,

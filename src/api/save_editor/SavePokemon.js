@@ -7,8 +7,13 @@ export class SavePokemon {
         const decryptedData = decryptPokemonData(pokemonData);
         this.decryptedData = decryptedData;
 
+<<<<<<< Updated upstream
 
         this.dex_number = decryptedData.subarray(SAVE_ROM.pokemon_data.dex_number).readUInt8();
+=======
+        this.pid = decryptedData.subarray(SAVE_ROM.pokemon_data.pid).readUInt16LE();
+        this.dex_number = decryptedData.subarray(SAVE_ROM.pokemon_data.dex_number).readUInt16LE();
+>>>>>>> Stashed changes
         this.form = decryptedData.subarray(SAVE_ROM.pokemon_data.form).readUInt8();
         this.held_item_num = decryptedData.subarray(SAVE_ROM.pokemon_data.held_item).readUInt8();
         this.ability_num = decryptedData.subarray(SAVE_ROM.pokemon_data.ability_num).readUInt8();

@@ -39,6 +39,11 @@ export const XY = new SaveData(
         slot_length: 260
     },
     {
+<<<<<<< Updated upstream
+=======
+        pid: 0x18,
+        checksum: 0x6,
+>>>>>>> Stashed changes
         dex_number: 0x8,
         form: 0x1D,
         held_item: 0xA,
