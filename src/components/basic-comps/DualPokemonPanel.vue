@@ -185,7 +185,6 @@ export default {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     },
     get_ally_pokemon(dex_number) {
-      console.log(dex_number, this.ally_data.team)
       return this.ally_data.team.filter(ally => ally && ally.dex_number === dex_number)[0]
     }
   },

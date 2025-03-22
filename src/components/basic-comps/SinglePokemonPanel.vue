@@ -206,16 +206,11 @@ export default {
       if (!this.team_data.team.filter(pokemon => !!pokemon).map(pokemon => pokemon.dex_number).includes(this.pk_slot)) {
         // noinspection UnnecessaryLocalVariableJS
         const imposter = this.get_imposter_pokemon(this.pk_slot); // TODO: esto tambien cambiaria los stat boosts, ashuda
-        console.log(this.team_data)
-        console.log(this.pk_slot)
 
         if (this.team === 'you' && imposter) {
           let data = this.get_imposter_pokemon_data(this.pk_slot);
           if (data) {
             imposter.moves = data.moves;
-          } else {
-            console.log(this.pk_slot)
-            console.log(this.team_data.team)
           }
         }
 

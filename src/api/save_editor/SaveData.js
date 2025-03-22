@@ -1,3 +1,5 @@
+import {truncateBuffer} from "@/api/ram_editor/RamData";
+
 export class SaveData {
     constructor(name, trainer_data, box_data, team_data, pokemon_data, items_address, badge_address) {
         this.name = name;
@@ -17,7 +19,6 @@ export class SaveData {
     getTeamSlotAddress(slot) {
         return this.team_data.party_address + (this.team_data.slot_length * slot);
     }
-
 }
 
 export const XY = new SaveData(
@@ -39,20 +40,17 @@ export const XY = new SaveData(
         slot_length: 260
     },
     {
-<<<<<<< Updated upstream
-=======
         pid: 0x18,
         checksum: 0x6,
->>>>>>> Stashed changes
         dex_number: 0x8,
         form: 0x1D,
         held_item: 0xA,
         ability_num: 0x14,
         nature_num: 0x1C,
-        level: 0x74,
+        level: 0xEC,
         stat_data: {
-            curent_hp: 0x78,
-            max_hp: 0x7A,
+            curent_hp: 0xF0,
+            max_hp: 0xF2,
         },
         ev_hp: 0x1E,
         ev_attack: 0x1F,
@@ -81,5 +79,7 @@ export const XY = new SaveData(
                 pp: 0x65,
             }
         ],
-    }
+    },
+    {},
+    0xC
 )

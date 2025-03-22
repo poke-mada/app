@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
 
+import {SAVE_ROM} from "@/stores/back_constants";
+
 let BLOCK_SIZE = 56
 
 const crypt = (data, seed, i) => {
@@ -55,7 +57,7 @@ const decryptPokemonData = (encryptedData) => {
     const sv = ((seed >> 13) & 31) % 24;
 
     const start = 8;
-    const end = (4 * BLOCK_SIZE) + start;
+    const end = 232;
 
     const header = encryptedData.slice(0, 8);
 
@@ -73,7 +75,7 @@ const encryptData = (decryptedData) => {
     const sv = ((seed >> 13) & 31) % 24;
 
     const start = 8;
-    const end = (4 * BLOCK_SIZE) + start;
+    const end = 232;
 
     const header = decryptedData.slice(0, 8);
 
@@ -126,4 +128,42 @@ export function get_string(data) {
 
     let length = load_string(data, result)
     return result.slice(0, length).join('')  // Crear una cadena con los caracteres procesados
+}
+
+function add16(buffer) {
+    if (!Buffer.isBuffer(buffer)) {
+        throw new TypeError('Input must be a Buffer');
+    }
+
+    let checksum = 0;
+
+    for (let i = 0; i < buffer.length; i += 2) {
+        let u16 = buffer.readUInt16LE(i);
+        checksum = (checksum + u16) & 0xFFFF; // Ensure 16-bit overflow
+    }
+
+    return checksum;
+}
+
+export function updateChecksum(pokemonData) {
+    return add16(pokemonData.subarray(8, SAVE_ROM.box_data.slot_length))
+}
+
+function crc16CCITT(data) {
+    let top = 0xFF;
+    let bot = 0xFF;
+
+    for (const b of data) {
+        let x = b ^ top;
+        x ^= (x >> 4);
+        top = (bot ^ (x >> 3) ^ (x << 4)) & 0xFF;
+        bot = (x ^ (x << 5)) & 0xFF;
+    }
+
+    return (top << 8) | bot;
+}
+
+export function getSaveChecksum(saveData, offset = 0x14200, length = 1564) {
+    const chkData = saveData.subarray(offset, offset + length)
+    return crc16CCITT(chkData)
 }

@@ -1,5 +1,5 @@
 import {SAVE_ROM} from "@/stores/back_constants";
-import {validatePokemonData} from '@/api/lib/validators';
+import {validatePokemonSaveData} from '@/api/lib/validators';
 import {SavePokemon} from '@/api/save_editor/SavePokemon';
 import {logger} from "@/api/handlers/logging";
 
@@ -9,18 +9,25 @@ export default {
             let address = SAVE_ROM.getTeamSlotAddress(slot)
             let pokemonData = saveData.subarray(address, address + SAVE_ROM.team_data.slot_length);
             const pokemon = new SavePokemon(pokemonData);
-            if (!validatePokemonData(pokemon)) {
+            if (!validatePokemonSaveData(pokemon)) {
                 return slot;
             }
         }
         return -1;
     },
+    getPokemonAt(saveData, slot) {
+        let address = SAVE_ROM.getTeamSlotAddress(slot)
+        let pokemonData = saveData.subarray(address, address + SAVE_ROM.team_data.slot_length);
+        const pokemon = new SavePokemon(pokemonData);
+        if (validatePokemonSaveData(pokemon)) {
+            return pokemon;
+        }
+        return null;
+    },
     writePokemon(saveData, pokemonData, slot) {
         let newData = Buffer.copyBytesFrom(saveData);
-        logger.info('old data')
         logger.info(newData.subarray(SAVE_ROM.team_data.party_address, SAVE_ROM.team_data.party_address + SAVE_ROM.team_data.slot_length * 6))
         pokemonData.copy(newData, SAVE_ROM.getTeamSlotAddress(slot), 0, SAVE_ROM.team_data.slot_length)
-        logger.info('new data')
         logger.info(newData.subarray(SAVE_ROM.team_data.party_address, SAVE_ROM.team_data.party_address + SAVE_ROM.team_data.slot_length * 6))
         return newData;
     }

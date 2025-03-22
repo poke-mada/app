@@ -26,15 +26,15 @@ class GameData {
         this.comms_closed = true;
     }
 
-    async startComms(rom, ipc, pokemon_game, save_file_path, win) {
+    async startComms(rom, ipc, pokemon_game, save_file_path) {
         let citra = new CitraClient();
+        watchSave();
         try {
             this.comms_closed = false;
             let trainer_name;
             await citra.readMemory(0, 1).then(() => {
                 trainer_name = getSaveName(save_file_path);
                 ipc.reply('trainer_name', trainer_name);
-                watchSave(win, save_file_path)
             });
 
             while (this.is_communicating) {
