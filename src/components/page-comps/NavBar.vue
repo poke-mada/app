@@ -9,35 +9,30 @@
         v-if="inlive"
         to="/"
         text="Combates"/>
-    <v-menu>
+    <v-menu v-if="inlive">
       <template v-slot:activator="{props}">
         <v-btn
             v-if="inlive"
             v-bind="props"
             text="DEBUG"/>
       </template>
-      <template v-slot:default>
-        <v-list>
-          <v-list-item>
-            <v-btn
-                v-if="inlive"
-                v-on:click="empty_slot"
-                text="EMPTY SLOT"/>
-          </v-list-item>
-          <v-list-item>
-            <v-btn
-                v-if="inlive"
-                v-on:click="add_pkmn_save"
-                text="add pkmn save"/>
-          </v-list-item>
-          <v-list-item>
-            <v-btn
-                v-if="inlive"
-                v-on:click="edit_pkmn"
-                text="edit pkmn live"/>
-          </v-list-item>
-        </v-list>
-      </template>
+      <v-list>
+        <v-list-item key="1">
+          <v-btn v-on:click="empty_slot">EMPTY SLOT</v-btn>
+        </v-list-item>
+        <v-list-item key="2">
+          <v-btn v-on:click="add_pkmn_save">add pkmn save</v-btn>
+        </v-list-item>
+        <v-list-item key="3">
+          <v-btn v-on:click="edit_pkmn">edit pkmn save</v-btn>
+        </v-list-item>
+        <v-list-item key="5">
+          <v-btn v-on:click="edit_pkmn2">edit pkmn live</v-btn>
+        </v-list-item>
+        <v-list-item key="4">
+          <v-btn v-on:click="boost_pkmn">edit pkmn boosts</v-btn>
+        </v-list-item>
+      </v-list>
     </v-menu>
     <v-btn
         v-if="logged_in"
@@ -105,6 +100,7 @@ export default {
     add_pkmn_save() {
       window.electron.sendMessage('pkm', {
         level: 'save',
+        effect: 'add',
         reward: 1
       });
     },
@@ -112,14 +108,37 @@ export default {
       window.electron.sendMessage('pkm', {
         level: 'ram',
         effect: 'clean',
-        slot: 3
+        slot: 0
       });
     },
     edit_pkmn() {
       window.electron.sendMessage('pkm', {
+        level: 'save',
         effect: 'edit',
+        slot: 2,
+        new_data: {
+          ability: 17
+        }
+      });
+    },
+    edit_pkmn2() {
+      window.electron.sendMessage('pkm', {
+        level: 'ram',
+        effect: 'edit',
+        slot: 2,
+        new_data: {
+          ability: 17
+        }
+      });
+    },
+    boost_pkmn() {
+      window.electron.sendMessage('pkm', {
+        level: 'ram',
+        effect: 'boosts',
         slot: 0,
-        new_data: null
+        boosts: {
+          special_attack: 2
+        }
       });
     },
     download_save() {

@@ -131,7 +131,6 @@ export default {
   },
   mounted() {
     window.electron.onDataReceived('updated_game_data', async (event, data) => {
-      console.log(data)
       this.store.activate(data);
     });
 

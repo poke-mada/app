@@ -1,5 +1,6 @@
 import {PokemonTeamData} from "@/api/ram_editor/PokemonTeamData";
 import {CitraClient} from "@/api/ram_editor/CitraClient";
+import {CombatEnv} from "@/api/ram_editor/RamAccesor";
 
 let BLOCK_SIZE = 56
 let SLOT_OFFSET = 484
@@ -30,7 +31,7 @@ export class RomData {
         this.item_data = item_data;
     }
 
-    getBattleDataAddress(combat_env) {
+    getBattleDataAddress(combat_env = CombatEnv.WILD) {
         try {
             return this.battle_data[combat_env.toLowerCase()]
         } catch (e) {
@@ -44,7 +45,7 @@ export class RomData {
     }
 
     getTeamSlotAddress(slot) {
-        return this.team_data.party_address + (this.team_data.slot_length * slot);
+        return this.partyAddress + (this.slot_data_size * slot);
     }
 }
 
