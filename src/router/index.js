@@ -12,6 +12,7 @@ import WildcardsAppPage from "@/pages/wildcards";
 import BoxesAppPage from "@/pages/boxes";
 import ShowdownAppPage from "@/pages/showdown";
 import TeamAppPage from "@/pages/team";
+import RewardsAppPage from "@/pages/rewards";
 
 const routes = [
   { path: '/', component: MainAppPage },
@@ -20,6 +21,7 @@ const routes = [
   { path: '/showdown', component: ShowdownAppPage },
   { path: '/team', component: TeamAppPage },
   { path: '/wildcards', component: WildcardsAppPage },
+  { path: '/rewards', component: RewardsAppPage },
 ]
 
 const router = createRouter({

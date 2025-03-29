@@ -1,6 +1,14 @@
 import SaveTeam from '@/api/save_editor/SaveTeam';
 import SaveBox from '@/api/save_editor/SaveBox';
-import {IS_DEV, SAVE_FILE, GLOBAL_CONFIG, SAVE_ROM} from "@/stores/back_constants";
+import {
+    IS_DEV,
+    SAVE_FILE,
+    GLOBAL_CONFIG,
+    SAVE_ROM,
+    emmiter,
+    declareGlobalConfig,
+    SAVE_FILE_2
+} from "@/stores/back_constants";
 import fs from "fs";
 import {logger} from "@/api/handlers/logging";
 import FormData from "form-data";
@@ -34,12 +42,12 @@ function writeSaveBytes(newData) {
     }
 }
 
-export function addPokemonSaveData(pokemonData) {
+export function addPokemonSaveData(pokemonData, toBox = false) {
     let createdIn = PokemonLocations.TEAM;
     let saveData = readSaveBytes();
     let teamSlot = SaveTeam.firstFreeSlot(saveData);
     let newData;
-    if (teamSlot === -1) {
+    if (teamSlot === -1 || toBox) {
         createdIn = PokemonLocations.BOXES;
         const boxData = SaveBox.firstFreeSlot(saveData);
         console.log(`Editing box slot ${boxData.box}:${boxData.slot}`)
@@ -96,46 +104,58 @@ export function serializeSaveData() {
     };
 }
 
-export function watchSave() {
-    console.log("wenas")
-    if (!fs.existsSync(SAVE_FILE)) {
-        console.log(SAVE_FILE)
+function fileWatcher() {
+    let trainer_name = getSaveName()
+    emmiter.emit('perform_save')
+    if (GLOBAL_CONFIG.overlay_event) {
+        try {
+            const serializedSave = serializeSaveData();
+            GLOBAL_CONFIG.overlay_event.send(JSON.stringify(serializedSave));
+        } catch (e) {
+            declareGlobalConfig('overlay_event', null);
+        }
+    }
+
+
+    const formData = new FormData();
+    formData.append('file', fs.createReadStream(SAVE_FILE), {
+        filename: trainer_name
+    });
+
+    if (IS_DEV) {
+        return;
+    }
+    if (GLOBAL_CONFIG.token) {
+        session.post(`/upload_save/`, formData, {
+            headers: {
+                Authorization: `Token ${GLOBAL_CONFIG.token}`,
+                ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
+            },
+        }).then(() => console.log('succeeded')).catch((err) => {
+        })
+    }
+}
+
+function watchSaveFile(save_file) {
+    if (!fs.existsSync(save_file)) {
+        console.log(save_file)
         console.log('file cannot be read')
         return;
     }
-    let trainer_name = getSaveName()
-    socket.on('connection', event => {
-        fs.watchFile(SAVE_FILE, {
-            bigint: true,
-            persistent: false,
-            interval: 1000
-        }, () => {
-            console.log('WATCHING FILE')
-            const serializedSave = serializeSaveData();
-            console.log(serializedSave)
-            event.send(JSON.stringify(serializedSave));
 
-            const formData = new FormData();
-            formData.append('file', fs.createReadStream(SAVE_FILE), {
-                filename: trainer_name
-            });
-            if (IS_DEV) {
-                console.log('upload faked')
-                return;
-            }
-            if (GLOBAL_CONFIG.win !== undefined) {
-                GLOBAL_CONFIG.win.webContents.executeJavaScript('localStorage.getItem("api_token");', true)
-                    .then(result => {
-                        session.post(`/upload_save/`, formData, {
-                            headers: {
-                                Authorization: `Token ${result}`,
-                                ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
-                            },
-                        }).then(() => console.log('succeeded')).catch((err) => console.error(err))
-                    });
-            }
-        })
+    fs.watchFile(save_file, {
+        bigint: true,
+        persistent: false,
+        interval: 1000
+    }, fileWatcher)
+}
+
+export function watchSave() {
+    socket.on('connection', event => {
+        declareGlobalConfig('overlay_event', event)
     });
+    watchSaveFile(SAVE_FILE);
+    watchSaveFile(SAVE_FILE_2)
 }
 
 export const stopWatching = function (FILE_NAME) {

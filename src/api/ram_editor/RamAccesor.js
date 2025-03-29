@@ -27,15 +27,14 @@ export const SLOT_OFFSET = 484;
 export const SLOT_DATA_SIZE = 232;
 export const STAT_DATA_SIZE = 22;
 
-export async function getOrCreatePokemonItem(item, quantity, add_flag = false, citra = new CitraClient()) {
+export async function getOrCreatePokemonItem(bag, item, quantity, add_flag = false, citra = new CitraClient()) {
     let slot = 0;
     const item_slot_offset = 4;
-    const bag_address = rom.item_data.items;
-    const specific_bag_address = getBagAddress(rom.item_data, item);
+    const bag_address = rom2.item_data.items;
+    const specific_bag_address = getBagAddress(rom2.item_data, bag);
     const bag_limit = 256;
     let current_offset = 0;
     console.log(`Adding x${quantity} ${item}`)
-
     while (current_offset <= bag_limit) {
         const read_address = bag_address - specific_bag_address + slot * item_slot_offset;
         let message_data = await citra.readMemory(read_address, item_slot_offset);
@@ -67,8 +66,8 @@ export async function getOrCreatePokemonItem(item, quantity, add_flag = false, c
 }
 
 // eslint-disable-next-line no-unused-vars
-export async function getBagAddress(item_data, item_index) {
-    return item_data.meds;
+export function getBagAddress(item_data, bag_name) {
+    return item_data[`${bag_name}_offset`];
 }
 
 // eslint-disable-next-line no-unused-vars

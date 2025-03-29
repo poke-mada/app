@@ -3,7 +3,7 @@ import {CombatEnv, CombatType} from "@/api/ram_editor/RamAccesor";
 import {decryptPokemonData as decryptData} from "@/api/lib/PokemonCrypt";
 import {getSaveName, watchSave} from "@/api/save_editor";
 import {logger, save_combat_log} from "@/api/handlers/logging";
-import {validatePokemon} from "@/api/lib/validators";
+import {validateBattleData, validatePokemon, validatePokemonData} from "@/api/lib/validators";
 import {RAM_ROM} from "@/stores/back_constants";
 
 let SLOT_OFFSET = 484;
@@ -346,7 +346,7 @@ class CombatData {
                 let slot_address = combat_data_address + (slot * rom.mongap);
                 let mon_data = await citra.readMemory(slot_address, rom.slot_data_size);
                 let pokemon = new InBattlePokemonData(mon_data);
-                if (pokemon && !validatePokemon(pokemon.dex_number)) {
+                if (pokemon && !validateBattleData(pokemon)) {
                     continue
                 }
 

@@ -99,8 +99,8 @@ export const XY = Object.freeze(new RomData(
             berries_offset: 9952,
             meds_offset: 10208,
             tms_offset: 10640,
-            unknwon: 11016,
-            keys_offset: 12616,
+            keys_offset: 11016,
+            items_offset: 12616,
         },
         player_team_data: {
             pp_address: 0x820430C,

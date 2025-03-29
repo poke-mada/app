@@ -1,9 +1,11 @@
+// noinspection JSUnresolvedVariable
+
 import {app, ipcMain} from "electron";
 import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
 import {CitraClient} from "@/api/ram_editor/CitraClient";
-import {GLOBAL_CONFIG} from "@/stores/back_constants";
+import {declareGlobalConfig, emmiter, GLOBAL_CONFIG} from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
 import {
@@ -112,9 +114,42 @@ async function pokemonModificationEvent(ipc, data) {
     }
 }
 
+function storeFrontData(ipc, data) {
+    for (const [key, value] of Object.entries(data)) {
+        declareGlobalConfig(key, value);
+    }
+}
+
+function exchangeRewardBundle(ipc, bundle_id) {
+    ipc.reply('show_save_dialog')
+    emmiter.on('perform_save', async () => {
+        ipc.reply('perform_save')
+        console.log('awa')
+        const response = await session.post(`/api/trainers/claim_reward/${bundle_id}/`, {}, {
+            headers: {
+                Authorization: `Token ${GLOBAL_CONFIG.token}`
+            }
+        });
+        const citra = new CitraClient();
+        const rewards = response.data.rewards;
+        for (const reward of rewards) {
+            if (reward.reward_type === 0) {// item
+                let a = await getOrCreatePokemonItem(reward.item_reward.bag, reward.item_reward.item, reward.item_reward.quantity, true, citra);
+                console.log(a)
+            } else if (reward.reward_type === 3) {// pokemon
+                const pokemonData = Buffer.from(reward.pokemon_reward.pokemon_data);
+                addPokemonSaveData(pokemonData, true)
+            }
+        }
+        emmiter.removeAllListeners('perform_save')
+    })
+}
+
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);
     ipcMain.on('download_save', downloadSaveEvent);
-    ipcMain.on('inv', inventoryModificationEvent);
-    ipcMain.on('pkm', pokemonModificationEvent);
+    // ipcMain.on('inv', inventoryModificationEvent);
+    // ipcMain.on('pkm', pokemonModificationEvent);
+    ipcMain.on('store', storeFrontData);
+    ipcMain.on('reward', exchangeRewardBundle);
 }

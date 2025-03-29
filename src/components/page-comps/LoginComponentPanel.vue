@@ -76,6 +76,9 @@ export default {
         username: this.username,
         password: this.password
       }).then(async (response) => {
+        window.electron.sendMessage('store', {
+          token: response.data.token
+        })
         localStorage.setItem('api_token', response.data.token);
         let trainer_response;
 

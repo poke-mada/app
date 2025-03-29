@@ -9,7 +9,7 @@
         v-model="notification_alert"
         close-delay="2000"
         transition="v-slide-x-transition">
-      <div class="text-subtitle-1 pb-2">{{notification.title}}</div>
+      <div class="text-subtitle-1 pb-2">{{ notification.title }}</div>
       <p>{{ notification.message }}</p>
       <template v-slot:actions>
         <v-btn
@@ -69,6 +69,22 @@
         </v-col>
       </v-row>
     </v-dialog>
+    <v-dialog v-model="save_dialog" persistent>
+      <v-row class="h-100 w-100" justify="center" align="center">
+        <v-col cols="6">
+          <v-card>
+            <template v-slot:title>
+              <h3>Guarda la partida</h3>
+            </template>
+            <template v-slot:text>
+              <p>
+                ¡Necesitas guardar la partida para poder continuar usando la aplicación!
+              </p>
+            </template>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -77,6 +93,7 @@
 <script>
 import UpdateDialog from '@/components/page-comps/UpdateDialog';
 import {session, emitter} from "@/stores";
+
 const {useGameStore} = require("@/stores/app");
 
 export default {
@@ -86,12 +103,13 @@ export default {
   },
   data() {
     return {
-      trainer_name: 'MARYBLOG',
+      trainer_name: null,
       update_dialog: false,
       update_data: {
         progress: 69,
         version: '0.0.0'
       },
+      save_dialog: false,
       logoff_dialog: false,
       action_notification_alert: false,
       action_notification: {
@@ -145,6 +163,18 @@ export default {
       this.update_data = data;
     })
     window.electron.startComms()
+
+    window.electron.onDataReceived('perform_save', () => {
+      this.save_dialog = false;
+    })
+
+    window.electron.onDataReceived('show_save_dialog', () => {
+      this.save_dialog = true;
+    })
+
+    window.electron.sendMessage('store', {
+      token: localStorage.getItem('api_token')
+    });
 
     emitter.on('notification', (data) => {
       this.notification_alert = true;

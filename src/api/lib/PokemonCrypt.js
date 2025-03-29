@@ -167,3 +167,8 @@ export function getSaveChecksum(saveData, offset = 0x14200, length = 1564) {
     const chkData = saveData.subarray(offset, offset + length)
     return crc16CCITT(chkData)
 }
+
+export function getBlockChecksum(saveData, block) {
+    const chkData = saveData.subarray(block.address, block.address + block.length)
+    return crc16CCITT(chkData)
+}

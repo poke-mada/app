@@ -9,7 +9,7 @@
         v-if="inlive"
         to="/"
         text="Combates"/>
-    <v-menu v-if="inlive">
+    <v-menu v-if="false">
       <template v-slot:activator="{props}">
         <v-btn
             v-if="inlive"
@@ -34,6 +34,11 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <v-btn
+        v-if="logged_in"
+        to="/rewards"
+        text="Inventario"
+    />
     <v-btn
         v-if="logged_in"
         variant="text"
