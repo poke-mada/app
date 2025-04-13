@@ -26,7 +26,7 @@ async function createWindow() {
         title: `Dedsafio Pokemon`,
         autoHideMenuBar: true,
         webPreferences: {
-            devTools: !app.isPackaged,
+            //devTools: !app.isPackaged,
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,

@@ -1,6 +1,6 @@
 import {CitraClient, InBattlePokemonData} from "@/api/ram_editor";
 import {RAM_ROM as rom, RAM_ROM2 as rom2} from '@/stores/back_constants'
-import {decryptPokemonData, encryptData, updateChecksum} from "@/api/lib/PokemonCrypt";
+import {decryptPokemonData, encryptData, regeneratePokemonInnerChecksum} from "@/api/lib/PokemonCrypt";
 
 export const CombatType = Object.freeze({
     OFF: "OFF",
@@ -96,7 +96,7 @@ export async function modifyPokemonData(slot, newData, citra = new CitraClient()
     let decryptedData = decryptPokemonData(Buffer.concat([oldData, Buffer.alloc(22)]));
 
     decryptedData.writeUint8(newData.ability, rom2.pokemon_data.ability)
-    const newChecksum = updateChecksum(decryptedData);
+    const newChecksum = regeneratePokemonInnerChecksum(decryptedData);
 
     decryptedData.writeUint16LE(newChecksum, rom2.pokemon_data.checksum)
     const encData = encryptData(decryptedData).subarray(0, 232);

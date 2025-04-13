@@ -16,13 +16,14 @@ import {
 } from "@/api/ram_editor/RamAccesor";
 import {
     addPokemonSaveData,
-    clearPokemonSaveData,
+    clearPokemonSaveData, getOrCreateSaveItem,
     modifyPokemonSaveData,
-    serializeSaveData
+    serializeSaveData, writeSaveBytes
 } from "@/api/save_editor/SaveAccesor";
 import {SavePokemon} from "@/api/save_editor/SavePokemon";
 import {PokemonGame} from "@/api/handlers/PokemonGame";
 import {WebSocketServer} from 'ws';
+import {logger} from "@/api/handlers/logging";
 
 export const socket = new WebSocketServer({port: 8081});
 
@@ -71,6 +72,7 @@ async function openMainChannel(ipc) {
             }
         });
     });
+    emmiter.removeAllListeners('perform_save')
     await game.startComms(ipc);
 }
 
@@ -120,28 +122,52 @@ function storeFrontData(ipc, data) {
     }
 }
 
-function exchangeRewardBundle(ipc, bundle_id) {
+function exchangeRewardBundle(ipc, data) {
+    const bundle_id = data.bundle_id;
+    const token = data.token;
+    logger.info(JSON.stringify(data))
     ipc.reply('show_save_dialog')
     emmiter.on('perform_save', async () => {
-        ipc.reply('perform_save')
-        console.log('awa')
-        const response = await session.post(`/api/trainers/claim_reward/${bundle_id}/`, {}, {
+        let newData;
+        let needsRestart = false;
+        emmiter.removeAllListeners('perform_save')
+        const response = await session.post(`/api/trainers/claim_reward/${bundle_id}/`, null, {
             headers: {
-                Authorization: `Token ${GLOBAL_CONFIG.token}`
+                Authorization: `Token ${token}`
             }
+        }).catch((reason) => {
+            ipc.reply('notification', {
+                title: '¡Un Error Ha Ocurrido!',
+                message: 'ha ocurrido un error, contacta a soporte (para_mada)',
+                details: JSON.stringify(reason)
+            })
+            ipc.reply('perform_save')
         });
-        const citra = new CitraClient();
-        const rewards = response.data.rewards;
-        for (const reward of rewards) {
-            if (reward.reward_type === 0) {// item
-                let a = await getOrCreatePokemonItem(reward.item_reward.bag, reward.item_reward.item, reward.item_reward.quantity, true, citra);
-                console.log(a)
-            } else if (reward.reward_type === 3) {// pokemon
-                const pokemonData = Buffer.from(reward.pokemon_reward.pokemon_data);
-                addPokemonSaveData(pokemonData, true)
+        if (response.status === 200) {
+            const citra = new CitraClient();
+            const rewards = response.data.rewards;
+            for (const reward of rewards) {
+                if (reward.reward_type === 0) {// item
+                    getOrCreatePokemonItem(reward.item_reward.bag, reward.item_reward.item, reward.item_reward.quantity, true, citra).then(() => {
+                    });
+                    getOrCreateSaveItem(reward.item_reward.bag, reward.item_reward.item, reward.item_reward.quantity, true);
+                } else if (reward.reward_type === 3) {// pokemon
+                    const pokemonData = Buffer.from(reward.pokemon_reward.pokemon_data);
+                    // eslint-disable-next-line no-unused-vars
+                    newData = addPokemonSaveData(pokemonData, true);
+                    needsRestart = true;
+                }
+            }
+            writeSaveBytes(newData);
+            ipc.reply('perform_save');
+            if (needsRestart) {
+                ipc.reply('notification', {
+                    title: '¡Reinicia Tu Partida!',
+                    message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
+                    persistent: true
+                })
             }
         }
-        emmiter.removeAllListeners('perform_save')
     })
 }
 

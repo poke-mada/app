@@ -85,6 +85,22 @@
         </v-col>
       </v-row>
     </v-dialog>
+    <v-dialog v-model="custom_dialog.display" :persistent="custom_dialog.persistent">
+      <v-row class="h-100 w-100" justify="center" align="center">
+        <v-col cols="6">
+          <v-card>
+            <template v-slot:title>
+              <h3>{{ custom_dialog.title }}</h3>
+            </template>
+            <template v-slot:text>
+              <p>
+                {{ custom_dialog.message }}
+              </p>
+            </template>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -115,6 +131,12 @@ export default {
       action_notification: {
         title: '',
         message: ''
+      },
+      custom_dialog: {
+        display: false,
+        message: '',
+        title: '',
+        persistent: false,
       },
       notification_alert: false,
       notification: {
@@ -152,6 +174,12 @@ export default {
       this.store.activate(data);
     });
 
+    window.electron.onDataReceived('notification', (event, data) => {
+      this.custom_dialog.display = true;
+      this.custom_dialog.title = data.title;
+      this.custom_dialog.message = data.message;
+    });
+
     window.electron.onDataReceived('trainer_name', (event, trainer_name) => {
       return this.store.set_trainer_name(trainer_name);
     });
@@ -161,28 +189,31 @@ export default {
         this.update_dialog = true;
       }
       this.update_data = data;
-    })
-    window.electron.startComms()
-
-    window.electron.onDataReceived('perform_save', () => {
-      this.save_dialog = false;
-    })
-
-    window.electron.onDataReceived('show_save_dialog', () => {
-      this.save_dialog = true;
-    })
+    });
 
     window.electron.sendMessage('store', {
       token: localStorage.getItem('api_token')
+    });
+
+    window.electron.startComms();
+
+    window.electron.onDataReceived('perform_save', () => {
+      this.save_dialog = false;
+    });
+
+    window.electron.onDataReceived('show_save_dialog', () => {
+      this.save_dialog = true;
     });
 
     emitter.on('notification', (data) => {
       this.notification_alert = true;
       this.notification = {
         title: data.title,
-        message: data.message
+        message: data.message,
+        persistent: data.persistent
       }
     });
+
     emitter.on('action-notification', (data) => {
       this.action_notification_alert = true;
 

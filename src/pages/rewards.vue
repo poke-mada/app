@@ -59,7 +59,12 @@ export default {
       this.available_rewards = response.data;
     },
     claim_reward(bundle_id) {
-      window.electron.sendMessage('reward', bundle_id);
+      const bundle_data = {
+        bundle_id: bundle_id,
+        token: localStorage.getItem('api_token')
+      };
+      console.log(bundle_data);
+      window.electron.sendMessage('reward', bundle_data);
     }
   }
 }

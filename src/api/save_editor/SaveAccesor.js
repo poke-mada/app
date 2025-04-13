@@ -13,7 +13,14 @@ import fs from "fs";
 import {logger} from "@/api/handlers/logging";
 import FormData from "form-data";
 import {session} from "@/stores/backend";
-import {decryptPokemonData, encryptData, get_string, getSaveChecksum, updateChecksum} from "@/api/lib/PokemonCrypt";
+import {
+    decryptPokemonData,
+    encryptData,
+    get_string,
+    getSaveChecksum,
+    regeneratePokemonInnerChecksum,
+    updateBlockChecksums
+} from "@/api/lib/PokemonCrypt";
 import {SavePokemon} from "@/api/save_editor/SavePokemon";
 import {socket} from "@/api/handlers/events";
 
@@ -27,13 +34,10 @@ function readSaveBytes() {
     return fs.readFileSync(SAVE_FILE)
 }
 
-function writeSaveBytes(newData) {
+export function writeSaveBytes(newData) {
     try {
-        const checksumData = Buffer.copyBytesFrom(newData);
-        const blockMetadataOffset = 0x65600 - 0x200;
-        const partyChecksumAddress = blockMetadataOffset + 0xAA
-        checksumData.writeUint16LE(getSaveChecksum(newData), partyChecksumAddress)
-        fs.writeFileSync(SAVE_FILE, checksumData);
+        const checksumedData = updateBlockChecksums(newData);
+        fs.writeFileSync(SAVE_FILE, checksumedData);
         return true;
     } catch (e) {
         logger.error(e)
@@ -42,13 +46,15 @@ function writeSaveBytes(newData) {
     }
 }
 
+export function getOrCreateSaveItem(bag, item, quantity, add_flag = false) {
+
+}
+
 export function addPokemonSaveData(pokemonData, toBox = false) {
-    let createdIn = PokemonLocations.TEAM;
     let saveData = readSaveBytes();
     let teamSlot = SaveTeam.firstFreeSlot(saveData);
     let newData;
     if (teamSlot === -1 || toBox) {
-        createdIn = PokemonLocations.BOXES;
         const boxData = SaveBox.firstFreeSlot(saveData);
         console.log(`Editing box slot ${boxData.box}:${boxData.slot}`)
         newData = SaveBox.writePokemon(saveData, pokemonData, boxData.box, boxData.slot)
@@ -57,9 +63,7 @@ export function addPokemonSaveData(pokemonData, toBox = false) {
         newData = SaveTeam.writePokemon(saveData, pokemonData, teamSlot)
     }
 
-    const created = writeSaveBytes(newData);
-
-    return [createdIn, created]
+    return newData
 }
 
 export function getSaveName() {
@@ -155,7 +159,6 @@ export function watchSave() {
         declareGlobalConfig('overlay_event', event)
     });
     watchSaveFile(SAVE_FILE);
-    watchSaveFile(SAVE_FILE_2)
 }
 
 export const stopWatching = function (FILE_NAME) {
@@ -178,7 +181,7 @@ export function modifyPokemonSaveData(slot, new_data) {
 
     pokemonData.set([new_data.ability], SAVE_ROM.pokemon_data.ability_num)
 
-    const newChecksum = updateChecksum(pokemonData);
+    const newChecksum = regeneratePokemonInnerChecksum(pokemonData);
     const checksum = Buffer.alloc(2);
     checksum.writeUint16LE(newChecksum)
     pokemonData.set(checksum, SAVE_ROM.pokemon_data.checksum)

@@ -130,7 +130,7 @@ export function get_string(data) {
     return result.slice(0, length).join('')  // Crear una cadena con los caracteres procesados
 }
 
-function add16(buffer) {
+function _inner_pkm_add16(buffer) {
     if (!Buffer.isBuffer(buffer)) {
         throw new TypeError('Input must be a Buffer');
     }
@@ -145,11 +145,11 @@ function add16(buffer) {
     return checksum;
 }
 
-export function updateChecksum(pokemonData) {
-    return add16(pokemonData.subarray(8, SAVE_ROM.box_data.slot_length))
+export function regeneratePokemonInnerChecksum(pokemonData) {
+    return _inner_pkm_add16(pokemonData.subarray(8, SAVE_ROM.box_data.slot_length))
 }
 
-function crc16CCITT(data) {
+export function calcBlockChecksum(data) {
     let top = 0xFF;
     let bot = 0xFF;
 
@@ -165,10 +165,19 @@ function crc16CCITT(data) {
 
 export function getSaveChecksum(saveData, offset = 0x14200, length = 1564) {
     const chkData = saveData.subarray(offset, offset + length)
-    return crc16CCITT(chkData)
+    return calcBlockChecksum(chkData)
 }
 
 export function getBlockChecksum(saveData, block) {
     const chkData = saveData.subarray(block.address, block.address + block.length)
-    return crc16CCITT(chkData)
+    return calcBlockChecksum(chkData)
+}
+
+export function updateBlockChecksums(saveData) {
+    const checksumData = Buffer.copyBytesFrom(saveData);
+
+    for (const [,block] of Object.entries(SAVE_ROM.block_info)) {
+        block.setChecksum(checksumData);
+    }
+    return checksumData;
 }
