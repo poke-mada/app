@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background: url('./assets/kalos.png') no-repeat fixed; background-size: cover">
+  <v-app>
     <v-snackbar
         max-width="400"
         closable
@@ -21,7 +21,12 @@
         </v-btn>
       </template>
     </v-snackbar>
-    <router-view/>
+    <v-layout>
+      <NavDrawer style="height: 100vh; position: fixed"/>
+      <v-main style="min-height: 100vh; background: url('./assets/bg.png') no-repeat fixed; background-size: cover">
+        <router-view/>
+      </v-main>
+    </v-layout>
     <v-snackbar
         max-width="400"
         closable
@@ -107,7 +112,8 @@
 
 <!--suppress JSUnresolvedFunction -->
 <script>
-import UpdateDialog from '@/components/page-comps/UpdateDialog';
+import NavDrawer from "@/app/vue/components/app-comps/NavDrawer";
+import UpdateDialog from '@/app/vue/components/page-comps/UpdateDialog';
 import {session, emitter} from "@/stores";
 
 const {useGameStore} = require("@/stores/app");
@@ -115,7 +121,8 @@ const {useGameStore} = require("@/stores/app");
 export default {
   name: 'App',
   components: {
-    UpdateDialog
+    UpdateDialog,
+    NavDrawer
   },
   data() {
     return {
@@ -243,13 +250,11 @@ body {
   background-size: cover;
 }
 
-* {
-  cursor: default;
+::-webkit-scrollbar {
+  display: none;
 }
 
-iframe {
-  width: 100vw;
-  height: 100vh;
-  border: none;
+* {
+  cursor: default;
 }
 </style>

@@ -7,7 +7,7 @@ import {autoUpdater} from "electron-updater";
 import path from "path";
 
 import {declareGlobalConfig} from "@/stores/back_constants";
-import {registerEvents} from "@/api/handlers/events";
+import {registerEvents} from "@/app/api/handlers/events";
 
 
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -22,7 +22,7 @@ async function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
         height: 873,
-        icon: './public/icons/icon.png',
+        icon: './public/icons/icon.ico',
         title: `Dedsafio Pokemon`,
         autoHideMenuBar: true,
         webPreferences: {
