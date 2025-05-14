@@ -1,5 +1,5 @@
 <template>
-  <v-app style="background: url('./assets/kalos.png') no-repeat fixed; background-size: cover">
+  <v-app>
     <v-snackbar
         max-width="400"
         closable
@@ -9,7 +9,7 @@
         v-model="notification_alert"
         close-delay="2000"
         transition="v-slide-x-transition">
-      <div class="text-subtitle-1 pb-2">{{notification.title}}</div>
+      <div class="text-subtitle-1 pb-2">{{ notification.title }}</div>
       <p>{{ notification.message }}</p>
       <template v-slot:actions>
         <v-btn
@@ -21,7 +21,12 @@
         </v-btn>
       </template>
     </v-snackbar>
-    <router-view/>
+    <v-layout>
+      <NavDrawer style="height: 100vh; position: fixed"/>
+      <v-main style="min-height: 100vh; background: url('./assets/bg.png') no-repeat fixed; background-size: cover">
+        <router-view/>
+      </v-main>
+    </v-layout>
     <v-snackbar
         max-width="400"
         closable
@@ -69,34 +74,76 @@
         </v-col>
       </v-row>
     </v-dialog>
+    <v-dialog v-model="save_dialog" persistent>
+      <v-row class="h-100 w-100" justify="center" align="center">
+        <v-col cols="6">
+          <v-card>
+            <template v-slot:title>
+              <h3>Guarda la partida</h3>
+            </template>
+            <template v-slot:text>
+              <p>
+                ¡Necesitas guardar la partida para poder continuar usando la aplicación!
+              </p>
+            </template>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-dialog>
+    <v-dialog v-model="custom_dialog.display" :persistent="custom_dialog.persistent">
+      <v-row class="h-100 w-100" justify="center" align="center">
+        <v-col cols="6">
+          <v-card>
+            <template v-slot:title>
+              <h3>{{ custom_dialog.title }}</h3>
+            </template>
+            <template v-slot:text>
+              <p>
+                {{ custom_dialog.message }}
+              </p>
+            </template>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-dialog>
   </v-app>
 </template>
 
 
 <!--suppress JSUnresolvedFunction -->
 <script>
-import UpdateDialog from '@/components/page-comps/UpdateDialog';
+import NavDrawer from "@/app/vue/components/app-comps/NavDrawer";
+import UpdateDialog from '@/app/vue/components/page-comps/UpdateDialog';
 import {session, emitter} from "@/stores";
+
 const {useGameStore} = require("@/stores/app");
 
 export default {
   name: 'App',
   components: {
-    UpdateDialog
+    UpdateDialog,
+    NavDrawer
   },
   data() {
     return {
-      trainer_name: 'MARYBLOG',
+      trainer_name: null,
       update_dialog: false,
       update_data: {
         progress: 69,
         version: '0.0.0'
       },
+      save_dialog: false,
       logoff_dialog: false,
       action_notification_alert: false,
       action_notification: {
         title: '',
         message: ''
+      },
+      custom_dialog: {
+        display: false,
+        message: '',
+        title: '',
+        persistent: false,
       },
       notification_alert: false,
       notification: {
@@ -134,6 +181,12 @@ export default {
       this.store.activate(data);
     });
 
+    window.electron.onDataReceived('notification', (event, data) => {
+      this.custom_dialog.display = true;
+      this.custom_dialog.title = data.title;
+      this.custom_dialog.message = data.message;
+    });
+
     window.electron.onDataReceived('trainer_name', (event, trainer_name) => {
       return this.store.set_trainer_name(trainer_name);
     });
@@ -143,16 +196,31 @@ export default {
         this.update_dialog = true;
       }
       this.update_data = data;
-    })
-    window.electron.startComms()
+    });
+
+    window.electron.sendMessage('store', {
+      token: localStorage.getItem('api_token')
+    });
+
+    window.electron.startComms();
+
+    window.electron.onDataReceived('perform_save', () => {
+      this.save_dialog = false;
+    });
+
+    window.electron.onDataReceived('show_save_dialog', () => {
+      this.save_dialog = true;
+    });
 
     emitter.on('notification', (data) => {
       this.notification_alert = true;
       this.notification = {
         title: data.title,
-        message: data.message
+        message: data.message,
+        persistent: data.persistent
       }
     });
+
     emitter.on('action-notification', (data) => {
       this.action_notification_alert = true;
 
@@ -182,13 +250,11 @@ body {
   background-size: cover;
 }
 
-* {
-  cursor: default;
+::-webkit-scrollbar {
+  display: none;
 }
 
-iframe {
-  width: 100vw;
-  height: 100vh;
-  border: none;
+* {
+  cursor: default;
 }
 </style>
