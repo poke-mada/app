@@ -30,7 +30,18 @@
 
     <template v-slot:append>
       <v-list density="compact" nav>
-        <v-list-item prepend-icon="mdi-logout" title="Cerrar Sesion" @click="log_off"></v-list-item>
+        <v-divider></v-divider>
+        <v-list-item v-if="emulator_on" prepend-avatar="./assets/lime_logo.png" title="Emulador Conectado"></v-list-item>
+        <v-list-item v-if="!emulator_on" prepend-avatar="./assets/lime_logo_off.png" title="Emulador Desconectado"></v-list-item>
+          <v-list-item  v-if="logged_in"
+              lines="two"
+              prepend-avatar=""
+              subtitle="Pokemon X"
+              to="/profile"
+              :title="''"
+          ></v-list-item>
+        <v-list-item v-if="logged_in" prepend-icon="mdi-logout" title="Cerrar Sesion" @click="log_off"></v-list-item>
+        <v-list-item v-if="!logged_in" prepend-icon="mdi-logout" title="Iniciar Sesion" to="/login"></v-list-item>
       </v-list>
     </template>
   </v-navigation-drawer>
@@ -44,6 +55,9 @@ export default {
   computed: {
     store() {
       return useGameStore()
+    },
+    emulator_on() {
+      return this.store.emulator_on
     },
     logged_in() {
       const token = localStorage.getItem('api_token');
@@ -69,5 +83,7 @@ const rail = ref(true)
 </script>
 
 <style scoped>
-
+.disconnected {
+  filter: grayscale(100%);
+}
 </style>

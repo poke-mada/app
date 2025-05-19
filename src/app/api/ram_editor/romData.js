@@ -69,7 +69,8 @@ export const XY = new RomData(
     {
         wild: 0x8203ED0,
         trainer: 0x82059E0,
-        multi: 0x8209D98,
+        multi: 0x82059E0,
+        multi_2: 0x8209D98,
     },
     {
         dex_number: 0x4,

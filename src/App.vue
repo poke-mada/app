@@ -180,6 +180,9 @@ export default {
     window.electron.onDataReceived('updated_game_data', async (event, data) => {
       this.store.activate(data);
     });
+    window.electron.onDataReceived('citra_connection_closed', async () => {
+      this.store.deactivate();
+    });
 
     window.electron.onDataReceived('notification', (event, data) => {
       this.custom_dialog.display = true;

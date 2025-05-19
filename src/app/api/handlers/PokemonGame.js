@@ -6,6 +6,7 @@ import {logger, save_combat_log} from "@/app/api/handlers/logging";
 import {validateBattleData, validatePokemon} from "@/app/api/lib/validators";
 import {RAM_ROM} from "@/stores/back_constants";
 import {session} from "@/stores/backend";
+import {ipcMain} from "electron";
 
 let SLOT_OFFSET = 484;
 let SLOT_DATA_SIZE = 232;
@@ -51,11 +52,11 @@ class GameData {
                     pokemon.discovered = true;
                     pokemon.battle_data = this.combat_info.your_battle_data[slot];
                 }
-
-                if (this.combat_info.enemy_battle_data.length > 0) {
-                    this.enemy_data.team = this.combat_info.enemy_battle_data;
+                const enemy_data = Object.values(this.combat_info.enemy_battle_data);
+                if (enemy_data.length > 0) {
+                    this.enemy_data.team = enemy_data;
                 }
-                this.ally_data.team = this.combat_info.ally_npc_battle_data;
+                this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
                 this.detectAnyDeath(this.your_data.team);
                 this.detectCurrentCombat(this.enemy_data);
 
@@ -65,8 +66,9 @@ class GameData {
                 }
             }
         } catch (e) {
-            console.log(e)
+            logger.error(e)
         } finally {
+            ipc.reply('citra_connection_closed')
             this.is_communicating = false;
             this.comms_closed = true;
             console.log('e2')
@@ -76,7 +78,7 @@ class GameData {
 
     detectAnyDeath(team) {
         for (let pokemon of team) {
-            if (pokemon.cur_hp <= 0) {
+            if (pokemon && pokemon.cur_hp <= 0) {
                 session.post('', {
 
                 }, {
@@ -349,9 +351,9 @@ class CombatData {
             let combat_data_address = rom.getBattleDataAddress(this.combat_env);
             let total_combat_data_slots = 24;
 
-            this.your_battle_data = [];
-            this.enemy_battle_data = [];
-            this.ally_npc_battle_data = [];
+            this.your_battle_data = {};
+            this.enemy_battle_data = {};
+            this.ally_npc_battle_data = {};
 
             // eslint-disable-next-line no-unused-vars
             let your_slots = [0, 1, 2, 3, 4, 5];
@@ -359,7 +361,6 @@ class CombatData {
             const ally_npc_slots = [6, 7, 8, 9, 10, 11];
             // eslint-disable-next-line no-unused-vars
             const enemy_slots = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23];
-
             for (let slot = 0; slot < total_combat_data_slots; slot++) {
                 let slot_address = combat_data_address + (slot * rom.mongap);
                 let mon_data = await citra.readMemory(slot_address, rom.slot_data_size);
@@ -369,11 +370,11 @@ class CombatData {
                 }
 
                 if (your_slots.includes(pokemon.battle_slot)) {
-                    this.your_battle_data.push(pokemon);
+                    this.your_battle_data[pokemon.battle_slot] = pokemon;
                 } else if (ally_npc_slots.includes(pokemon.battle_slot)) {
-                    this.ally_npc_battle_data.push(pokemon);
+                    this.ally_npc_battle_data[pokemon.battle_slot] = pokemon;
                 } else if (enemy_slots.includes(pokemon.battle_slot)) {
-                    this.enemy_battle_data.push(pokemon);
+                    this.enemy_battle_data[pokemon.battle_slot] = pokemon;
                 } else {
                     logger.error(`team not found for battle data slot ${slot} with data ${pokemon}`)
                 }
@@ -434,6 +435,7 @@ export class PokemonGame {
         if (!this.data.is_communicating) {
             this.data.is_communicating = true;
             this.data.startComms(this.rom, ipc, this, save_file_path, win).catch(() => {
+                ipc.reply('citra_connection_closed')
             });
         }
     }

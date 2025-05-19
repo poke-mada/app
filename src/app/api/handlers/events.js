@@ -55,7 +55,7 @@ async function openMainChannel(ipc) {
             if (res && is_updateVersion) {
                 new_version = res.updateInfo.version.toString();
                 res.downloadPromise.then(() => {
-                    app.quit();
+                    autoUpdater.quitAndInstall(true, true);
                 })
             }
         });
