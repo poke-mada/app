@@ -16,12 +16,10 @@ import {
     decryptPokemonData,
     encryptData,
     get_string,
-    getSaveChecksum,
     regeneratePokemonInnerChecksum,
     updateBlockChecksums
 } from "@/app/api/lib/PokemonCrypt";
 import {SavePokemon} from "@/app/api/save_editor/SavePokemon";
-import {socket} from "@/app/api/handlers/events";
 
 
 const PokemonLocations = Object.freeze({
@@ -76,49 +74,9 @@ export function getSaveName() {
     return get_string(original_thrash_nick);
 }
 
-export function serializeSaveData() {
-    const saveData = readSaveBytes();
-    const badges = saveData.subarray(0x04200, 17216).subarray(SAVE_ROM.badge_address).readUInt8();
-    const pokemon1 = SaveTeam.getPokemonAt(saveData, 0);
-    const pokemon2 = SaveTeam.getPokemonAt(saveData, 1);
-    const pokemon3 = SaveTeam.getPokemonAt(saveData, 2);
-    const pokemon4 = SaveTeam.getPokemonAt(saveData, 3);
-    const pokemon5 = SaveTeam.getPokemonAt(saveData, 4);
-    const pokemon6 = SaveTeam.getPokemonAt(saveData, 5);
-
-    return {
-        "gym1": (badges & (1 << 0)) !== 0,
-        "gym2": (badges & (1 << 1)) !== 0,
-        "gym3": (badges & (1 << 2)) !== 0,
-        "gym4": (badges & (1 << 3)) !== 0,
-        "gym5": (badges & (1 << 4)) !== 0,
-        "gym6": (badges & (1 << 5)) !== 0,
-        "gym7": (badges & (1 << 6)) !== 0,
-        "gym8": (badges & (1 << 7)) !== 0,
-        "deathCount": 12,
-        "team": [
-            pokemon1 !== null ? pokemon1.toOverlayData() : null,
-            pokemon2 !== null ? pokemon2.toOverlayData() : null,
-            pokemon3 !== null ? pokemon3.toOverlayData() : null,
-            pokemon4 !== null ? pokemon4.toOverlayData() : null,
-            pokemon5 !== null ? pokemon5.toOverlayData() : null,
-            pokemon6 !== null ? pokemon6.toOverlayData() : null
-        ]
-    };
-}
-
 function fileWatcher() {
     let trainer_name = getSaveName()
     emmiter.emit('perform_save')
-    if (GLOBAL_CONFIG.overlay_event) {
-        try {
-            const serializedSave = serializeSaveData();
-            GLOBAL_CONFIG.overlay_event.send(JSON.stringify(serializedSave));
-        } catch (e) {
-            declareGlobalConfig('overlay_event', null);
-        }
-    }
-
 
     const formData = new FormData();
     formData.append('file', fs.createReadStream(SAVE_FILE), {
@@ -134,7 +92,7 @@ function fileWatcher() {
                 Authorization: `Token ${GLOBAL_CONFIG.token}`,
                 ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
             },
-        }).then(() => console.log('succeeded')).catch((err) => {
+        }).then(() => console.log('succeeded')).catch(() => {
         })
     }
 }

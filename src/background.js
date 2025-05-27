@@ -23,7 +23,7 @@ async function createWindow() {
         width: 1200,
         height: 873,
         icon: './public/icons/icon.ico',
-        title: `Dedsafio Pokemon`,
+        title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
         autoHideMenuBar: true,
         webPreferences: {
             //devTools: !app.isPackaged,

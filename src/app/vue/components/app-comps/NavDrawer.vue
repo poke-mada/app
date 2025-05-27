@@ -26,11 +26,13 @@
       <v-list-item to="/boxes" prepend-icon="mdi-archive" title="Cajas" value="boxes"></v-list-item>
       <v-list-item to="/wildcards" prepend-icon="mdi-cards-outline" title="Comodines" value="wildcards"></v-list-item>
       <v-list-item to="/showdown" prepend-icon="mdi-sword-cross" title="Showdown" value="showdown"></v-list-item>
+      <v-list-item to="/market" prepend-icon="mdi-store" title="Mercado" value="market"></v-list-item>
     </v-list>
 
     <template v-slot:append>
       <v-list density="compact" nav>
         <v-divider></v-divider>
+        <v-list-item prepend-avatar="./assets/coin.png" :title="coins + ' Monedas'"></v-list-item>
         <v-list-item v-if="emulator_on" prepend-avatar="./assets/lime_logo.png" title="Emulador Conectado"></v-list-item>
         <v-list-item v-if="!emulator_on" prepend-avatar="./assets/lime_logo_off.png" title="Emulador Desconectado"></v-list-item>
           <v-list-item  v-if="logged_in"
@@ -38,7 +40,7 @@
               prepend-avatar=""
               subtitle="Pokemon X"
               to="/profile"
-              :title="''"
+              :title="'Maryblog'"
           ></v-list-item>
         <v-list-item v-if="logged_in" prepend-icon="mdi-logout" title="Cerrar Sesion" @click="log_off"></v-list-item>
         <v-list-item v-if="!logged_in" prepend-icon="mdi-logout" title="Iniciar Sesion" to="/login"></v-list-item>
@@ -52,6 +54,12 @@ import {useGameStore} from "@/stores/app";
 
 export default {
   name: "NavDrawer",
+  props: {
+    coins: {
+      required: true,
+      type: Number
+    }
+  },
   computed: {
     store() {
       return useGameStore()
@@ -69,7 +77,7 @@ export default {
       localStorage.removeItem('api_token');
       localStorage.removeItem('trainer_id');
       localStorage.removeItem('coins');
-      this.$router.push('/login')
+      this.$router.push('/login');
     }
   }
 }

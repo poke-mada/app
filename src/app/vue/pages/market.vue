@@ -7,7 +7,7 @@
 import PokemonBoxesPanel from "@/app/vue/components/offline-app/PokemonBoxesPanel";
 
 export default {
-  name: 'BoxesPage',
+  name: 'MarketPage',
   components: {
     PokemonBoxesPanel
   },

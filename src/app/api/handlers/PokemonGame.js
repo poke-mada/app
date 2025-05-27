@@ -4,9 +4,8 @@ import {decryptPokemonData as decryptData} from "@/app/api/lib/PokemonCrypt";
 import {getSaveName, watchSave} from "@/app/api/save_editor";
 import {logger, save_combat_log} from "@/app/api/handlers/logging";
 import {validateBattleData, validatePokemon} from "@/app/api/lib/validators";
-import {RAM_ROM} from "@/stores/back_constants";
+import {GLOBAL_CONFIG, RAM_ROM} from "@/stores/back_constants";
 import {session} from "@/stores/backend";
-import {ipcMain} from "electron";
 
 let SLOT_OFFSET = 484;
 let SLOT_DATA_SIZE = 232;
@@ -17,6 +16,8 @@ const TeamOwner = Object.freeze({
     ENEMY: 'ENEMY',
     ALLY: 'ALLY'
 });
+
+let alreadyDeath = [];
 
 class GameData {
     constructor(options) {
@@ -78,11 +79,17 @@ class GameData {
 
     detectAnyDeath(team) {
         for (let pokemon of team) {
-            if (pokemon && pokemon.cur_hp <= 0) {
-                session.post('', {
-
+            if (pokemon && (!alreadyDeath.includes(pokemon.pid)) && pokemon.battle_data && (pokemon.battle_data.current_hp <=0)) {
+                session.post('/api/trainers/register_death', {
+                    pid: pokemon.pid,
+                    mote: pokemon.mote,
+                    species: pokemon.dex_number
                 }, {
-
+                    headers: {
+                        'Authorization': `Token ${GLOBAL_CONFIG.token}`
+                    }
+                }).catch(() =>{}).then(() => {
+                    alreadyDeath.append(pokemon.pid)
                 })
             }
         }
@@ -354,6 +361,13 @@ class CombatData {
             this.your_battle_data = {};
             this.enemy_battle_data = {};
             this.ally_npc_battle_data = {};
+
+            let ally_slot_address = combat_data_address + (6 * rom.mongap);
+            let ally_mon_data = await citra.readMemory(ally_slot_address, rom.slot_data_size);
+            let ally_pokemon = new InBattlePokemonData(ally_mon_data);
+            if (ally_pokemon && !validateBattleData(ally_pokemon)) {
+                combat_data_address = rom.getBattleDataAddress(CombatEnv.TRAINER);
+            }
 
             // eslint-disable-next-line no-unused-vars
             let your_slots = [0, 1, 2, 3, 4, 5];

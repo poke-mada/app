@@ -27,6 +27,16 @@ export const SLOT_OFFSET = 484;
 export const SLOT_DATA_SIZE = 232;
 export const STAT_DATA_SIZE = 22;
 
+export async function giveMoneyToPlayer(quantity, citra = new CitraClient()) {
+    const money_address = rom2.item_data.items;
+    const money_data = await citra.readMemory(money_address, 4);
+    const money = money_data.readUInt32LE();
+    const new_money = money + quantity;
+    let new_data = Buffer.alloc(4);
+    new_data.writeUint32LE(new_money);
+    await citra.writeMemory(money_address, new_data);
+}
+
 export async function getOrCreatePokemonItem(bag, item, quantity, add_flag = false, citra = new CitraClient()) {
     let slot = 0;
     const item_slot_offset = 4;

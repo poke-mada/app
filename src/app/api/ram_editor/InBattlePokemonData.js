@@ -11,6 +11,7 @@ export class InBattlePokemonData {
         this.battle_slot = data.slice(rom.pokemon_battle_data.battle_slot).readUInt8()
         this.form = data.slice(rom.pokemon_battle_data.form).readUInt8()
         this.level = data.slice(rom.pokemon_battle_data.level).readUInt8()
+        this.current_hp = data.slice(rom.pokemon_battle_data.current_hp).readUInt16LE()
         this.stats = {
             max_hp: data.slice(rom.pokemon_battle_data.stats.max_hp).readUInt16LE(),
             attack: data.slice(rom.pokemon_battle_data.stats.attack).readUInt16LE(),

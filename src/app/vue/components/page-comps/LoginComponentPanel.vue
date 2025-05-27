@@ -80,24 +80,13 @@ export default {
           token: response.data.token
         })
         localStorage.setItem('api_token', response.data.token);
-        let trainer_response;
-
-        try {
-          trainer_response = await session.get(`api/trainers/get_trainer/`, {
-            headers: {
-              'Authorization': `Token ${response.data.token}`
-            }
-          });
-        } catch (e) {
-          trainer_response = await session.get(`api/trainers/get_coached_trainer/`, {
-            headers: {
-              'Authorization': `Token ${response.data.token}`
-            }
-          });
-        } finally {
-          localStorage.setItem('trainer_id', trainer_response.data.id)
-          this.$router.push('/');
-        }
+        let trainer_response = await session.get(`api/trainers/get_trainer/`, {
+          headers: {
+            'Authorization': `Token ${response.data.token}`
+          }
+        });
+        localStorage.setItem('trainer_id', trainer_response.data.id)
+        this.$router.push('/');
       }).catch((error_response) => {
         console.log(error_response)
         this.request = error_response.response

@@ -97,7 +97,7 @@
             <v-btn text="Comprar y usar" color="purple" @click="comprar_y_usar()"/>
           </v-col>
         </v-row>
-        <v-row v-if="selected_card.id !== 25">
+        <v-row v-if="![25, 41, 42].includes(selected_card.id)">
           <v-col>
             <v-text-field type="number" label="Cantidad" v-model="quantity"/>
           </v-col>
@@ -105,6 +105,16 @@
         <v-row v-if="selected_card.id === 25">
           <v-col>
             <v-autocomplete label="Mega Piedra" v-model="item_id" :items="mega_stones" :item-props="true"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="selected_card.id === 41">
+          <v-col>
+            <v-autocomplete label="Objeto Debil" v-model="item_id" :items="weak_items" :item-props="true"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="selected_card.id === 42">
+          <v-col>
+            <v-autocomplete label="Objeto Fuerte" v-model="item_id" :items="strong_items" :item-props="true"/>
           </v-col>
         </v-row>
       </v-col>
@@ -149,53 +159,9 @@ export default {
       wildcard_search: '',
       list_wildcards: [],
       rarity_filter: null,
-      mega_stones: [
-        {"value": 113, "title": "greninjita"},
-        {"value": 120, "title": "Beedrillita"},
-        {"value": 121, "title": "Pidgeotita"},
-        {"value": 122, "title": "Slowbronita"},
-        {"value": 123, "title": "Sceptilita"},
-        {"value": 124, "title": "Swampertita"},
-        {"value": 125, "title": "Sharpedonita"},
-        {"value": 126, "title": "Altarianita"},
-        {"value": 127, "title": "Glalita"},
-        {"value": 128, "title": "Salamencita"},
-        {"value": 129, "title": "Metagrosita"},
-        {"value": 130, "title": "Lopunnita"},
-        {"value": 131, "title": "Galladita"},
-        {"value": 132, "title": "Audinita"},
-        {"value": 133, "title": "Diancita"},
-        {"value": 656, "title": "Gengarita"},
-        {"value": 657, "title": "Gardevoirita"},
-        {"value": 658, "title": "Ampharosita"},
-        {"value": 659, "title": "Venusaurita"},
-        {"value": 660, "title": "Charizardita X"},
-        {"value": 661, "title": "Blastoisinita"},
-        {"value": 662, "title": "Mewtwonita X"},
-        {"value": 663, "title": "Mewtwonita Y"},
-        {"value": 664, "title": "Blazikenita"},
-        {"value": 665, "title": "Medichamita"},
-        {"value": 666, "title": "Houndoominita"},
-        {"value": 667, "title": "Aggronita"},
-        {"value": 668, "title": "Banettita"},
-        {"value": 669, "title": "Tyranitarita"},
-        {"value": 670, "title": "Scizorita"},
-        {"value": 671, "title": "Pinsirita"},
-        {"value": 672, "title": "Aerodactylita"},
-        {"value": 673, "title": "Lucarionita"},
-        {"value": 674, "title": "Abomasita"},
-        {"value": 675, "title": "Kangaskhanita"},
-        {"value": 676, "title": "Gyaradosita"},
-        {"value": 677, "title": "Absolita"},
-        {"value": 678, "title": "Charizardita Y"},
-        {"value": 679, "title": "Alakazita"},
-        {"value": 680, "title": "Heracronita"},
-        {"value": 681, "title": "Mawilita"},
-        {"value": 682, "title": "Manectita"},
-        {"value": 683, "title": "Garchompita"},
-        {"value": 684, "title": "Latiasita"},
-        {"value": 685, "title": "Latiosita"}
-      ],
+      mega_stones: [],
+      weak_items: [],
+      strong_items: [],
       common_filters: [
         {
           value: null,
@@ -320,6 +286,18 @@ export default {
         this.load_wildcards();
       })
     },
+    async load_mega_stones() {
+      const response = await session.get('/api/wildcards/list_mega_stones/')
+      this.mega_stones = response.data
+    },
+    async load_weak_items() {
+      const response = await session.get('/api/wildcards/list_weak_items/')
+      this.weak_items = response.data
+    },
+    async load_strong_items() {
+      const response = await session.get('/api/wildcards/list_strong_items/')
+      this.strong_items = response.data
+    }
   },
   computed: {
     wildcards() {
@@ -362,6 +340,9 @@ export default {
   },
   mounted() {
     this.load_wildcards();
+    this.load_mega_stones();
+    this.load_weak_items();
+    this.load_strong_items();
   },
   watch: {
     card_displayed() {
