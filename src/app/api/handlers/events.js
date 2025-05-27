@@ -1,6 +1,6 @@
 // noinspection JSUnresolvedVariable
 
-import {app, ipcMain} from "electron";
+import {ipcMain} from "electron";
 import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
@@ -9,7 +9,7 @@ import {declareGlobalConfig, emmiter, GLOBAL_CONFIG, MODS_FILE_LIME3} from "@/st
 import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
 import {
-    getOrCreatePokemonItem,
+    getOrCreatePokemonItem, giveMoneyToPlayer,
     modifyPokemonBattleData,
     modifyPokemonData,
     setPokemon
@@ -18,14 +18,11 @@ import {
     addPokemonSaveData,
     clearPokemonSaveData,
     modifyPokemonSaveData,
-    serializeSaveData, writeSaveBytes
+    writeSaveBytes
 } from "@/app/api/save_editor/SaveAccesor";
 import {SavePokemon} from "@/app/api/save_editor/SavePokemon";
 import {PokemonGame} from "@/app/api/handlers/PokemonGame";
-import {WebSocketServer} from 'ws';
 import AdmZip from "adm-zip";
-
-export const socket = new WebSocketServer({port: 8081});
 
 function downloadSaveEvent(ipc, trainer_name) {
     session.get(`/last_save/${trainer_name}`, {
@@ -55,7 +52,7 @@ async function openMainChannel(ipc) {
             if (res && is_updateVersion) {
                 new_version = res.updateInfo.version.toString();
                 res.downloadPromise.then(() => {
-                    app.quit();
+                    autoUpdater.quitAndInstall(true, true);
                 })
             }
         });
@@ -68,15 +65,6 @@ async function openMainChannel(ipc) {
         });
     }
 
-    socket.on('connection', event => {
-        event.on('message', function message(data) {
-            switch (data.toString()) {
-                case 'request_data':
-                    event.send(JSON.stringify(serializeSaveData()))
-                    break;
-            }
-        });
-    });
     emmiter.removeAllListeners('perform_save')
     await game.startComms(ipc);
 }
@@ -213,17 +201,23 @@ async function joinEvent(ipc, data) {
     })
 }
 
-
 async function manageWildcardEvents(ipc, command_data) {
     const citra = new CitraClient();
-    if (command_data && command_data.command === 'give_item') {
+    if (command_data) {
         const reward = command_data.data
-        await getOrCreatePokemonItem(reward.item_bag, reward.item_id, reward.quantity, true, citra);
-        console.log(`Added x${reward.item_reward.quantity} ${reward.item_reward.item} to ${reward.item_reward.bag} by wildcard`);
+        switch (command_data.command) {
+            case 'give_item':
+                await getOrCreatePokemonItem(reward.item_bag, reward.item_id, reward.quantity, true, citra);
+                console.log(`Added x${reward.item_reward.quantity} ${reward.item_reward.item} to ${reward.item_reward.bag} by wildcard`);
+                break;
+            case 'give_money':
+                await giveMoneyToPlayer(reward.quantity, citra);
+                console.log(`Added ¥${reward.quantity} to the game by wildcard`);
+                break;
+        }
     }
     citra.close()
 }
-
 
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);

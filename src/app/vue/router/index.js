@@ -7,6 +7,8 @@
 // Composables
 import { createRouter, createWebHashHistory } from 'vue-router'
 import MainAppPage from "@/app/vue/pages/index";
+import CombatAppPage from "@/app/vue/pages/combat";
+import ProfileAppPage from "@/app/vue/pages/profile";
 import LoginAppPage from "@/app/vue/pages/login";
 import WildcardsAppPage from "@/app/vue/pages/wildcards";
 import BoxesAppPage from "@/app/vue/pages/boxes";
@@ -17,6 +19,8 @@ import EventsAppPage from "@/app/vue/pages/events";
 
 const routes = [
   { path: '/', component: MainAppPage },
+  { path: '/combat', component: CombatAppPage },
+  { path: '/profile', component: ProfileAppPage },
   { path: '/login', component: LoginAppPage },
   { path: '/boxes', component: BoxesAppPage },
   { path: '/showdown', component: ShowdownAppPage },

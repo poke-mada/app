@@ -94,13 +94,16 @@ export class RomData {
 export const XY = Object.freeze(new RomData(
     {
         item_data: {
+            money: 0x8C6A69C,
             badges: 0x8C6A6A0,
             items: 0x8C6A69C,
+
             berries_offset: 9952,
             meds_offset: 10208,
             tms_offset: 10640,
             keys_offset: 11016,
             items_offset: 12616,
+
             berries_length: 9952,
             meds_length: 256,
             tms_length: 432,
@@ -139,6 +142,7 @@ export const XY = Object.freeze(new RomData(
             level: 0x10,
             form: 0x14B,
             gender: 0xFB,
+            current_hp: 0x8,
             status: {
                 burned: 0x24,
                 paralized: 0x18,

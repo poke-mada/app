@@ -35,7 +35,7 @@ export class PokemonTeamData {
             return;
         }
 
-        this.pid = raw_data.subarray(RAM_ROM2.pokemon_data.pid)
+        this.pid = raw_data.subarray(RAM_ROM2.pokemon_data.pid).readUint32LE()
         this.held_item_num = raw_data.subarray(10).readUInt16LE()
         this.ability_num = raw_data.subarray(20).readUInt8()  // Ability
         this.nature_num = raw_data.subarray(28).readUInt8()   // Nature

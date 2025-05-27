@@ -22,7 +22,7 @@
       </template>
     </v-snackbar>
     <v-layout>
-      <NavDrawer style="height: 100vh; position: fixed"/>
+      <NavDrawer :coins="this.economy" style="height: 100vh; position: fixed"/>
       <v-main style="min-height: 100vh; background: url('./assets/bg.png') no-repeat fixed; background-size: cover">
         <router-view/>
       </v-main>
@@ -145,6 +145,7 @@ export default {
         title: '',
         persistent: false,
       },
+      economy : 0,
       notification_alert: false,
       notification: {
         type: 'success',
@@ -179,6 +180,9 @@ export default {
   mounted() {
     window.electron.onDataReceived('updated_game_data', async (event, data) => {
       this.store.activate(data);
+    });
+    window.electron.onDataReceived('citra_connection_closed', async () => {
+      this.store.deactivate();
     });
 
     window.electron.onDataReceived('notification', (event, data) => {

@@ -91,10 +91,6 @@ export default {
       type: String,
       required: false
     },
-    trainer_id: {
-      type: Number,
-      required: true
-    },
     active: {
       type: Boolean,
       required: false
@@ -111,7 +107,7 @@ export default {
     return {
       config: config,
       loading_box: true,
-      selected_trainer: this.trainer_id,
+      selected_trainer: 0,
       trainers: [],
       display_box_detail: false,
       pokemon_team_display: false,
@@ -129,8 +125,9 @@ export default {
     });
   },
   async mounted() {
+    const response = await session.get('/api/trainers/get_trainer')
+    this.selected_trainer = response.data.id;
     await this.load_trainers();
-    await this.load_boxes();
     await this.open_box();
   },
   methods: {
@@ -159,6 +156,7 @@ export default {
       this.box_data.box = response.data;
       this.loading_box = false;
       await this.load_trainer_team();
+      await this.load_boxes();
     },
     select_pokemon(pokemon) {
       if (pokemon) {
