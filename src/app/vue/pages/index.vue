@@ -84,6 +84,9 @@
               <!-- TU EQUIPO -->
               <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
                 <div class="divCardSup pa-5 d-flex justify-center align-center">
+                  <v-avatar size="78" style="position: absolute; top: 80%; right: -5%;">
+                    <v-img src="/assets/img/Home/Pokeball.png"></v-img>
+                  </v-avatar>
                   <h2 class="textNoticias">Tu Equipo</h2>
                 </div>
 
@@ -93,7 +96,7 @@
                       <div class="position-relative d-inline-block">
                         <!-- Imagen principal del Pokémon -->
                         <v-img :src="pokemon.sprite_url" width="70" />
-                        <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
+                        <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png" />
 
                         <!-- Badge solo si tiene held_item -->
                         <img v-if="pokemon.held_item_name && pokemon.held_item_name !== ''"
