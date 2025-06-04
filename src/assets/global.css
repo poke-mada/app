@@ -5,12 +5,30 @@
     font-style: normal;
 }
 
+:root {
+    --pink: #D5048D;
+    --white: #ffff;
+    --blue: #0600FF;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 img[src*="bgNew.png"] {
-  background-color: transparent !important;
+    background-color: transparent !important;
+}
+
+.t-w {
+    color: #fff;
+}
+
+.t-pkm {
+    font-family: 'POKMNFont';
+}
+
+.p-0 {
+    padding: 0;
 }
 
 /* -------------- SECTION NAVBAR -------------- */
@@ -21,10 +39,6 @@ img[src*="bgNew.png"] {
 
 .v-list-item--density-compact.v-list-item--one-line {
     height: 48px;
-}
-
-.t-pkm {
-    font-family: 'POKMNFont';
 }
 
 .v-divider {
@@ -60,7 +74,7 @@ img[src*="bgNew.png"] {
 }
 
 .v-list-item--active {
-    background: linear-gradient(90deg, #D5048D -3.57%, #0600FF 103.57%);
+    background: linear-gradient(90deg, var(--pink) -3.57%, var(--blue) 103.57%);
     color: white !important;
     /* cambia el color del texto/icono */
     border-top-left-radius: 30px;
@@ -121,8 +135,188 @@ img[src*="bgNew.png"] {
     display: none;
 }
 
-#app > div > div > div > nav > div.v-navigation-drawer__append > div > a > div.v-list-item__append > div.v-responsive.v-img.me-2 > img{
+#app>div>div>div>nav>div.v-navigation-drawer__append>div>a>div.v-list-item__append>div.v-responsive.v-img.me-2>img {
     height: 6px;
 }
 
 /* -------------- FIN SECTION NAVBAR -------------- */
+
+/* -------------- SECTION HOME -------------- */
+.divCardSup {
+    background-color: var(--pink);
+}
+
+.textNoticias {
+    font-size: 22px;
+    font-family: 'POKMNFont';
+    color: var(--white);
+    font-weight: 100;
+    letter-spacing: 2px;
+}
+
+.tittleTweet {
+    color: var(--pink);
+    display: inline-block;
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.gradient-border {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 4px;
+}
+
+.gradient-border::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(90deg, var(--blue) -3.57%, var(--pink) 103.57%);
+}
+
+.p-tweet {
+    font-size: 14px;
+}
+
+.sectionVS {
+    position: relative;
+    padding: 24px 24px 0 24px;
+}
+
+.sectionVS .avatarVS {
+    position: absolute;
+    padding: 5px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    background-color: var(--white);
+    top: 50%;
+}
+
+.team1,
+.team2 {
+    position: relative;
+    height: 77px;
+}
+
+.sectionVS .avatarTeam {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.sectionVS .team1 {
+    background-color: var(--pink);
+}
+
+.sectionVS .team2 {
+    background-color: var(--blue);
+}
+
+.flexCenter {
+    display: flex;
+    justify-content: center;
+}
+
+.nameTeam1,
+.nameTeam2 {
+    background-color: var(--white);
+    z-index: 15;
+    position: absolute;
+    border-radius: 20px;
+    padding: 5px 10px;
+    font-family: 'POKMNFont';
+    font-size: 10px;
+    box-shadow: 0px 4px 4px 0px #00000026;
+}
+
+.nameTeam1 {
+    left: 5px;
+    bottom: 5px;
+}
+
+.nameTeam2 {
+    right: 5px;
+    bottom: 5px;
+}
+
+.btnHome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 30px;
+    padding: 24px;
+    height: 54px;
+    background-color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.btnHome::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    padding: 1px;
+    /* grosor del borde */
+    background: linear-gradient(90deg, var(--pink) 0%, var(--blue) 100%);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    z-index: 0;
+    font-weight: 700;
+}
+
+.btnHome .btn-text {
+    position: relative;
+    z-index: 1;
+    color: black;
+    cursor: pointer;
+}
+
+.btnHome .btn-icon {
+    background: var(--pink);
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 12px;
+    z-index: 1;
+    cursor: pointer;
+}
+
+.btnHome .iconArrow{
+    cursor: pointer;
+    font-weight: 800;
+    text-shadow: 0 0 2px white;
+}
+
+.custom-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: transparent;
+  padding: 0;
+}
+
+.iconBallPoke{
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    left: -5px;
+}
+
+/* -------------- FIN SECTION HOME -------------- */

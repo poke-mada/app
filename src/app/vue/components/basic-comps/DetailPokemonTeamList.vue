@@ -71,6 +71,7 @@ export default {
     selectPokemon: function (pokemon) {
       this.selected_pokemon = pokemon;
       if (this.team === 'you') {
+        console.log("Tu equipo cargado2:", this.team);
         this.display = true;
       }
     },
