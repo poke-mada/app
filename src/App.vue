@@ -23,7 +23,7 @@
     </v-snackbar>
     <v-layout>
       <NavDrawer :coins="this.economy" style="height: 100vh; position: fixed"/>
-      <v-main style="min-height: 100vh; background: url('./assets/bg.png') no-repeat fixed; background-size: cover">
+      <v-main style="min-height: 100vh; background: url('./assets/bgDif.jpg') no-repeat fixed; background-size: cover">
         <router-view/>
       </v-main>
     </v-layout>
@@ -243,7 +243,8 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
