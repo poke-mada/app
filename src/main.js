@@ -7,6 +7,7 @@ import 'vuetify/dist/vuetify.min.css'
 import '@mdi/font/css/materialdesignicons.css'
 import router from '@/app/vue/router'
 import pinia from '@/stores'
+import './assets/global.css'
 
 const vuetify = createVuetify({
     components,
