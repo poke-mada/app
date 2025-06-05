@@ -145,16 +145,15 @@ export default {
   },
   async mounted() {
     const token = localStorage.getItem("api_token");
-    const trainerId = localStorage.getItem("trainer_id");
 
-    if (token && trainerId) {
+    if (token) {
       const config = {
         headers: { Authorization: `Token ${token}` },
       };
 
       try {
-        const res = await session.get(`/api/trainers/${trainerId}/`, config);
-        this.team = res.data.current_team.team;
+        const res = await session.get(`/api/trainers/get_team/`, config);
+        this.team = res.data;
         console.log("Tu equipo cargado:", this.team);
       } catch (err) {
         console.error("Error al cargar el equipo:", err);

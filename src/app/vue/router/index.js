@@ -16,6 +16,8 @@ import ShowdownAppPage from "@/app/vue/pages/showdown";
 import TeamAppPage from "@/app/vue/pages/team";
 import RewardsAppPage from "@/app/vue/pages/rewards";
 import EventsAppPage from "@/app/vue/pages/events";
+import MarketAppPage from "@/app/vue/pages/market/index";
+import MarketCreateAppPage from "@/app/vue/pages/market/create";
 
 const routes = [
   { path: '/', component: MainAppPage },
@@ -28,6 +30,8 @@ const routes = [
   { path: '/wildcards', component: WildcardsAppPage },
   { path: '/rewards', component: RewardsAppPage },
   { path: '/events', component: EventsAppPage },
+  { path: '/market', component: MarketAppPage },
+  { path: '/market_create', component: MarketCreateAppPage },
 ]
 
 const router = createRouter({
