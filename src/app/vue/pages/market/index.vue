@@ -68,7 +68,7 @@
         <v-container class="w-100" v-if="!selected_post">
           <v-row>
             <v-col>
-              <v-btn>
+              <v-btn to="/market_create">
                 Crear oferta
               </v-btn>
             </v-col>
