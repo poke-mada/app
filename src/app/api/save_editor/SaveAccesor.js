@@ -112,9 +112,6 @@ function watchSaveFile(save_file) {
 }
 
 export function watchSave() {
-    socket.on('connection', event => {
-        declareGlobalConfig('overlay_event', event)
-    });
     watchSaveFile(SAVE_FILE);
 }
 
