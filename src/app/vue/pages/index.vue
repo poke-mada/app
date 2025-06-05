@@ -95,7 +95,7 @@
                     <v-col cols="4" v-for="(pokemon, i) in team" :key="i" class="text-center">
                       <div class="position-relative d-inline-block">
                         <!-- Imagen principal del Pokémon -->
-                        <v-img :src="pokemon.sprite_url" width="70" />
+                        <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)" />
                         <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png" />
 
                         <!-- Badge solo si tiene held_item -->
@@ -106,12 +106,15 @@
                   </v-row>
                 </div>
 
-
                 <div v-else class="text-center">
                   <v-progress-circular indeterminate color="pink" class="ma-4" />
                   <p class="text-subtitle-1">Cargando tu equipo...</p>
                 </div>
               </v-card>
+              <v-dialog v-model="display" max-width="600">
+                <PokemonDetailPanel :pokemon="selected_pokemon" />
+              </v-dialog>
+
             </v-container>
           </v-col>
         </v-row>
@@ -121,16 +124,23 @@
 </template>
 
 <script>
-// import PokemonCard from "@/app/vue/components/basic-comps/PokemonCard";
+import PokemonCard from "@/app/vue/components/basic-comps/PokemonCard";
 import { session } from "@/stores";
-// import LiveCombatPanel from "@/app/vue/components/page-comps/LiveCombatPanel";
+import PokemonDetailPanel from "@/app/vue/components/basic-comps/PokemonDetailPanel";
+
 
 export default {
   name: "MainAppPage",
+  emits: ["pokemonSelected"],
+  components: {
+    PokemonCard,
+    PokemonDetailPanel
+  },
   data() {
     return {
       team: [],
-      selected_pokemon: null
+      selected_pokemon: null,
+      display: false
     };
   },
   async mounted() {
@@ -154,6 +164,7 @@ export default {
   methods: {
     selectPokemon(pokemon) {
       this.selected_pokemon = pokemon;
+      this.display = true;
     },
   },
 };
