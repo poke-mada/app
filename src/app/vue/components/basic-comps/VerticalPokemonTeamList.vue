@@ -13,11 +13,11 @@
     <v-row class="pa-1">
       <v-col cols="6" v-for="(pokemon, i) in this.data.team" :key="i">
         <v-row>
-          <v-spacer/>
+          <v-spacer />
           <v-col>
-            <PokemonCard :pokemon="pokemon" @click="selectPokemon(i)"/>
+            <PokemonCard :pokemon="pokemon" @click="selectPokemon(i)" />
           </v-col>
-          <v-spacer/>
+          <v-spacer />
         </v-row>
       </v-col>
     </v-row>
@@ -32,7 +32,7 @@ export default {
   emits: ["select_pokemon"],
   components: {
     PokemonCard
-  },
+    },
   props: {
     data: {
       type: Object,
@@ -55,6 +55,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
