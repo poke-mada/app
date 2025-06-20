@@ -3,7 +3,7 @@
   <v-card type="primary" class="mt-2" border>
     <v-alert type="success">
       <template v-slot:prepend></template>
-      <span>Tu Pokemon</span>
+      <span>Tu Pokemon 7</span>
     </v-alert>
     <div class="pa-4">
       <v-row>

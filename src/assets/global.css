@@ -9,6 +9,8 @@
     --pink: #D5048D;
     --white: #ffff;
     --blue: #0600FF;
+    --purple: #5E1CE3;
+    --yellow: #FFC81F;
 }
 
 body {
@@ -144,6 +146,10 @@ img[src*="bgNew.png"] {
 /* -------------- SECTION HOME -------------- */
 .divCardSup {
     background-color: var(--pink);
+}
+
+.divCardLog {
+    background-color: var(--purple);
 }
 
 .textNoticias {
@@ -298,21 +304,21 @@ img[src*="bgNew.png"] {
     cursor: pointer;
 }
 
-.btnHome .iconArrow{
+.btnHome .iconArrow {
     cursor: pointer;
     font-weight: 800;
     text-shadow: 0 0 2px white;
 }
 
 .custom-badge {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  background-color: transparent;
-  padding: 0;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background-color: transparent;
+    padding: 0;
 }
 
-.iconBallPoke{
+.iconBallPoke {
     position: absolute;
     z-index: 100;
     top: 0;
@@ -320,3 +326,237 @@ img[src*="bgNew.png"] {
 }
 
 /* -------------- FIN SECTION HOME -------------- */
+
+/* -------------- SECTION COMBATS -------------- */
+.textTeamCombats {
+    font-size: 15px;
+    font-family: 'POKMNFont';
+    color: var(--white);
+    font-weight: 100;
+    letter-spacing: 2px;
+}
+
+.cardCombats {}
+
+.custom-boost-badge {
+    background-color: var(--pink);
+    border-radius: 50%;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    width: 20px;
+    height: 20px;
+}
+
+.statsContent {
+    display: flex;
+    align-items: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.badgeIcon {
+    position: relative;
+}
+
+.v-badge__wrapper {
+    position: absolute;
+    left: -30px;
+}
+
+.cardPokemon {
+    position: relative;
+    border-radius: 40px;
+    background-color: white;
+    padding: 1rem;
+    z-index: 1;
+    overflow: hidden;
+    margin: 10px 20px;
+    text-align: center;
+}
+
+.cardPokemon::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    /* grosor del borde */
+    border-radius: inherit;
+    background: linear-gradient(180deg, var(--pink) 0%, var(--blue) 100%);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.pokemon-number {
+    letter-spacing: 5px;
+    font-weight: bold;
+    font-size: 14px;
+    color: #aaa;
+    align-self: flex-end;
+}
+
+.pokemon-name {
+    font-weight: 800;
+    font-size: 20px;
+    text-align: center;
+    letter-spacing: 2px;
+}
+
+.pokemon-level {
+    font-size: 14px;
+    color: #000;
+    font-weight: 700;
+}
+
+.v-progress-linear__background {
+    background-color: #adadad !important;
+}
+
+.containerMovPokeBattle {
+    background-color: transparent;
+    position: relative;
+    border-radius: 40px;
+    background-color: white;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+}
+
+.containerMovPokeBattle::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    /* grosor del borde */
+    border-radius: inherit;
+    background: linear-gradient(180deg, var(--pink) 0%, var(--blue) 100%);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.cardImgPokeBattle {
+    width: 114px;
+    display: flex;
+    align-items: center;
+    height: fit-content;
+}
+
+.cardImgPokeBattle img {
+    width: 130px;
+    height: fit-content;
+}
+
+#app>div>div>div>main>div>main>div>div>div>div>div:nth-child(1)>div.v-col.v-col-8>div>div.v-container.v-locale--is-ltr.pa-6>div>div>div>div,
+#app>div>div>div>main>div>main>div>div>div.v-row>div>div>div.v-col.v-col-8>div>div.v-container.v-locale--is-ltr.pa-6>div>div>div>div {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+
+#movSection>div>div {
+    padding-left: 40px !important;
+    padding-right: 40px !important;
+}
+
+div.v-col.v-col-4>div.statsContent>span {
+    font-size: 12px;
+    font-weight: 900 !important;
+}
+
+.badges-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-right: 1rem;
+}
+
+.informationMov {
+    max-width: 150px;
+}
+
+.tittleMoves {
+    padding: 0 !important;
+    margin-left: 40px;
+}
+
+.tittleMoves h1 {
+    font-size: 20px;
+    letter-spacing: 2px;
+    background: linear-gradient(270deg, #0600FF 80%, #D5048D 110%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+}
+
+.containerLogsCombats {
+    margin-top: 20px;
+    padding-left: 0;
+    padding-right: 0;
+    width: 100%;
+}
+
+.containerLogsCombats button {
+    width: 100%;
+    background-color: var(--purple) !important;
+    height: 45px!important;
+    border-radius: 20px;
+}
+
+.logText{
+    padding-right: 15px;
+}
+
+.logsElementsDiv{
+    display: flex;
+    justify-content: flex-start!important;
+    align-items: center;
+    margin: 0!important;
+}
+
+.letrasMinus{
+    text-transform: inherit!important;
+}
+
+.marginLogs{
+    margin-left: 15px;
+}
+
+.textTeamCombatsLog{
+    font-size: 14px;
+    color: var(--white);
+    font-weight: 100;
+    letter-spacing: 2px;
+    font-weight: 500;
+}
+
+.tamaImg{
+    width: 24px;
+    height: 24px;
+    max-width: 24px;
+}
+/* -------------- FIN SECTION COMBATS -------------- */
+/* -------------- SECTION DETAILS POKEMON -------------- */
+.templateCardDetails{
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cardsDetailsPokemon{
+    width: 50%!important;
+    max-width: 50% !important;
+}
+
+/* -------------- FIN SECTION DETAILS POKEMON -------------- */
