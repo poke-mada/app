@@ -10,6 +10,7 @@
     --white: #ffff;
     --blue: #0600FF;
     --purple: #5E1CE3;
+    --yellow: #FFC81F;
 }
 
 body {
@@ -145,6 +146,10 @@ img[src*="bgNew.png"] {
 /* -------------- SECTION HOME -------------- */
 .divCardSup {
     background-color: var(--pink);
+}
+
+.divCardLog {
+    background-color: var(--purple);
 }
 
 .textNoticias {
@@ -511,4 +516,47 @@ div.v-col.v-col-4>div.statsContent>span {
 .logText{
     padding-right: 15px;
 }
+
+.logsElementsDiv{
+    display: flex;
+    justify-content: flex-start!important;
+    align-items: center;
+    margin: 0!important;
+}
+
+.letrasMinus{
+    text-transform: inherit!important;
+}
+
+.marginLogs{
+    margin-left: 15px;
+}
+
+.textTeamCombatsLog{
+    font-size: 14px;
+    color: var(--white);
+    font-weight: 100;
+    letter-spacing: 2px;
+    font-weight: 500;
+}
+
+.tamaImg{
+    width: 24px;
+    height: 24px;
+    max-width: 24px;
+}
 /* -------------- FIN SECTION COMBATS -------------- */
+/* -------------- SECTION DETAILS POKEMON -------------- */
+.templateCardDetails{
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.cardsDetailsPokemon{
+    width: 50%!important;
+    max-width: 50% !important;
+}
+
+/* -------------- FIN SECTION DETAILS POKEMON -------------- */

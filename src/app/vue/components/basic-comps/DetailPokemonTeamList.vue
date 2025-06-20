@@ -1,12 +1,14 @@
 <template>
-  <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
+  <!-- SECCION DE BATALLA CON POKEMONS SALVAJES -->
+  <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;"
+    :style="{ display: combat_type !== 'WILD' ? 'block' : 'none' }">
     <div :style="{ backgroundColor: team === 'enemy' ? '#0600FF' : '#D5048D' }"
-      class="divCardSup pa-5 d-flex justify-center align-center">
+      class="divCardSup pa-3 d-flex justify-center align-center">
       <v-avatar size="78" style="position: absolute; top: 80%; left: -5%;">
         <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
       </v-avatar>
       <span class="textTeamCombats" v-if="team === 'enemy'">
-        Equipo Enemigo
+        Equipo EnemigoS
       </span>
       <span class="textTeamCombats" v-if="team === 'you'">
         Tu Equipo
@@ -41,6 +43,7 @@
       </v-row>
     </div>
   </v-card>
+  <!-- LOG DE CMBATE ABAJO DE MI EQUIPO -->
   <template v-if="team === 'you'">
     <v-container class="containerLogsCombats">
       <v-btn color="teal" @click="combat_log_display = true">
@@ -50,15 +53,26 @@
     </v-container>
   </template>
   <template v-if="team === 'enemy' && combat_type === 'WILD'">
-    <v-container class="mt-2">
-      <h3 class="text-h6 font-weight-bold">Últimos movimientos:</h3>
-      <v-list>
-        <v-list-item v-for="(item, i) in lastMoves" :key="i">
-          <v-list-item-content>
-            <v-list-item-title>{{ item.message }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
+    <!-- CARD CON ULTIMOS 3 MOVIMIENTOS DE LOGS ENEMIGOS SALVAJES -->
+    <v-container class="m-0 p-0">
+      <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
+        <!-- titulos de log de batalla  -->
+        <div class="divCardLog pa-3 d-flex justify-center align-center">
+          <h2 class="textTeamCombatsLog">LOG DE BATALLA</h2>
+          <v-img src="/assets/icons/ComatsWhite.svg" class="tamaImg" alt="Log icon" cover />
+        </div>
+
+        <div class="pa-4">
+          <v-list>
+            <v-list-item v-for="(item, i) in lastMoves" :key="i">
+              <v-list-item-content class="logsElementsDiv">
+                <v-img src="/assets/img/combat/PokeballLog1.png" alt="Pokeball" width="24" height="24" max-width="24" />
+                <v-list-item-title class="marginLogs letrasMinus">{{ item.message }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </div>
+      </v-card>
     </v-container>
   </template>
 
@@ -122,6 +136,7 @@ export default {
       return this.selected_pokemon.types;
     },
     lastMoves() {
+      // console.log("Movimientos: ", this.move_log);
       return this.move_log.slice(-3).reverse();
     }
   },
@@ -129,7 +144,7 @@ export default {
     selectPokemon: function (pokemon) {
       this.selected_pokemon = pokemon;
       if (this.team === 'you') {
-        console.log("Tu equipo cargado2:", this.team);
+        console.log("Tu equipo cargado:", this.team);
         this.display = true;
       }
     },

@@ -1,14 +1,14 @@
 <template>
+  <!-- SECCION DE COMBATE CUANDO NO HAY COMBATES ACTIVOS Y SE VE TU EQUIPO  -->
   <v-card border class="mt-2">
-    <v-alert :type="team === 'enemy' ? 'primary' : 'success'" class="p-0">
-      <template v-slot:prepend>
-      </template>
-      <span v-if="team === 'enemy'">
-        Equipo Enemigo
-      </span>
-      <span v-if="team === 'you'">
+    <v-alert :color="team === 'enemy' ? '#0600FF' : '#D5048D'"
+      class="divCardSup pa-3 d-flex justify-center align-center">
+      <h2 class="textTeamCombats" v-if="team === 'enemy'">
+        Pokemon Enemigo
+      </h2>
+      <h2 class="textTeamCombats" v-if="team === 'you'">
         Tu Equipo
-      </span>
+      </h2>
     </v-alert>
     <v-row class="pa-1">
       <v-col cols="6" v-for="(pokemon, i) in this.data.team" :key="i">
@@ -32,7 +32,7 @@ export default {
   emits: ["select_pokemon"],
   components: {
     PokemonCard
-    },
+  },
   props: {
     data: {
       type: Object,

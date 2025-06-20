@@ -23,6 +23,7 @@
     </v-snackbar>
     <v-layout>
       <NavDrawer :coins="this.economy" style="height: 100vh; position: fixed"/>
+      <FloatingInfoCard />
       <v-main style="min-height: 100vh; background: url('./assets/bgDif.jpg') no-repeat fixed; background-size: cover">
         <router-view/>
       </v-main>
@@ -114,6 +115,7 @@
 <script>
 import NavDrawer from "@/app/vue/components/app-comps/NavDrawer";
 import UpdateDialog from '@/app/vue/components/page-comps/UpdateDialog';
+import FloatingInfoCard from '@/app/vue/components/app-comps/displays/FloatingInfoCard.vue'
 import {session, emitter} from "@/stores";
 
 const {useGameStore} = require("@/stores/app");
@@ -122,7 +124,8 @@ export default {
   name: 'App',
   components: {
     UpdateDialog,
-    NavDrawer
+    NavDrawer,
+    FloatingInfoCard
   },
   data() {
     return {
