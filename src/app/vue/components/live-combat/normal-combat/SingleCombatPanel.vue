@@ -1,9 +1,12 @@
 <template>
   <v-col cols="8">
-    <SinglePokemonPanel :team="team" :team_data="team_data" :enemy_data="enemy_data" :pk_slot="this.team_data.selected_pokemon[0]"/>
+    <SinglePokemonPanel :team="team" :team_data="team_data" :enemy_data="enemy_data"
+      :pk_slot="this.team_data.selected_pokemon[0]" />
   </v-col>
   <v-col cols="4">
-    <PokemonTeamList :team="team" :data="this.team_data" :enemy_data="enemy_data"/>
+    <PokemonTeamList :team="team" :data="this.team_data" :enemy_data="enemy_data" 
+      :move_log="move_log"
+      :combat_type="combat_type" />
   </v-col>
 </template>
 
@@ -29,6 +32,14 @@ export default {
     enemy_data: {
       type: Object,
       required: true
+    },
+    move_log: {
+      type: Array,
+      default: () => []
+    },
+    combat_type: {
+      type: String,
+      default: ""
     }
   },
   computed: {},
@@ -40,6 +51,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
