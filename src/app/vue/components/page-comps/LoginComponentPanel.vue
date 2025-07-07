@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import {login_session, session} from "@/stores";
+import {login_session} from "@/stores";
 import SvgIcon from '@jamescoyle/vue-icon';
 import {mdiKey, mdiAccount} from '@mdi/js';
 
@@ -80,12 +80,6 @@ export default {
           token: response.data.token
         })
         localStorage.setItem('api_token', response.data.token);
-        let trainer_response = await session.get(`api/trainers/get_trainer/`, {
-          headers: {
-            'Authorization': `Token ${response.data.token}`
-          }
-        });
-        localStorage.setItem('trainer_id', trainer_response.data.id)
         this.$router.push('/');
       }).catch((error_response) => {
         console.log(error_response)

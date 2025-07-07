@@ -30,8 +30,8 @@
               <v-col v-for="item in wildcards" :key="item.id" xs="12" sm="6" md="6" lg="3">
                 <v-row>
                   <v-spacer/>
-                  <v-col>
-                    <v-img :src="`./${item.sprite_name}`" height="300" class="cursor-pointer"
+                  <v-col cols="6">
+                    <v-img :src="`https://pokemon.para-mada.com${item.sprite}`" height="300" class="cursor-pointer"
                            :class="!item.always_available && !item.inventory ? 'disabled' : ''"
                            lazy-src="./wildcards/000-sin_hacer.png"
                            @click="display_card(item)"/>
@@ -57,7 +57,7 @@
     <v-row>
       <v-spacer @click="card_displayed = false;"/>
       <v-col lg="2">
-        <img :src="`./${selected_card.sprite_name}`" height="300"/>
+        <img :src="`https://pokemon.para-mada.com${selected_card.sprite}`" height="300"/>
       </v-col>
       <v-col class="text-left text-white">
         <v-row>
@@ -197,7 +197,7 @@ export default {
       });
     },
     get_coin_asset() {
-      return './assets/coin.gif'
+      return './assets/coin.png'
     },
     display_card(wildcard) {
       this.card_displayed = true;
@@ -376,5 +376,8 @@ export default {
 
 .legendary {
   color: rgb(251, 140, 0) !important;
+}
+* {
+  /*border: 1px solid red;*/
 }
 </style>

@@ -1,11 +1,47 @@
 <template>
   <div class="floating-card">
-    <p>Holis</p>
+    <CoinsComponent :coins="this.coins" />
+    <WildcardCountComponent :count="this.wildcard_count" />
   </div>
 </template>
 
-<script setup>
+<script>
+import CoinsComponent from '@/app/vue/components/offline-app/CoinsComponent'
+import WildcardCountComponent from '@/app/vue/components/offline-app/WildcardCountComponent'
+import {emitter} from "@/stores";
 
+export default {
+  name: "FloatingInfoCardComponent",
+  components: {
+    CoinsComponent,
+    WildcardCountComponent
+  },
+  methods: {
+    async refresh_wildcard_count() {
+      if (!localStorage.getItem('api_token')) {
+        return;
+      }
+
+    }
+  },
+  computed: {
+  },
+  mounted() {
+    this.interval = setInterval(async () => {
+      await this.refresh_wildcard_count();
+    }, 5000);
+    emitter.on('coins_updated', (data) => {
+      console.log(data)
+      this.coins = data
+    })
+  },
+  data() {
+    return {
+      coins: parseInt(localStorage.getItem('coins')),
+      wildcard_count: 0
+    }
+  }
+}
 </script>
 
 <style scoped>

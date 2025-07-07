@@ -5,7 +5,6 @@ import {
     GLOBAL_CONFIG,
     SAVE_ROM,
     emmiter,
-    declareGlobalConfig,
     SAVE_FILE_LIME3 as SAVE_FILE
 } from "@/stores/back_constants";
 import fs from "fs";
@@ -92,8 +91,11 @@ function fileWatcher() {
                 Authorization: `Token ${GLOBAL_CONFIG.token}`,
                 ...formData.getHeaders(),  // Añade los encabezados necesarios para multipart/form-data
             },
-        }).then(() => console.log('succeeded')).catch(() => {
+        }).then(() => console.log('succeeded')).catch((data) => {
+            console.log(data)
         })
+    } else {
+        console.log('no hay token compaye')
     }
 }
 

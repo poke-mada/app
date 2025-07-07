@@ -137,7 +137,7 @@ export default {
     },
     lastMoves() {
       // console.log("Movimientos: ", this.move_log);
-      return this.move_log.slice(-3).reverse();
+      return this.move_log.slice(0, 3).reverse();
     }
   },
   methods: {

@@ -51,7 +51,7 @@
         <div class="bgProfile" v-if="logged_in">
           <v-img src="./assets/img/profile/ProfilePicture.png" width="56" height="56"></v-img>
         </div>
-        <v-list-item class="nameProfile" v-if="logged_in" lines="two" subtitle="Pokemon X" to="/profile" :title="'Eris Mochizuki'">
+        <v-list-item class="nameProfile" v-if="logged_in" lines="two" subtitle="Pokemon X" to="/profile" :title="streamer_name">
           <template #append>
             <v-img src="./assets/img/profile/pointsProfile.png" width="28" height="28" class="me-2" cover />
           </template>
@@ -73,9 +73,9 @@ import { useGameStore } from "@/stores/app";
 export default {
   name: "NavDrawer",
   props: {
-    coins: {
+    streamer_name: {
       required: true,
-      type: Number
+      type: String
     }
   },
   computed: {
