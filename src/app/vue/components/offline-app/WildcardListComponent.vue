@@ -197,7 +197,7 @@ export default {
       });
     },
     get_coin_asset() {
-      return './assets/coin.gif'
+      return './assets/coin.png'
     },
     display_card(wildcard) {
       this.card_displayed = true;

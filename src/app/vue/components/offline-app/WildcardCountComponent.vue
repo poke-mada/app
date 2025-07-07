@@ -2,26 +2,22 @@
 <template>
   <div class="d-flex flex-row align-items-center">
     <img class="mr-2 mt-1 mb-1" :src="get_coin_asset()" height="16" width="16" />
-    <span class="mr-2">{{ coins }}</span>
+    <span class="mr-2">{{ count }}</span>
   </div>
 </template>
 
 <script>
 export default {
-  name: "CoinsComponent",
+  name: "WildcardCountComponent",
   props: {
-    disabled: {
-      type: Boolean,
-      required: false
-    },
-    coins: {
+    count: {
       type: Number,
       required: true
     }
   },
   methods: {
     get_coin_asset() {
-      return './assets/coin.png'
+      return './assets/wildcards.png'
     },
   },
 }

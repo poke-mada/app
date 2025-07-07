@@ -1,6 +1,4 @@
-'use strict'
-
-import {app, BrowserWindow, protocol} from 'electron'
+import {app, BrowserWindow, protocol, Menu, Tray} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
 import {autoUpdater} from "electron-updater";
@@ -26,7 +24,7 @@ async function createWindow() {
         title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
         autoHideMenuBar: true,
         webPreferences: {
-            //devTools: !app.isPackaged,
+            // devTools: false,
             // Use pluginOptions.nodeIntegration, leave this alone
             // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
@@ -56,6 +54,8 @@ app.on('window-all-closed', () => {
     }
 })
 
+
+
 app.on('activate', async () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
@@ -75,21 +75,45 @@ app.on('ready', async () => {
             console.error('Vue Devtools failed to install:', e.toString())
         }
     }
+
+    function createTray() {
+        let appIcon = new Tray("./public/icons/icon.ico");
+        const contextMenu = Menu.buildFromTemplate([
+            {
+                label: 'Show', click: function () {
+                    win.show();
+                }
+            },
+            {
+                label: 'Exit', click: function () {
+                    app.isQuiting = true;
+                    app.quit();
+                    appIcon.destroy();
+                }
+            }
+        ]);
+
+        appIcon.on('click', function (event) {
+            win.show();
+        });
+        appIcon.setToolTip('Dedsafio Pokémon');
+        appIcon.setContextMenu(contextMenu);
+        return appIcon;
+    }
+    createTray();
+
+    win.on('close', function (event) {
+        if (!app.isQuiting) {
+            event.preventDefault();
+            win.hide();
+        }
+        return false;
+    });
+
+    win.on('restore', function (event) {
+        win.show();
+    });
+
     registerEvents();
     win.reload();
 })
-
-// Exit cleanly on request from parent process in development mode.
-if (isDevelopment) {
-    if (process.platform === 'win32') {
-        process.on('message', (data) => {
-            if (data === 'graceful-exit') {
-                app.quit()
-            }
-        })
-    } else {
-        process.on('SIGTERM', () => {
-            app.quit()
-        })
-    }
-}

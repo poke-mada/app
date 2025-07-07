@@ -22,7 +22,8 @@
                         <v-alert-title>{{ event.game_mod.mod_name }}</v-alert-title>
                       </template>
                       <template v-slot:append>
-                        <v-btn text="Unirse" @click="join_event(event.id)"/>
+                        <v-btn v-if="true" text="Unirse" @click="join_event(event.id)"/>
+                        <v-btn v-if="false" text="Retirarse" @click="leave_event(event.id)"/>
                       </template>
                     </v-alert>
                   </v-row>

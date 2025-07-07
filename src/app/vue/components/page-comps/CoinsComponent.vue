@@ -1,7 +1,7 @@
 <template>
   <!--  TODO: economy transactions log screen -->
   <img class="mr-2" src="assets/coin.gif" height="16" width="16" style="display: inline"/>
-  <span class="mr-2">{{ coins }}</span>
+  <span class="mr-2 textTeamCombats">{{ coins }}</span>
 </template>
 
 <script>

@@ -103,6 +103,11 @@ export function get_sprite(dex_number, form) {
 export function get_form(pokemon) {
     const lower_species = pokemon.species.toLowerCase();
     const lower_item = pokemon.held_item_name.toLowerCase();
+
+    if (pokemon.suffix) {
+        return `${lower_species}-${pokemon.suffix}`;
+    }
+
     let form = null;
     if (lower_item === 'alakazite' && lower_species === 'alakazam') {
         return 'alakazam-mega';

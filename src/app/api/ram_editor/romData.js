@@ -1,11 +1,5 @@
 import {CombatEnv} from "@/app/api/ram_editor/RamAccesor";
 
-let BLOCK_SIZE = 56
-let SLOT_OFFSET = 484
-let SLOT_DATA_SIZE = (8 + (4 * BLOCK_SIZE))
-let STAT_DATA_OFFSET = 112
-let STAT_DATA_SIZE = 22
-
 export class RomData {
     constructor(name, partyaddress, battlewildpartyadd, battlewildoppadd, battletrainerpartyadd, battletraineroppadd, curoppadd, wildppadd, trainerppadd, multippadd, mongap, badgeaddress, multi_combat_mongap, slot_data_size, battle_data, pokemon_battle_data_addresses, pokemon_team_data_addresses, log_data, item_data) {
         this.name = name;
@@ -118,6 +112,10 @@ export const XY = new RomData(
         move_log: {
             multi: 0x84CF064,
             single: 0x845C004
+        },
+        turn_log: {
+            single: 0x8541AE4,
+            multi: 0
         }
     },
     {

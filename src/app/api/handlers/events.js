@@ -1,12 +1,13 @@
 // noinspection JSUnresolvedVariable
 
-import {ipcMain} from "electron";
+import {ipcMain, Notification} from "electron";
 import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
 import {CitraClient} from "@/app/api/ram_editor/CitraClient";
 import {declareGlobalConfig, emmiter, GLOBAL_CONFIG, MODS_FILE_LIME3} from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
+import { Howl } from 'howler';
 import {compareVersions} from "compare-versions";
 import {
     getOrCreatePokemonItem, giveMoneyToPlayer,
@@ -201,6 +202,29 @@ async function joinEvent(ipc, data) {
     })
 }
 
+async function leaveEvent(ipc) {
+
+    try {
+        const items = fs.readdirSync(MODS_FILE_LIME3, {withFileTypes: true});
+
+        for (const item of items) {
+            if (item.isDirectory()) {
+                const rutaCompleta = path.join(MODS_FILE_LIME3, item.name);
+                await fs.rm(rutaCompleta, {recursive: true, force: true});
+                console.log(`Carpeta eliminada: ${rutaCompleta}`);
+            }
+        }
+    } catch (err) {
+        console.error('Error al borrar carpetas:', err);
+    }
+
+    ipc.reply('notification', {
+        title: '¡Reinicia Tu Partida!',
+        message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
+        persistent: true
+    })
+}
+
 async function manageWildcardEvents(ipc, command_data) {
     const citra = new CitraClient();
     if (command_data) {
@@ -219,12 +243,29 @@ async function manageWildcardEvents(ipc, command_data) {
     citra.close()
 }
 
+function showNotification(ipc, data) {
+    if (data) {
+        const notification = new Notification({
+            title: data.title,
+            body: data.message,
+            silent: true,
+            icon: './public/icons/icon.ico'
+        });
+
+        notification.on('click', () => {
+            console.log('Notificación clickeada');
+        });
+        notification.show();
+    }
+}
+
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);
     ipcMain.on('download_save', downloadSaveEvent);
     ipcMain.on('event', joinEvent);
-    // ipcMain.on('pkm', pokemonModificationEvent);
+    ipcMain.on('leave_event', leaveEvent);
     ipcMain.on('store', storeFrontData);
     ipcMain.on('reward', exchangeRewardBundle);
     ipcMain.on('wildcard', manageWildcardEvents);
+    ipcMain.on('notify', showNotification);
 }

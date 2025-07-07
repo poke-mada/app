@@ -16,18 +16,17 @@
 
               <!-- Lista de noticias -->
               <v-divider class="mb-3"></v-divider>
-              <div class="pa-6">
-                <div v-for="i in 3" :key="i" class="mb-6 ">
+              <div class="pa-6" style="min-width: 500px">
+                <div v-for="news in this.newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
                   <div class="d-flex align-start">
-                    <v-icon color="#D5048D" class="me-3">mdi-twitter</v-icon>
+                    <v-icon color="#D5048D" class="me-3">
+                      <img :src="Showdown" style="width: 100%; height: 100%" />
+                    </v-icon>
                     <div>
                       <h3 class="tittleTweet gradient-border mb-1 text-uppercase">
-                        Lorem Ipsum
+                        Noticias!
                       </h3>
-                      <p class="p-tweet">
-                        <strong>DEDsafio Pokémon</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                        do.
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor in.
+                      <p class="p-tweet" v-html="news.message">
                       </p>
                     </div>
                   </div>
@@ -52,7 +51,7 @@
                   </v-avatar>
                   <v-col cols="6" class="d-flex align-center justify-center team1">
                     <div class="text-center">
-                      <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer1.png" width="250px" />
+                      <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer1.png" width="250px"/>
                       <div class="nameTeam1">
                         <p>
                           Maryblogs
@@ -63,7 +62,7 @@
 
                   <v-col cols="6" class="d-flex align-center justify-center team2">
                     <div class="text-center">
-                      <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer2.png" width="250" />
+                      <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer2.png" width="250"/>
                       <div class="nameTeam2">
                         <p>JuanSGuarnizo</p>
                       </div>
@@ -72,7 +71,8 @@
                 </v-row>
 
                 <div class="flexCenter ma-6">
-                  <v-btn class="btnHome" elevation="0">
+                  <v-btn class="btnHome" elevation="0" to="/combat"
+                         v-if="this.emulator_on && this.game_data && game_data.combat_info.combat_type !== 'OFF'">
                     <span class="btn-text">VER COMBATE</span>
                     <span class="btn-icon">
                       <v-icon class="iconArrow" color="white" size="20">mdi-arrow-right</v-icon>
@@ -95,39 +95,49 @@
                     <v-col cols="4" v-for="(pokemon, i) in team" :key="i" class="text-center">
                       <div class="position-relative d-inline-block">
                         <!-- Imagen principal del Pokémon -->
-                        <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)" />
-                        <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png" />
+                        <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)"/>
+                        <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
 
                         <!-- Badge solo si tiene held_item -->
                         <img v-if="pokemon && pokemon.held_item && pokemon.held_item !== '0'"
-                          src="/assets/img/Home/itemPoke.png" width="22" class="custom-badge" />
+                             src="/assets/img/Home/itemPoke.png" width="22" class="custom-badge"/>
                       </div>
                     </v-col>
                   </v-row>
                 </div>
 
                 <div v-else class="text-center">
-                  <v-progress-circular indeterminate color="pink" class="ma-4" />
+                  <v-progress-circular indeterminate color="pink" class="ma-4"/>
                   <p class="text-subtitle-1">Cargando tu equipo...</p>
                 </div>
               </v-card>
-              <v-dialog v-model="display" max-width="600">
-                <PokemonDetailPanel :pokemon="selected_pokemon" />
-              </v-dialog>
 
             </v-container>
           </v-col>
         </v-row>
       </v-container>
+      <v-dialog v-model="display">
+        <v-row>
+          <v-spacer v-on:click="display = false"/>
+          <v-col>
+            <PokemonDetailPanel :pokemon="selected_pokemon" max-width="600"/>
+          </v-col>
+          <v-spacer v-on:click="display = false"/>
+        </v-row>
+      </v-dialog>
     </v-main>
   </v-layout>
 </template>
 
-<script>
-import PokemonCard from "@/app/vue/components/basic-comps/PokemonCard";
-import { session } from "@/stores";
-import PokemonDetailPanel from "@/app/vue/components/basic-comps/PokemonDetailPanel";
+<script setup>
+import Showdown from '@/icons/Showdown.svg';
+</script>
 
+<script>
+import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
+import {session} from "@/stores";
+import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "MainAppPage",
@@ -136,19 +146,30 @@ export default {
     PokemonCard,
     PokemonDetailPanel
   },
+
   data() {
     return {
+      newsletter: [],
       team: [],
       selected_pokemon: null,
       display: false
     };
+  },
+  computed: {
+    store: () => useGameStore(),
+    emulator_on() {
+      return this.store.emulator_on
+    },
+    game_data() {
+      return this.store.game_data;
+    },
   },
   async mounted() {
     const token = localStorage.getItem("api_token");
 
     if (token) {
       const config = {
-        headers: { Authorization: `Token ${token}` },
+        headers: {Authorization: `Token ${token}`},
       };
 
       try {
@@ -159,10 +180,15 @@ export default {
         console.error("Error al cargar el equipo:", err);
       }
     }
+
+    session.get('/api/newsletter/').then(json_data => {
+      this.newsletter = json_data.data;
+    });
   },
   methods: {
     selectPokemon(pokemon) {
       this.selected_pokemon = pokemon;
+      console.log(pokemon)
       this.display = true;
     },
   },

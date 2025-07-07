@@ -3,6 +3,7 @@ import {XY as SAVE_XY} from "@/app/api/save_editor/SaveData";
 import {XY as RAM_XY} from "@/app/api/ram_editor/romData";
 import {XY as RAM_XY2} from "@/app/api/ram_editor/RamData";
 import {EventEmitter} from "events";
+import config from "@/app/api/lib/config";
 
 
 let BASE_URL;
@@ -13,16 +14,6 @@ if (DEV) {
     BASE_URL = 'https://pokemon.para-mada.com';
 }
 
-const SAVE_FILE_PATH_CITRA = path.join(
-    process.env.APPDATA, 'Citra', 'sdmc', 'Nintendo 3DS',
-    '00000000000000000000000000000000', '00000000000000000000000000000000',
-    'title', '00040000', '00055d00', 'data', '00000001', 'main'
-);
-const SAVE_FILE_PATH_LIME = path.join(
-    process.env.APPDATA, 'Lime3DS', 'sdmc', 'Nintendo 3DS',
-    '00000000000000000000000000000000', '00000000000000000000000000000000',
-    'title', '00040000', '00055d00', 'data', '00000001', 'main'
-);
 
 const MODS_FILE_PATH_LIME = path.join(
     process.env.APPDATA, 'Lime3DS', 'load', 'mods', '0004000000055D00'
@@ -37,8 +28,7 @@ export const RAM_ROM = RAM_XY;
 export const RAM_ROM2 = RAM_XY2;
 export const SERVER_URL = BASE_URL;
 export const IS_DEV = DEV;
-export const SAVE_FILE_CITRA = SAVE_FILE_PATH_CITRA;
-export const SAVE_FILE_LIME3 = SAVE_FILE_PATH_LIME;
+export const SAVE_FILE_LIME3 = config.get("savePath");
 export const MODS_FILE_LIME3 = MODS_FILE_PATH_LIME;
 
 export function declareGlobalConfig(name, value) {

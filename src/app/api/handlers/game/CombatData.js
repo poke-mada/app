@@ -26,21 +26,23 @@ function replacer(key, value) {
 }
 
 async function isInCombat(citra) {
-    let wildData = await citra.readMemory(rom.wild_battle_data.your_team.address, rom.wild_battle_data.combat_data.slot_data_size);
+    let wildData = await citra.readMemory(rom.wild_battle_data.combat_data.address, rom.wild_battle_data.combat_data.slot_data_size);
     let rawWildData = decryptPokemonData(wildData);
 
     let wildPP = (await citra.readMemory(rom.wild_battle_data.combat_data.pp_address, 1)).readUInt8(0);
-    let wildDex = rawWildData.subarray(8).readUInt16LE()
+    let wildDex = rawWildData.subarray(rom.pokemon_battle_data.dex_number).readUInt16LE()
+
+    console.log(wildDex)
 
     if (validatePokemon(wildDex) && wildPP < 65) {
         return CombatEnv.WILD;
     }
 
-    let trainerData = await citra.readMemory(rom.trainer_battle_data.your_team.address, rom.trainer_battle_data.combat_data.slot_data_size);
+    let trainerData = await citra.readMemory(rom.trainer_battle_data.combat_data.address, rom.trainer_battle_data.combat_data.slot_data_size);
     let rawTrainerData = decryptPokemonData(trainerData);
 
     let trainerPP = (await citra.readMemory(rom.trainer_battle_data.combat_data.pp_address, 1)).readUInt8(0);
-    let trainerDex = rawTrainerData.subarray(8).readUInt16LE()
+    let trainerDex = rawTrainerData.subarray(rom.pokemon_battle_data.dex_number).readUInt16LE()
 
     if (validatePokemon(trainerDex) && trainerPP < 65) {
         return CombatEnv.TRAINER;
@@ -179,6 +181,7 @@ export async function gatherData(citra) {
         await manageMoveLog(citra, combat_addresses.combat_data.move_log);
         await manageCombatLog(citra, combat_addresses.combat_data.combat_log);
         await manageTrainerLog(citra, combat_addresses.combat_data.trainer_log);
+
         let _hasChanged = false;
         if (hasChanged) {
             _hasChanged = true;
