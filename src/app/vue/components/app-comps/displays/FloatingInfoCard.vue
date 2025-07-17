@@ -1,8 +1,6 @@
 <template>
   <div class="floating-card">
     <CoinsComponent :coins="this.coins" />
-    <WildcardCountComponent :count="this.wildcard_count" />
-    <MaxLevelComponent />
   </div>
 </template>
 
