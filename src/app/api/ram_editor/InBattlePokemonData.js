@@ -1,7 +1,8 @@
 import {STATICS_URL} from "@/app/api/lib/poke-api";
 import {MON_DATA} from '@/data/mon_data';
 import {validatePokemon} from "@/app/api/lib/validators";
-import {RAM_ROM2 as rom} from '@/stores/back_constants'
+import {RAM_ROM2 as rom} from '@/stores/back_constants';
+import {WEAKNESS_DATA} from '@/data/type_data';
 
 export class InBattlePokemonData {
     constructor(data) {
@@ -73,6 +74,35 @@ export class InBattlePokemonData {
         if (type3 && type1 !== type3 && type2 !== type3) {
             types.push({name: type3})
         }
+
+        let weaknesses = {};
+        for (const type of types) {
+            let weak = WEAKNESS_DATA[type.name.toLowerCase()];
+            for (const weakness of weak.double_from) {
+                if (weakness in weaknesses) {
+                    weaknesses[weakness] *= 2;
+                } else {
+                    weaknesses[weakness] = 2;
+                }
+            }
+            for (const weakness of weak.zero_from) {
+                weaknesses[weakness] = 0;
+            }
+            for (const weakness of weak.half_from) {
+                if (weakness in weaknesses) {
+                    weaknesses[weakness] /= 2;
+                } else {
+                    weaknesses[weakness] = 0.5;
+                }
+            }
+        }
+
+        // noinspection JSUnusedLocalSymbols
+        this.weaknesses = Object.entries(weaknesses).filter(([type, multiplier]) => multiplier !== 1).map(([type, multiplier]) => {
+            return {name: type, multiplier: multiplier}
+        })
+
+
         if (validatePokemon(this.dex_number)) {
             try {
                 this.species = MON_DATA[this.dex_number.toString()][this.form].name;
