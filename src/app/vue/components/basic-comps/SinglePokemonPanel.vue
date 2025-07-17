@@ -110,7 +110,7 @@
                   <v-tooltip location="top">
                     <template #activator="{ props }">
                       <v-progress-linear class="paddinBars" v-bind="props" :model-value="value"
-:max="stat === 'hp' ? maxHp : 255" height="18"
+                        :max="stat === 'hp' ? maxHp : 255" height="18"
                         :color="stat === 'attack' ? '#0600FF' : '#D5048D'" rounded />
                     </template>
                     <span>{{ value }}</span>
