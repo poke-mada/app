@@ -3,10 +3,8 @@
     <template v-slot:activator="{props}">
       <v-row>
         <v-col>
-          <img :src="pokemon ? get_sprite() : missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''"
+          <img :src="pokemon ? get_sprite() ? get_sprite() : missingno : missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''"
                @click="$emit('click', pokemon)" v-bind="props" class="cursor-pointer"/>
-          <v-badge color="error" dot bordered location="bottom right" v-if="pokemon && pokemon.held_item_name !== 'None'">
-          </v-badge>
         </v-col>
       </v-row>
     </template>

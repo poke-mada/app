@@ -28,7 +28,8 @@ export class RomData {
                     box_data,
                     wild_battle_data,
                     trainer_battle_data,
-                    multi_battle_data
+                    multi_battle_data,
+                    game
                 }) {
         this.item_data = item_data;
 
@@ -39,6 +40,7 @@ export class RomData {
         this.box_data = box_data;
         this.trainer_battle_data = trainer_battle_data;
         this.multi_battle_data = multi_battle_data;
+        this.game_data = game;
     }
 
 
@@ -271,6 +273,11 @@ export const XY = Object.freeze(new RomData(
                 selected_mons: 0x84208C8,
                 slot_data_size: 332,
             }
+        },
+        game: {
+            chat_address1: 0x8804906,
+            chat_address2: 0x8805DFE,
+            chat_length: 500
         }
     }
 ));

@@ -22,8 +22,8 @@
       </template>
     </v-snackbar>
     <v-layout>
-      <NavDrawer :coins="this.economy" style="height: 100vh; position: fixed"/>
-      <FloatingInfoCard />
+      <NavDrawer :streamer_name="this.streamer_name" style="height: 100vh; position: fixed"/>
+      <FloatingInfoCard/>
       <v-main style="min-height: 100vh; background: url('./assets/bgDif.jpg') no-repeat fixed; background-size: cover">
         <router-view/>
       </v-main>
@@ -110,13 +110,13 @@
   </v-app>
 </template>
 
-
 <!--suppress JSUnresolvedFunction -->
 <script>
 import NavDrawer from "@/app/vue/components/app-comps/NavDrawer";
 import UpdateDialog from '@/app/vue/components/page-comps/UpdateDialog';
 import FloatingInfoCard from '@/app/vue/components/app-comps/displays/FloatingInfoCard.vue'
-import {session, emitter} from "@/stores";
+import {emitter, session} from "@/stores";
+import {Howl} from 'howler';
 
 const {useGameStore} = require("@/stores/app");
 
@@ -148,7 +148,8 @@ export default {
         title: '',
         persistent: false,
       },
-      economy : 0,
+      economy: 0,
+      streamer_name: '',
       notification_alert: false,
       notification: {
         type: 'success',
@@ -158,18 +159,6 @@ export default {
     }
   },
   methods: {
-    refresh_economy() {
-      if (!localStorage.getItem('api_token')) {
-        return;
-      }
-      session.get(`api/trainers/get_economy/`).then((response) => {
-        if (this.economy !== response.data) {
-          localStorage.setItem('coins', response.data);
-          emitter.emit('coins_updated', response.data)
-          this.economy = response.data
-        }
-      });
-    },
     log_off() {
       localStorage.removeItem('api_token');
       localStorage.removeItem('trainer_id');
@@ -178,12 +167,22 @@ export default {
     }
   },
   computed: {
-    store: () => useGameStore()
+    store: () => useGameStore(),
   },
-  mounted() {
+  async mounted() {
+    const sound = new Howl({
+      src: ['./assets/sounds/alert.mp3']
+    })
+    let trainer_response = await session.get(`/api/trainers/get_profile/`);
+
+    const streamer_name = trainer_response.data.name;
+    this.streamer_name = streamer_name;
+    const dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
+
     window.electron.onDataReceived('updated_game_data', async (event, data) => {
       this.store.activate(data);
     });
+
     window.electron.onDataReceived('citra_connection_closed', async () => {
       this.store.deactivate();
     });
@@ -208,6 +207,51 @@ export default {
     window.electron.sendMessage('store', {
       token: localStorage.getItem('api_token')
     });
+
+    dataSocket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      const data = JSON.parse(message.message);
+      switch (data.type) {
+        case 'event_notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Nuevo Evento!',
+            message: `¡Un nuevo evento está por comenzar!`
+          });
+          sound.play();
+          break;
+        case 'attack_notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Te han atacado!',
+            message: `¡${data.data.user_name} te ha atacado!`
+          });
+          sound.play();
+          break;
+        case 'coins_notification':
+          emitter.emit('coins_updated', data.data)
+          break;
+        case 'start_timer_notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Empieza!',
+            message: `Ya puedes recibir ayuda de tu coach`
+          });
+
+          setTimeout(() => {
+            window.electron.sendMessage('notify', {
+              title: '¡Se acabó el tiempo!',
+              message: `Ya no puedes recibir ayuda del coach`
+            });
+            sound.play();
+          }, data.data * 1000)
+          break;
+      }
+    }
+
+    dataSocket.onopen = async () => {
+      let response = await session.get(`api/trainers/get_economy/`);
+      if (this.coins !== response.data) {
+        emitter.emit('coins_updated', response.data)
+      }
+    }
 
     window.electron.startComms();
 
@@ -237,9 +281,6 @@ export default {
         message: data.message
       }
     });
-    this.interval = setInterval(() => {
-      this.refresh_economy();
-    }, 5000);
   }
 }
 </script>
