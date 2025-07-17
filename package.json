@@ -6,7 +6,7 @@
   },
   "description": "Pokemon Assistant to ease your pokemon newbie experience",
   "name": "dedsafio-pokemon",
-  "version": "0.8.3",
+  "version": "0.9.3",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

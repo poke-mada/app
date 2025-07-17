@@ -105,22 +105,26 @@ export default {
       return base / simplifier;
     },
     multiplier(enemy) {
-      let multiplier = 1;
-      let stab_multiplier = this.stab ? 1.5 : 1;
-      let offensive_boost = this.get_pokemon_boost(this.category === 'Especial' ? 'special_attack' : 'attack');
-      let boost_multiplier = this.get_stat_offensive_multiplier(offensive_boost);
-
       if (!enemy) {
-        return multiplier * stab_multiplier * boost_multiplier;
+        return 1;
       }
+
       let enemy_types = this.pokemon_types(enemy);
       if (!enemy_types) {
-        return multiplier * stab_multiplier * boost_multiplier;
+        return 1;
       }
 
       if (this.category === 'Status') {
         return null;
       }
+      const static_moves = [
+        "tinieblas",
+        "furia dragón",
+        "bomba sónica",
+        "sísmico"
+      ]
+
+      let multiplier = 1;
 
 
       let doubles = appearances(this.movement.coverage_data.double_damage_to, enemy_types)
@@ -138,7 +142,11 @@ export default {
         }
       }
 
-      return multiplier * stab_multiplier * boost_multiplier;
+      if (multiplier > 0 && static_moves.includes(this.movement.move_name.toLowerCase())) {
+        return null;
+      }
+
+      return multiplier;
     },
     pokemon_types(pokemon) {
       if (pokemon.battle_data) {

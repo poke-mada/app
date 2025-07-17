@@ -92,7 +92,6 @@ export function get_ability_multiplier(attacker_pokemon, target_pokemon, attack_
 }
 
 export function get_sprite(dex_number, form) {
-    console.log(dex_number, form)
     const data_pokemon = get_data_pokemon({dex_number, form})
     if (data_pokemon) {
         return data_pokemon.sprite_url;
@@ -106,6 +105,10 @@ export function get_form(pokemon) {
 
     if (pokemon.suffix) {
         return `${lower_species}-${pokemon.suffix}`;
+    }
+
+    if (lower_species === 'basculin') {
+        return "basculin-red-striped";
     }
 
     let form = null;

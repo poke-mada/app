@@ -17,7 +17,7 @@
               <!-- Lista de noticias -->
               <v-divider class="mb-3"></v-divider>
               <div class="pa-6" style="min-width: 500px">
-                <div v-for="news in this.newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
+                <div v-for="news in newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
                   <div class="d-flex align-start">
                     <v-icon color="#D5048D" class="me-3">
                       <img :src="Showdown" style="width: 100%; height: 100%" />
@@ -72,7 +72,7 @@
 
                 <div class="flexCenter ma-6">
                   <v-btn class="btnHome" elevation="0" to="/combat"
-                         v-if="this.emulator_on && this.game_data && game_data.combat_info.combat_type !== 'OFF'">
+                         v-if="emulator_on && game_data && game_data.combat_info.combat_type !== 'OFF'">
                     <span class="btn-text">VER COMBATE</span>
                     <span class="btn-icon">
                       <v-icon class="iconArrow" color="white" size="20">mdi-arrow-right</v-icon>
@@ -141,7 +141,6 @@ import {useGameStore} from "@/stores/app";
 
 export default {
   name: "MainAppPage",
-  emits: ["pokemonSelected"],
   components: {
     PokemonCard,
     PokemonDetailPanel
@@ -156,12 +155,14 @@ export default {
     };
   },
   computed: {
-    store: () => useGameStore(),
+    store: () => {
+      return useGameStore();
+    },
     emulator_on() {
-      return this.store.emulator_on
+      return this.store ? this.store.emulator_on : null
     },
     game_data() {
-      return this.store.game_data;
+      return this.store ? this.store.game_data : null;
     },
   },
   async mounted() {
