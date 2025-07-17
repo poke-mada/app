@@ -23,7 +23,7 @@
               <div>
                 <p class="pokemon-name">{{ pokemon?.species || '???' }}</p>
                 <p class="pokemon-level">Nv. {{ pokemon?.level || '??' }}</p>
-                <div class="pokemon-type" v-if="pokemon_types.length">
+                <div class="pokemon-type" v-if="pokemon_types && pokemon_types.length">
                   <v-img v-for="(type, i) in pokemon_types" :key="i"
                     :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline />
                 </div>
@@ -113,10 +113,13 @@ export default {
   },
   computed: {
     pokemon_types() {
-      if (this.pokemon.battle_data) {
+      if (this.pokemon?.battle_data?.types) {
         return this.pokemon.battle_data.types;
       }
-      return this.pokemon.types;
+      if (this.pokemon?.types) {
+        return this.pokemon.types;
+      }
+      return []; // <-- importante para evitar errores
     },
     statsWithLabels() {
       console.log("Pokemon PARA REVISAR HP: ", this.pokemon);

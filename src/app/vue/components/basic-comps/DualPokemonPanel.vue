@@ -3,15 +3,15 @@
   <v-card border>
     <template v-slot:title>
       <v-alert :color="team === 'enemy' ? 'error' : team === 'ally' ? 'info' : 'success'" class="p-0">
-            <span v-if="team === 'enemy'">
-              Pokemon enemigo
-            </span>
+        <span v-if="team === 'enemy'">
+          Pokemon enemigo
+        </span>
         <span v-if="team === 'you'">
-              Pokemon atacando
-            </span>
+          Pokemon atacando
+        </span>
         <span v-if="team === 'ally'">
-              Pokemon aliado atacando
-            </span>
+          Pokemon aliado atacando
+        </span>
       </v-alert>
     </template>
     <template v-slot:text>
@@ -19,29 +19,29 @@
         <v-col cols="2">
           <v-row>
             <v-col cols="6">
-              <v-img :src="pokemon ? pokemon.sprite_url : missingno" width="128"/>
+              <v-img :src="pokemon ? pokemon.sprite_url : missingno" width="128" />
             </v-col>
             <v-col cols="6">
               <v-row v-if="team === 'you'">
                 <v-col cols="12" class="pa-0 ma-0">
                   <v-badge bordered
-                           :color="get_pokemon_boost('defense') < 0? 'error' : get_pokemon_boost('defense') > 0 ? 'success' : 'info'"
-                           :content="`Defensa: ${get_pokemon_boost('defense')}`"/>
+                    :color="get_pokemon_boost('defense') < 0 ? 'error' : get_pokemon_boost('defense') > 0 ? 'success' : 'info'"
+                    :content="`Defensa: ${get_pokemon_boost('defense')}`" />
                 </v-col>
                 <v-col cols="12" class="pa-0 ma-0">
                   <v-badge bordered
-                           :color="get_pokemon_boost('special_defense') < 0? 'error' : get_pokemon_boost('special_defense') > 0 ? 'success' : 'info'"
-                           :content="`Defensa Especial: ${get_pokemon_boost('special_defense')}`"/>
+                    :color="get_pokemon_boost('special_defense') < 0 ? 'error' : get_pokemon_boost('special_defense') > 0 ? 'success' : 'info'"
+                    :content="`Defensa Especial: ${get_pokemon_boost('special_defense')}`" />
                 </v-col>
                 <v-col cols="12" class="pa-0 ma-0">
                   <v-badge bordered
-                           :color="get_pokemon_boost('speed') < 0? 'error' : get_pokemon_boost('speed') > 0 ? 'success' : 'info'"
-                           :content="`Velocidad: ${get_pokemon_boost('speed')}`"/>
+                    :color="get_pokemon_boost('speed') < 0 ? 'error' : get_pokemon_boost('speed') > 0 ? 'success' : 'info'"
+                    :content="`Velocidad: ${get_pokemon_boost('speed')}`" />
                 </v-col>
                 <v-col cols="12" class="pa-0 ma-0">
                   <v-badge bordered
-                           :color="get_pokemon_boost('evasion') < 0? 'error' : get_pokemon_boost('evasion') > 0 ? 'success' : 'info'"
-                           :content="`Evasión: ${get_pokemon_boost('evasion')}`"/>
+                    :color="get_pokemon_boost('evasion') < 0 ? 'error' : get_pokemon_boost('evasion') > 0 ? 'success' : 'info'"
+                    :content="`Evasión: ${get_pokemon_boost('evasion')}`" />
                 </v-col>
               </v-row>
             </v-col>
@@ -49,67 +49,69 @@
           <v-row>
             <v-col>
               <div v-if="pokemon">
-                <v-img v-for="(type, i) in pokemon_types" :key="i"
-                       :src="`./assets/types/${type_name(type.name)}.png`"
-                       width="32" inline/>
+                <v-img v-for="(type, i) in pokemon_types" :key="i" :src="`./assets/types/${type_name(type.name)}.png`"
+                  width="32" inline />
               </div>
             </v-col>
           </v-row>
         </v-col>
         <v-col cols="2">
           <v-row>
-            <v-spacer/>
+            <v-spacer />
             <v-col class="text-center">
               <span class="justify-center mote" :class="team === 'enemy' ? 'info' : 'success'">
                 {{ pokemon ? pokemon.mote : '???' }}
               </span>
             </v-col>
-            <v-spacer/>
+            <v-spacer />
           </v-row>
           <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???' }}</p>
-          <p class="text-center">{{ pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
+          <p v-if="pokemon_types" class="text-center">
+            {{pokemon_types.map((v) => v.name).join("/")}}
+          </p>
+          <p v-else class="text-center">???</p>
         </v-col>
         <v-col cols="8">
           <v-row v-if="pokemon && team === 'you'">
             <v-col cols="6" v-for="(move, index) in pokemon.moves" :key="index">
-              <MovementCard :pokemon="pokemon" :enemy_data="enemy_data" :movement="move" v-if="move"/>
+              <MovementCard :pokemon="pokemon" :enemy_data="enemy_data" :movement="move" v-if="move" />
             </v-col>
           </v-row>
           <v-row class="pa-0 ma-0" v-if="team !== 'you'">
             <v-col cols="12" class="pa-0 ma-0">
               <v-badge bordered
-                       :color="get_pokemon_boost('attack') < 0? 'error' : get_pokemon_boost('attack') > 0 ? 'success' : 'info'"
-                       :content="`Ataque: ${get_pokemon_boost('attack')}`"/>
+                :color="get_pokemon_boost('attack') < 0 ? 'error' : get_pokemon_boost('attack') > 0 ? 'success' : 'info'"
+                :content="`Ataque: ${get_pokemon_boost('attack')}`" />
             </v-col>
             <v-col cols="12" class="pa-0 ma-0">
               <v-badge bordered
-                       :color="get_pokemon_boost('defense') < 0? 'error' : get_pokemon_boost('defense') > 0 ? 'success' : 'info'"
-                       :content="`Defensa: ${get_pokemon_boost('defense')}`"/>
+                :color="get_pokemon_boost('defense') < 0 ? 'error' : get_pokemon_boost('defense') > 0 ? 'success' : 'info'"
+                :content="`Defensa: ${get_pokemon_boost('defense')}`" />
             </v-col>
             <v-col cols="12" class="pa-0 ma-0" v-if="team !== 'you'">
               <v-badge bordered
-                       :color="get_pokemon_boost('special_attack') < 0? 'error' : get_pokemon_boost('special_attack') > 0 ? 'success' : 'info'"
-                       :content="`Ataque Especial: ${get_pokemon_boost('special_attack')}`"/>
+                :color="get_pokemon_boost('special_attack') < 0 ? 'error' : get_pokemon_boost('special_attack') > 0 ? 'success' : 'info'"
+                :content="`Ataque Especial: ${get_pokemon_boost('special_attack')}`" />
             </v-col>
             <v-col cols="12" class="pa-0 ma-0">
               <v-badge bordered
-                       :color="get_pokemon_boost('special_defense') < 0? 'error' : get_pokemon_boost('special_defense') > 0 ? 'success' : 'info'"
-                       :content="`Defensa Especial: ${get_pokemon_boost('special_defense')}`"/>
+                :color="get_pokemon_boost('special_defense') < 0 ? 'error' : get_pokemon_boost('special_defense') > 0 ? 'success' : 'info'"
+                :content="`Defensa Especial: ${get_pokemon_boost('special_defense')}`" />
             </v-col>
             <v-col cols="12" class="pa-0 ma-0">
               <v-badge bordered
-                       :color="get_pokemon_boost('speed') < 0? 'error' : get_pokemon_boost('speed') > 0 ? 'success' : 'info'"
-                       :content="`Velocidad: ${get_pokemon_boost('speed')}`"/>
+                :color="get_pokemon_boost('speed') < 0 ? 'error' : get_pokemon_boost('speed') > 0 ? 'success' : 'info'"
+                :content="`Velocidad: ${get_pokemon_boost('speed')}`" />
             </v-col>
             <v-col cols="12" class="pa-0 ma-0">
               <v-badge bordered
-                       :color="get_pokemon_boost('evasion') < 0? 'error' : get_pokemon_boost('evasion') > 0 ? 'success' : 'info'"
-                       :content="`Evasión: ${get_pokemon_boost('evasion')}`"/>
+                :color="get_pokemon_boost('evasion') < 0 ? 'error' : get_pokemon_boost('evasion') > 0 ? 'success' : 'info'"
+                :content="`Evasión: ${get_pokemon_boost('evasion')}`" />
             </v-col>
             <v-col cols="12" class="pa-0 ma-0">
               <v-badge bordered
-                       :color="get_pokemon_boost('accuracy') < 0? 'error' : get_pokemon_boost('accuracy') > 0 ? 'success' : 'info'"
-                       :content="`Precisión: ${get_pokemon_boost('accuracy')}`"/>
+                :color="get_pokemon_boost('accuracy') < 0 ? 'error' : get_pokemon_boost('accuracy') > 0 ? 'success' : 'info'"
+                :content="`Precisión: ${get_pokemon_boost('accuracy')}`" />
             </v-col>
           </v-row>
         </v-col>
@@ -214,10 +216,11 @@ export default {
       return this.get_pokemon(this.pk_dex);
     },
     pokemon_types() {
+      if (!this.pokemon) return [];
       if (this.pokemon.battle_data) {
-        return this.pokemon.battle_data.types;
+        return this.pokemon.battle_data.types || [];
       }
-      return this.pokemon.types;
+      return this.pokemon.types || [];
     }
   },
   data() {
