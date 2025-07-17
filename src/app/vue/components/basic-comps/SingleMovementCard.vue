@@ -2,29 +2,56 @@
 <template>
   <v-tooltip location="top">
     <template v-slot:activator="{ props }">
-      <v-alert v-bind="props" class="mb-2 w-100 pl-1" :icon="type_image_path">
-        <template v-slot:prepend>
-          <v-img :src="type_image_path" v-if="movement" width="32" inline></v-img>
-        </template>
-        <template v-slot:text>
-          <v-row>
-            <v-col cols="12">
-              {{ movement.move_name }}
-            </v-col>
-          </v-row>
-        </template>
-        <template v-slot:append>
-          <v-row>
-            <v-col sm>
-              <v-badge bordered :content="category" color="secondary" inline></v-badge>
-              <v-badge bordered :content="`x${this.multiplier}`" v-if="this.category !== 'Status' && this.enemy_data"
-                       :color="this.multiplier > 1 ? 'success' : this.multiplier < 1 ? 'error' : 'info'" inline></v-badge>
-            </v-col>
-          </v-row>
-        </template>
+      <v-alert v-bind="props" class="containerMovPokeBattle pa-1" rounded="pill" elevation="1">
+        <v-row align="center" no-gutters>
+          <!-- Tipo -->
+          <v-col cols="auto">
+            <v-img :src="type_image_path" width="32" height="32" />
+          </v-col>
+
+          <!-- Nombre del movimiento -->
+          <v-col class="text-start font-weight-bold">
+            {{ movement.move_name }}
+          </v-col>
+
+          <v-col cols="auto" v-if="category !== 'Status'">
+            <div :style="{
+              backgroundColor: categoryColor(),
+              color: 'white',
+              borderRadius: '999px',
+              padding: '4px 8px',
+              fontWeight: 'bold',
+              fontSize: '14px',
+            }">
+              {{ category }}
+            </div>
+          </v-col>
+
+          <!-- Icono de categoría -->
+          <!-- <v-col cols="auto">
+            <v-img :src="`./assets/icons/categories/${category.toLowerCase()}.png`" width="32" height="32"
+              alt="category" v-if="category !== 'Status'" />
+          </v-col> -->
+
+          <!-- Multiplicador -->
+          <v-col cols="auto" v-if="category !== 'Status' && enemy_data">
+            <div :style="{
+              backgroundColor:
+                multiplier > 1 ? '#4CAF50' : multiplier < 1 ? '#F44336' : '#00AAD0',
+              color: 'white',
+              fontSize: '12px',
+              borderRadius: '999px',
+              padding: '4px 8px',
+              fontWeight: 'bold',
+            }">
+              x{{ multiplier }}
+            </div>
+          </v-col>
+        </v-row>
       </v-alert>
+
     </template>
-    <span>
+    <v-container class="informationMov">
       <v-row>
         <v-col cols="12">
           {{ movement.flavor_text }}
@@ -32,11 +59,12 @@
         <v-col cols="12">
           <v-badge v-if="movement.power !== -1" color="error" :content="`Power: ${movement.power}`" inline></v-badge>
           <v-badge v-if="movement.power === -1" color="error" content="Power: -" inline></v-badge>
-          <v-badge v-if="movement.accuracy !== -1" color="info" :content="`Accuracy: ${movement.accuracy * accuracy_multiplier}%`" inline></v-badge>
-          <v-badge v-if="movement.accuracy === -1" color="info" content="Accuracy: -" inline></v-badge>
+          <v-badge v-if="movement.accuracy !== -1" color="info"
+            :content="`Precisión: ${movement.accuracy * accuracy_multiplier}%`" inline></v-badge>
+          <v-badge v-if="movement.accuracy === -1" color="info" content="Precisión: -" inline></v-badge>
         </v-col>
       </v-row>
-    </span>
+    </v-container>
   </v-tooltip>
 </template>
 
@@ -93,7 +121,22 @@ export default {
       return base / simplifier;
     },
     get_enemy_pokemon(dex_number) {
-      return this.enemy_data.team.filter(enemy => enemy && enemy.dex_number.toString() === dex_number.toString())[0]
+      if (!dex_number || !this.enemy_data?.team) return null;
+      return this.enemy_data.team.find(
+        enemy => enemy && enemy.dex_number?.toString() === dex_number.toString()
+      );
+    },
+    categoryColor() {
+      switch (this.category.toLowerCase()) {
+        case 'fisico':
+          return '#E53935';
+        case 'especial':
+          return '#1E88E5';
+        case 'status':
+          return '#757575';
+        default:
+          return '#607D8B';
+      }
     },
     pokemon_types(pokemon) {
       if (pokemon.battle_data) {
@@ -141,7 +184,7 @@ export default {
       return multiplier * stab_multiplier * boost_multiplier;
     },
     type_image_path() {
-      return `./assets/types/${this.movement.type}.png`;
+      return `./assets/types/Types/${this.movement.type}.png`;
     },
     category() {
       switch (this.movement.category) {
@@ -175,6 +218,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
