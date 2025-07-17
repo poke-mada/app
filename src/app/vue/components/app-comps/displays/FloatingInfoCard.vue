@@ -2,34 +2,30 @@
   <div class="floating-card">
     <CoinsComponent :coins="this.coins" />
     <WildcardCountComponent :count="this.wildcard_count" />
+    <MaxLevelComponent />
   </div>
 </template>
 
 <script>
 import CoinsComponent from '@/app/vue/components/offline-app/CoinsComponent'
-import WildcardCountComponent from '@/app/vue/components/offline-app/WildcardCountComponent'
 import {emitter} from "@/stores";
 
 export default {
   name: "FloatingInfoCardComponent",
   components: {
     CoinsComponent,
-    WildcardCountComponent
   },
   methods: {
     async refresh_wildcard_count() {
       if (!localStorage.getItem('api_token')) {
         return;
       }
-
     }
   },
   computed: {
   },
-  mounted() {
-    this.interval = setInterval(async () => {
-      await this.refresh_wildcard_count();
-    }, 5000);
+  async mounted() {
+    await this.refresh_wildcard_count();
     emitter.on('coins_updated', (data) => {
       console.log(data)
       this.coins = data

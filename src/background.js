@@ -76,44 +76,6 @@ app.on('ready', async () => {
         }
     }
 
-    function createTray() {
-        let appIcon = new Tray("./public/icons/icon.ico");
-        const contextMenu = Menu.buildFromTemplate([
-            {
-                label: 'Show', click: function () {
-                    win.show();
-                }
-            },
-            {
-                label: 'Exit', click: function () {
-                    app.isQuiting = true;
-                    app.quit();
-                    appIcon.destroy();
-                }
-            }
-        ]);
-
-        appIcon.on('click', function (event) {
-            win.show();
-        });
-        appIcon.setToolTip('Dedsafio Pokémon');
-        appIcon.setContextMenu(contextMenu);
-        return appIcon;
-    }
-    createTray();
-
-    win.on('close', function (event) {
-        if (!app.isQuiting) {
-            event.preventDefault();
-            win.hide();
-        }
-        return false;
-    });
-
-    win.on('restore', function (event) {
-        win.show();
-    });
-
     registerEvents();
     win.reload();
 })

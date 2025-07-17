@@ -66,12 +66,12 @@ export class InBattlePokemonData {
         let type3 = types_by_index[this.type3];
 
 
-        this.types = [{name: type1}]
+        let types = [{name: type1}]
         if (type1 !== type2) {
-            this.types.push({name: type2})
+            types.push({name: type2})
         }
         if (type3 && type1 !== type3 && type2 !== type3) {
-            this.types.push({name: type3})
+            types.push({name: type3})
         }
         if (validatePokemon(this.dex_number)) {
             try {
