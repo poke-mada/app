@@ -133,8 +133,8 @@ class GameData {
     async detectAnyDeath(team) {
         const alreadyDeath = config.get('deaths');
         for (let pokemon of team) {
-            if (pokemon && (!alreadyDeath.includes(pokemon.pid)) && pokemon.battle_data && (pokemon.battle_data.current_hp <= 0)) {
-                const response = await session.post('/api/trainers/register_death', {
+            if (pokemon && !alreadyDeath.includes(pokemon.pid) && pokemon.battle_data && (pokemon.battle_data.current_hp <= 0)) {
+                const response = await session.post('/api/trainers/register_death/', {
                     pid: pokemon.pid,
                     mote: pokemon.mote,
                     species: pokemon.dex_number
@@ -265,17 +265,7 @@ class CombatData {
         let trainerPP = (await citra.readMemory(rom.trainerppadd, 1)).readUInt8(0);
         let trainerDex = rawTrainerData.subarray(8).readUInt16LE()
 
-        if (validatePokemon(wildDex) && wildPP < 65) {
-            read_address = rom.partyAddress;
-            pp_address = rom.wildppadd;
-            enemy_read_address = rom.wildOpponentPartyAddress;
-            enemy_pp_address = rom.wildppadd;
-            current_opponent_address = rom.currentOpponentAddress;
-            multi_combat_mongap = rom.multiCombatMonGap;
-
-            this.combat_env = CombatEnv.WILD;
-            this.in_combat = true;
-        } else if (validatePokemon(trainerDex) && trainerPP < 65) {
+        if (validatePokemon(trainerDex) && trainerPP < 65) {
             read_address = rom.battleTrainerPartyAddress;
             pp_address = rom.trainerppadd;
             enemy_read_address = rom.trainerOpponentPartyAddress;
@@ -284,6 +274,16 @@ class CombatData {
             multi_combat_mongap = rom.multiCombatMonGap;
 
             this.combat_env = CombatEnv.TRAINER;
+            this.in_combat = true;
+        } else if (validatePokemon(wildDex) && wildPP < 65) {
+            read_address = rom.partyAddress;
+            pp_address = rom.wildppadd;
+            enemy_read_address = rom.wildOpponentPartyAddress;
+            enemy_pp_address = rom.wildppadd;
+            current_opponent_address = rom.currentOpponentAddress;
+            multi_combat_mongap = rom.multiCombatMonGap;
+
+            this.combat_env = CombatEnv.WILD;
             this.in_combat = true;
         } else {
             read_address = rom.partyAddress;

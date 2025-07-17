@@ -44,7 +44,7 @@ export async function getOrCreatePokemonItem(bag, item, quantity, add_flag = fal
     const specific_bag_address = getBagAddress(rom2.item_data, bag);
     const bag_limit = getBagLength(rom2.item_data, bag);
     let current_offset = 0;
-    console.log(`Adding x${quantity} ${item}`)
+    console.log(`Adding x${quantity} ${item} to ${bag}`)
     while (current_offset <= bag_limit) {
         const read_address = bag_address - specific_bag_address + slot * item_slot_offset;
         let message_data = await citra.readMemory(read_address, item_slot_offset);

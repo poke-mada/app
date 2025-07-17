@@ -2,7 +2,7 @@
 <template>
   <v-tooltip location="top">
     <template v-slot:activator="{ props }">
-      <v-alert v-bind="props" class="containerMovPokeBattle pa-1" rounded="pill" elevation="1">
+      <v-alert v-bind="props" class="containerMovPokeBattle pa-1" :class="stab ? 'golden' : ''" rounded="pill" elevation="1">
         <v-row align="center" no-gutters>
           <!-- Tipo -->
           <v-col cols="auto">
@@ -26,14 +26,6 @@
               {{ category }}
             </div>
           </v-col>
-
-          <!-- Icono de categoría -->
-          <!-- <v-col cols="auto">
-            <v-img :src="`./assets/icons/categories/${category.toLowerCase()}.png`" width="32" height="32"
-              alt="category" v-if="category !== 'Status'" />
-          </v-col> -->
-
-          <!-- Multiplicador -->
           <v-col cols="auto" v-if="category !== 'Status' && enemy_data">
             <div :style="{
               backgroundColor:
@@ -147,24 +139,27 @@ export default {
   },
   computed: {
     multiplier() {
-      let multiplier = 1;
-      let stab_multiplier = this.stab ? 1.5 : 1;
-      let offensive_boost = this.get_pokemon_boost(this.category === 'Especial' ? 'special_attack' : 'attack');
-      let boost_multiplier = this.get_stat_offensive_multiplier(offensive_boost);
       if (this.category === 'Status') {
         return null;
       }
-      if (!this.enemy_data) {
-        return null;
-      }
+
       let enemy = this.get_enemy_pokemon(this.enemy_data.selected_pokemon);
       if (!enemy) {
-        return multiplier * stab_multiplier * boost_multiplier;
+        return 1;
       }
-      let enemy_types = this.pokemon_types(enemy);
+
+      let enemy_types = this.pokemon_types(enemy)
       if (!enemy_types) {
-        return multiplier * stab_multiplier * boost_multiplier;
+        return 1;
       }
+      const static_moves = [
+        "tinieblas",
+        "furia dragón",
+        "bomba sónica",
+        "sísmico"
+      ]
+
+      let multiplier = 1;
 
       let doubles = appearances(this.movement.coverage_data.double_damage_to, enemy_types)
       let halves = appearances(this.movement.coverage_data.half_damage_to, enemy_types)
@@ -181,7 +176,11 @@ export default {
         }
       }
 
-      return multiplier * stab_multiplier * boost_multiplier;
+      if (multiplier > 0 && static_moves.includes(this.movement.move_name.toLowerCase())) {
+        return null;
+      }
+
+      return multiplier;
     },
     type_image_path() {
       return `./assets/types/Types/${this.movement.type}.png`;
@@ -218,4 +217,8 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.golden {
+  background: #daa52050;
+}
+</style>
