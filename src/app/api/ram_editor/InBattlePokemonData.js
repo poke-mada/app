@@ -74,6 +74,8 @@ export class InBattlePokemonData {
         if (type3 && type1 !== type3 && type2 !== type3) {
             types.push({name: type3})
         }
+        
+        this.types = types;
 
         let weaknesses = {};
         for (const type of types) {
