@@ -1,10 +1,11 @@
 <template>
   <v-tooltip location="bottom">
-    <template v-slot:activator="{props}">
+    <template v-slot:activator="{ props }">
       <img :src="pokemon ? pokemon.sprite_url : missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''"
-           @click="$emit('click', pokemon)" v-bind="props" class="cursor-pointer"/>
-      <v-badge color="error" dot bordered location="bottom right" v-if="pokemon && pokemon.held_item_num && pokemon.held_item_num !== '0'">
-      </v-badge>
+        @click="$emit('click', pokemon)" v-bind="props" class="cursor-pointer" />
+      <!-- Badge solo si tiene held_item -->
+      <img v-if="pokemon && pokemon.held_item_num && pokemon.held_item_num !== '0'" src="/assets/img/Home/itemPoke.png"
+        width="22" class="custom-badge" />
     </template>
     {{ pokemon ? pokemon.mote : '' }}
   </v-tooltip>
@@ -34,7 +35,6 @@ export default {
 </script>
 
 <style scoped>
-
 .bordered {
   filter: drop-shadow(0 0 0.75rem dodgerblue);
 }

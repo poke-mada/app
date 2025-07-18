@@ -36,7 +36,7 @@
             </div>
 
           </v-col>
-          <v-col cols="7">
+          <v-col cols="7" class="p-0">
             <v-container class="tittleStats">
               <h1>STATS</h1>
             </v-container>
@@ -48,11 +48,13 @@
             <v-row class="mt-2" dense>
               <v-col cols="12" v-for="(value, stat) in statsWithLabels" :key="stat">
                 <v-row align="center">
-                  <v-col cols="5" class="text-end">
-                    <span class="font-weight-bold">{{ value.label }}</span>
+                  <v-col cols="4" class="text-end p-0">
+                    <span class="font-weight-bold nowrap">{{ value.label }}</span>
+                  </v-col>
+                  <v-col cols="2" class="text-end">
                     <span class="text-right ml-5">{{ value.statValue }}</span>
                   </v-col>
-                  <v-col cols="7">
+                  <v-col cols="6">
                     <v-tooltip location="top">
                       <template #activator="{ props }">
                         <v-progress-linear class="paddinBars" v-bind="props" :model-value="value.statValue"
@@ -67,8 +69,17 @@
             </v-row>
             <v-container class="tittleStats mt-5">
               <h1>DEBILIDAD</h1>
+              <v-divider class="mb-3"></v-divider>
+              <div class="pokemon-weaknesses" v-if="pokemon_weaknesses.length">
+                <div v-for="(weakness, i) in pokemon_weaknesses" :key="i">
+                  <div class="badgeMulti">
+                    <p> x{{ weakness.multiplier }}</p>
+                  </div>
+                  <v-img 
+                    :src="`./assets/types/Types/${type_name(weakness.name)}.png`" width="50" inline />
+                </div>
+              </div>
             </v-container>
-            <v-divider class="mb-3"></v-divider>
           </v-col>
         </v-row>
         <v-row>
@@ -120,6 +131,12 @@ export default {
         return this.pokemon.types;
       }
       return []; // <-- importante para evitar errores
+    },
+    pokemon_weaknesses() {
+      if (this.pokemon.battle_data && Array.isArray(this.pokemon.battle_data.weaknesses)) {
+        return this.pokemon.battle_data.weaknesses.filter(w => w.multiplier > 1);
+      }
+      return [];
     },
     statsWithLabels() {
       console.log("Pokemon PARA REVISAR HP: ", this.pokemon);

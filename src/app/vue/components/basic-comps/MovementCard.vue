@@ -27,23 +27,25 @@
               {{ category }}
             </div>
           </v-col>
-          <v-col cols="auto" v-for="(enemy_dex, index) in filteredEnemyDexNumbers" :key="index">
-            <div v-if="get_enemy_pokemon(enemy_dex)">
-              <template v-if="category !== 'Status' && multiplier(get_enemy_pokemon(enemy_dex)) != null">
-                <div :style="{
-                  backgroundColor:
-                    multiplier(get_enemy_pokemon(enemy_dex)) > 1 ? '#4CAF50'
-                      : multiplier(get_enemy_pokemon(enemy_dex)) < 1 ? '#F44336'
-                        : '#00AAD0',
-                  color: 'white',
-                  fontSize: '12px',
-                  borderRadius: '999px',
-                  padding: '4px 8px',
-                  fontWeight: 'bold',
-                }" :title="get_enemy_pokemon(enemy_dex)?.species">
-                  x{{ formatMultiplier(multiplier(get_enemy_pokemon(enemy_dex))) }}
-                </div>
-              </template>
+          <v-col cols="auto" v-if="game_data && game_data.combat_info.combat_type === 'DOUBLE'">
+            <div v-for="(enemy_dex, index) in filteredEnemyDexNumbers" :key="index" class="multiplicadorMovi">
+              <div v-if="get_enemy_pokemon(enemy_dex)">
+                <template v-if="category !== 'Status' && multiplier(get_enemy_pokemon(enemy_dex)) != null">
+                  <div class="" :style="{
+                    backgroundColor:
+                      multiplier(get_enemy_pokemon(enemy_dex)) > 1 ? '#4CAF50'
+                        : multiplier(get_enemy_pokemon(enemy_dex)) < 1 ? '#F44336'
+                          : '#00AAD0',
+                          color: 'white',
+                          fontSize: '12px',
+                          borderRadius: '999px',
+                          padding: '4px 8px',
+                          fontWeight: 'bold',
+                        }" :title="get_enemy_pokemon(enemy_dex)?.species">
+                    x{{ formatMultiplier(multiplier(get_enemy_pokemon(enemy_dex))) }}
+                  </div>
+                </template>
+              </div>
             </div>
           </v-col>
         </v-row>
@@ -66,16 +68,18 @@
       </v-row>
 
       <!-- Multiplier contra enemigos (si aplica) -->
-      <v-row v-if="enemy_data && category !== 'Status'">
+       <v-row v-if="enemy_data && category !== 'Status'">
         <v-col sm v-for="(enemy_dex, index) in enemy_data.selected_pokemon" :key="index" class="pr-0">
           <div v-if="get_enemy_pokemon(enemy_dex)">
-            <v-img :src="get_enemy_pokemon(enemy_dex).sprite_url" width="64" aspect-ratio="1/1" />
-            <v-badge :content="`x${multiplier(get_enemy_pokemon(enemy_dex))}`"
-              :color="multiplier(get_enemy_pokemon(enemy_dex)) > 1 ? 'success' : multiplier(get_enemy_pokemon(enemy_dex)) < 1 ? 'error' : 'info'"
-              inline />
+            <v-img class="imgEnemyContainer" :src="get_enemy_pokemon(enemy_dex).sprite_url" width="64" aspect-ratio="1/1">
+              <v-badge class="bradgeMultiDos" :content="`x${multiplier(get_enemy_pokemon(enemy_dex))}`"
+                :color="multiplier(get_enemy_pokemon(enemy_dex)) > 1 ? 'success' : multiplier(get_enemy_pokemon(enemy_dex)) < 1 ? 'error' : 'info'"
+                inline />
+            </v-img>
           </div>
         </v-col>
       </v-row>
+      
     </v-container>
   </v-tooltip>
 </template>

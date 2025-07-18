@@ -8,7 +8,7 @@
         <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
       </v-avatar>
       <span class="textTeamCombats" v-if="team === 'enemy'">
-        Equipo EnemigoS
+        Equipo Enemigo
       </span>
       <span class="textTeamCombats" v-if="team === 'you'">
         Tu Equipo
@@ -44,7 +44,7 @@
     </div>
   </v-card>
   <!-- LOG DE CMBATE ABAJO DE MI EQUIPO -->
-  <template v-if="team === 'you'">
+  <template v-if="team === 'you' && combat_type !== 'DOUBLE'">
     <v-container class="containerLogsCombats">
       <v-btn color="teal" @click="combat_log_display = true">
         <span class="logText">LOG DE BATALLA</span>

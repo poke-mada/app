@@ -2,20 +2,19 @@
 <template>
   <v-row v-if="!combat_data" class="w-100 ma-1" justify="center" align="center">
     <v-col>
-      <TeamSelectorPanel :api_token="api_token" @search="search_combat" :default_trainer="trainer_id"/>
+      <TeamSelectorPanel :api_token="api_token" @search="search_combat" :default_trainer="trainer_id" />
     </v-col>
   </v-row>
   <v-row v-if="combat_data" class="ma-1 h-100">
     <v-col>
-      <DoubleCombatPanel :trainer_name="this.combat_data.enemy_trainer.name"
-                         @selected_pokemon="select_enemy_pokemon" team="enemy"
-                         :data="combat_data.enemy_trainer.current_team"
-                         :enemy_data="combat_data.your_trainer.current_team"/>
+      <DoubleCombatPanel :trainer_name="this.combat_data.enemy_trainer.name" @selected_pokemon="select_enemy_pokemon"
+        team="enemy" :data="combat_data.enemy_trainer.current_team"
+        :enemy_data="combat_data.your_trainer.current_team" />
       <v-row>
         <v-col sm="12" md="4">
           <DetailPokemonTeamList team="enemy" :data="this.combat_data.enemy_trainer.current_team"
-                                 :enemy_data="this.combat_data.your_trainer.current_team"
-                                 :trainer_name="this.combat_data.enemy_trainer.name"/>
+            :enemy_data="this.combat_data.your_trainer.current_team"
+            :trainer_name="this.combat_data.enemy_trainer.name" />
         </v-col>
         <v-col>
           <v-row class="h-100 w-100" justify="center" align="center">
@@ -25,13 +24,12 @@
                   <v-row class="w-100 ma-0">
                     <v-col>
                       <v-btn class="w-100" color="teal" @click="speed_table_display = true"
-                             text="Tabla de velocidades"/>
+                        text="Tabla de velocidades" />
                     </v-col>
                   </v-row>
                   <v-row class="w-100 ma-0">
                     <v-col>
-                      <v-btn class="w-100" color="teal" @click="coverage_table_display = true"
-                             text="Tabla de tipos"/>
+                      <v-btn class="w-100" color="teal" @click="coverage_table_display = true" text="Tabla de tipos" />
                     </v-col>
                   </v-row>
                 </template>
@@ -41,34 +39,32 @@
         </v-col>
         <v-col sm="12" md="4">
           <DetailPokemonTeamList team="you" :data="this.combat_data.your_trainer.current_team"
-                                 :enemy_data="this.combat_data.enemy_trainer.current_team"
-                                 :trainer_name="this.combat_data.your_trainer.name"/>
+            :enemy_data="this.combat_data.enemy_trainer.current_team"
+            :trainer_name="this.combat_data.your_trainer.name" />
         </v-col>
       </v-row>
-      <DoubleCombatPanel :trainer_name="this.combat_data.your_trainer.name"
-                         @selected_pokemon="select_you_pokemon" team="you"
-                         :data="combat_data.your_trainer.current_team"
-                         :enemy_data="combat_data.enemy_trainer.current_team"/>
+      <DoubleCombatPanel :trainer_name="this.combat_data.your_trainer.name" @selected_pokemon="select_you_pokemon"
+        team="you" :data="combat_data.your_trainer.current_team" :enemy_data="combat_data.enemy_trainer.current_team" />
     </v-col>
   </v-row>
   <v-dialog v-model="speed_table_display">
     <v-row justify="center">
-      <v-spacer @click="speed_table_display = false"/>
+      <v-spacer @click="speed_table_display = false" />
       <v-col fluid>
         <v-card height="100%">
           <template v-slot:actions>
             <v-btn text="Cerrar" color="teal" variant="text" @click="speed_table_display = false"></v-btn>
           </template>
           <template v-slot:text>
-            <SpeedTable :combat_info="combat_data"/>
+            <SpeedTable :combat_info="combat_data" />
           </template>
         </v-card>
       </v-col>
-      <v-spacer @click="speed_table_display = false"/>
+      <v-spacer @click="speed_table_display = false" />
     </v-row>
   </v-dialog>
   <v-dialog v-model="coverage_table_display">
-    <CoverageTableDisplay :combat_data="combat_data" @close_display="this.coverage_table_display = false;"/>
+    <CoverageTableDisplay :combat_data="combat_data" @close_display="this.coverage_table_display = false;" />
   </v-dialog>
 </template>
 
@@ -78,8 +74,8 @@ import DoubleCombatPanel from "@/app/vue/components/offline-app/showdown/DoubleC
 import DetailPokemonTeamList from '@/app/vue/components/offline-app/api-comps/DetailPokemonTeamList';
 import SpeedTable from "@/app/vue/components/offline-app/api-comps/SpeedTable";
 import CoverageTableDisplay from "@/app/vue/components/offline-app/api-comps/CoverageTableDisplay.vue";
-import {POKEMON_TYPES} from '@/data/type_data';
-import {session} from "@/stores";
+import { POKEMON_TYPES } from '@/data/type_data';
+import { session } from "@/stores";
 
 export default {
   name: "ShowdownCombatPanel",
@@ -120,12 +116,12 @@ export default {
   methods: {
     async search_combat(data) {
       let enemy_trainer = await session.get(`/api/trainers/${data.selected_enemy_trainer}/`, {
-        params: {localization: 'en'},
+        params: { localization: 'en' },
         headers: this.config.headers
       }).then((response) => response.data);
 
       let your_trainer = await session.get(`/api/trainers/${data.selected_trainer}/`, {
-        params: {localization: 'en'},
+        params: { localization: 'en' },
         headers: this.config.headers
       }).then((response) => response.data);
 
@@ -154,5 +150,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
