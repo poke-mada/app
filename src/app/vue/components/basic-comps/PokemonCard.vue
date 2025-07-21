@@ -1,11 +1,12 @@
 <template>
   <v-tooltip location="bottom">
     <template v-slot:activator="{ props }">
-      <img :src="pokemon ? pokemon.sprite_url : missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''"
-        @click="$emit('click', pokemon)" v-bind="props" class="cursor-pointer" />
-      <!-- Badge solo si tiene held_item -->
-      <img v-if="pokemon && pokemon.held_item_num && pokemon.held_item_num !== '0'" src="/assets/img/Home/itemPoke.png"
-        width="22" class="custom-badge" />
+      <div class="badge-container">
+        <img :src="pokemon ? pokemon.sprite_url : missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''"
+             @click="pokemon ? $emit('click', pokemon) : null" v-bind="props" class="cursor-pointer" />
+        <!-- Badge solo si tiene held_item -->
+        <v-img v-if="pokemon && pokemon.item_name !== 'None'" src="/assets/img/Home/itemPoke.png" width="22" class="custom-badge" />
+      </div>
     </template>
     {{ pokemon ? pokemon.mote : '' }}
   </v-tooltip>
@@ -37,5 +38,10 @@ export default {
 <style scoped>
 .bordered {
   filter: drop-shadow(0 0 0.75rem dodgerblue);
+}
+.badge-container {
+  position: relative;
+  width: 70px;
+  height: 70px;
 }
 </style>

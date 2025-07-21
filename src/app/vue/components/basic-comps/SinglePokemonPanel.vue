@@ -31,8 +31,14 @@
                   </span> -->
                   <p class="pokemon-level">Nv. {{ pokemon?.level || '??' }}</p>
                   <div class="pokemon-type" v-if="pokemon_types.length">
-                    <v-img v-for="(type, i) in pokemon_types" :key="i"
-                      :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline />
+                    <div v-for="(type, i) in pokemon_types" :key="i" class="d-inline">
+                      <v-tooltip location="top">
+                        <template v-slot:activator="{props}">
+                          <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline v-bind="props" />
+                        </template>
+                        {{type_name_loc(type.name)}}
+                      </v-tooltip>
+                    </div>
                   </div>
                 </div>
               </v-col>
@@ -207,6 +213,9 @@ export default {
     },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    },
+    type_name_loc(val) {
+      return val; // TODO: traducir de ingles a español
     },
     normalizeSpeciesName(name) {
       return name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
