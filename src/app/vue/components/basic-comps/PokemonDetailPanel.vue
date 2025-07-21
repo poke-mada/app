@@ -24,8 +24,14 @@
                 <p class="pokemon-name">{{ pokemon?.species || '???' }}</p>
                 <p class="pokemon-level">Nv. {{ pokemon?.level || '??' }}</p>
                 <div class="pokemon-type" v-if="pokemon_types && pokemon_types.length">
-                  <v-img v-for="(type, i) in pokemon_types" :key="i"
-                    :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline />
+                  <div v-for="(type, i) in pokemon_types" :key="i" class="d-inline">
+                    <v-tooltip location="top">
+                      <template v-slot:activator="{props}">
+                        <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline v-bind="props" />
+                      </template>
+                      {{type_name_loc(type.name)}}
+                    </v-tooltip>
+                  </div>
                 </div>
                 <div class="infoAdicional">
                   <p class="text-center"><strong>Naturaleza:</strong> {{ pokemon.nature_name }}</p>
@@ -43,7 +49,8 @@
             <v-divider class="mb-3"></v-divider>
             <div class="nivelMax">
               <img src="/imgs/Pokeball.png" />
-              <p>Máximos al Nivel 100</p>
+              <p v-if="this.side !== 'enemy'">Stats máximos al Nivel 100</p>
+              <p v-if="this.side === 'you'">Stats actuales</p>
             </div>
             <v-row class="mt-2" dense>
               <v-col cols="12" v-for="(value, stat) in statsWithLabels" :key="stat">
@@ -112,6 +119,10 @@ export default {
       type: Object,
       required: false
     },
+    side: {
+      type: String,
+      required: false
+    },
     pokemon: {
       type: Object,
       required: true
@@ -121,6 +132,9 @@ export default {
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     },
+    type_name_loc(val) {
+      return val; // TODO: traducir de ingles a español
+    }
   },
   computed: {
     pokemon_types() {
@@ -136,6 +150,9 @@ export default {
       if (this.pokemon.battle_data && Array.isArray(this.pokemon.battle_data.weaknesses)) {
         return this.pokemon.battle_data.weaknesses.filter(w => w.multiplier > 1);
       }
+      if (this.pokemon && Array.isArray(this.pokemon.weaknesses)) {
+        return this.pokemon.weaknesses.filter(w => w.multiplier > 1);
+      }
       return [];
     },
     statsWithLabels() {
@@ -143,7 +160,7 @@ export default {
       return {
         hp: {
           label: 'PS',
-          statValue: this.pokemon.battle_data.current_hp ?? 0
+          statValue: this.pokemon.battle_data ? this.pokemon.battle_data.current_hp ?? 0 : this.pokemon.maxhp
         },
         attack: {
           label: 'Ataque',

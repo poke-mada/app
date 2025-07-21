@@ -544,15 +544,11 @@ div.v-col.v-col-4>div.statsContent>span {
 /* -------------- FIN SECTION COMBATS -------------- */
 /* -------------- SECTION DETAILS POKEMON -------------- */
 .templateCardDetails {
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .cardsDetailsPokemon {
-    width: 60% !important;
-    max-width: 60% !important;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
 .textInfoPokemon {

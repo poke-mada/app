@@ -8,7 +8,6 @@ export class InBattlePokemonData {
     constructor(data) {
         this.original_data = data;
         this.dex_number = data.slice(rom.pokemon_battle_data.dex_number).readUInt16LE()
-
         this.battle_slot = data.slice(rom.pokemon_battle_data.battle_slot).readUInt8()
         this.form = data.slice(rom.pokemon_battle_data.form).readUInt8()
         this.level = data.slice(rom.pokemon_battle_data.level).readUInt8()
@@ -74,11 +73,14 @@ export class InBattlePokemonData {
         if (type3 && type1 !== type3 && type2 !== type3) {
             types.push({name: type3})
         }
-        
+
         this.types = types;
 
         let weaknesses = {};
         for (const type of types) {
+            if (!type.name) {
+                continue
+            }
             let weak = WEAKNESS_DATA[type.name.toLowerCase()];
             for (const weakness of weak.double_from) {
                 if (weakness in weaknesses) {
@@ -99,7 +101,7 @@ export class InBattlePokemonData {
             }
         }
 
-        // noinspection JSUnusedLocalSymbols
+        // eslint-disable-next-line no-unused-vars
         this.weaknesses = Object.entries(weaknesses).filter(([type, multiplier]) => multiplier !== 1).map(([type, multiplier]) => {
             return {name: type, multiplier: multiplier}
         })
@@ -117,6 +119,211 @@ export class InBattlePokemonData {
             this.species = 'Invalid-Pokemon';
         }
         this.sprite_url = STATICS_URL + `/sprites/master/sprites/pokemon/${this.dex_number}.png`;
+
+        this.suffix = this.getSuffix(this.dex_number, this.form)
+    }
+
+    getSuffix(dexNumber, form) {
+        switch (dexNumber) {
+            case 641:
+            case 642:
+            case 645:
+                return form > 0 ? "therian" : "incarnate";
+
+            case 6:
+                if (form === 8 || form === 10) return "mega-x";
+                if (form === 16 || form === 18) return "mega-y";
+                break;
+
+            case 20:
+                if (form === 0 || form === 2) return null;
+                return "alola";
+
+            case 25:
+                if (form === 0 || form === 2) return null;
+                return "partner";
+
+            case 105:
+                if (form === 0 || form === 2) return null;
+                return "alola";
+
+            case 150:
+                if (form === 4) return null;
+                if (form === 12) return "mega-x";
+                if (form === 20) return "mega-y";
+                break;
+
+            case 151:
+            case 201:
+            case 412:
+            case 414:
+            case 421:
+            case 422:
+            case 423:
+            case 550:
+            case 585:
+            case 586:
+            case 647:
+            case 649:
+            case 671:
+            case 676:
+            case 684:
+            case 716:
+            case 801:
+                return null;
+
+            case 351:
+                if (form === 8 || form === 10) return "sunny";
+                if (form === 16 || form === 18) return "rainy";
+                if (form === 24 || form === 26) return "snowy";
+                break;
+
+            case 382:
+            case 383:
+                if (form === 12) return "primal";
+                break;
+
+            case 386:
+                if (form === 4) return null;
+                if (form === 12) return "attack";
+                if (form === 20) return "defense";
+                if (form === 28) return "speed";
+                break;
+
+            case 413:
+                if (form === 10) return "sandy";
+                if (form === 18) return "trash";
+                if (form === 2) return "plant";
+                break;
+
+            case 479:
+                if (form === 12) return "heat";
+                if (form === 20) return "wash";
+                if (form === 28) return "frost";
+                if (form === 36) return "fan";
+                if (form === 44) return "mow";
+                break;
+
+            case 487:
+                if (form === 12) return "origin";
+                break;
+
+            case 492:
+                if (form === 12) return "sky";
+                break;
+
+            case 555:
+                if (form === 8 || form === 10) return "zen";
+                return null;
+
+            case 646:
+                if (form === 12) return "white";
+                if (form === 20) return "black";
+                break;
+
+            case 648:
+                if (form === 12) return "pirouette";
+                if (form === 4) return "aria";
+                break;
+
+            case 658:
+                if (form === 8 || form === 16) return "ash";
+                break;
+
+            case 664:
+            case 665:
+            case 666:
+            case 669:
+                return null;
+
+            case 670:
+                if (form === 42) return "eternal";
+                return null;
+
+            case 678:
+                if (form === 10) return "f";
+                return null;
+
+            case 681:
+                if (form === 0 || form === 2) return "shield";
+                if (form === 8 || form === 10) return "blade";
+                break;
+
+            case 710:
+            case 711:
+                if (form === 8 || form === 10) return "average";
+                if (form === 16 || form === 18) return "large";
+                if (form === 24 || form === 26) return "super";
+                return null;
+
+            case 718:
+                if (form === 12) return "10";
+                if (form === 20 || form === 36) return "complete";
+                return null;
+
+            case 720:
+                if (form === 12) return "unbound";
+                return null;
+
+            case 741:
+                if (form === 8 || form === 10) return "pom-pom";
+                if (form === 16 || form === 18) return "pau";
+                if (form === 24 || form === 26) return "sensu";
+                return "baile";
+
+            case 745:
+                if (form === 16 || form === 18) return "dusk";
+                if (form === 8 || form === 10) return "midnight";
+                break;
+
+            case 746:
+                if (form === 0 || form === 2) return null;
+                return "school";
+
+            case 774:
+                if ([12, 20, 28, 36, 44, 52, 60].includes(form)) return "core";
+                break;
+
+            case 800:
+                if (form === 12) return "dusk";
+                if (form === 20) return "dawn";
+                if (form === 28) return "ultra";
+                return null;
+
+            case 19:
+            case 26:
+            case 27:
+            case 28:
+            case 37:
+            case 38:
+            case 50:
+            case 51:
+            case 52:
+            case 53:
+            case 74:
+            case 75:
+            case 76:
+            case 88:
+            case 89:
+            case 103:
+                if ([8, 10, 12].includes(form)) return "alola";
+                return null;
+
+            case 735:
+            case 738:
+            case 743:
+            case 752:
+            case 754:
+            case 758:
+            case 777:
+            case 778:
+            case 784:
+                return null;
+
+            default:
+                if (form > 0 && form !== 2 && form !== 4) return "mega";
+                return null;
+        }
     }
 
     toWrittableBytes() {
