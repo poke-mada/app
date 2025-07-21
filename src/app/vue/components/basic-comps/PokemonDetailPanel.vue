@@ -68,15 +68,24 @@
               </v-col>
             </v-row>
             <v-container class="tittleStats mt-5">
-              <h1>DEBILIDAD</h1>
+              <h1>DEBILIDADES Y RESISTENCIAS</h1>
               <v-divider class="mb-3"></v-divider>
               <div class="pokemon-weaknesses" v-if="pokemon_weaknesses.length">
                 <div v-for="(weakness, i) in pokemon_weaknesses" :key="i">
-                  <div class="badgeMulti">
-                    <p> x{{ weakness.multiplier }}</p>
+                  <div class="badgeMulti" :class="{
+                    'badge-weakness': weakness.multiplier > 1,
+                    'badge-resistance': weakness.multiplier < 1,
+                    'badge-neutral': weakness.multiplier === 1
+                  }">
+                    <p style="margin: 0;">x{{ weakness.multiplier }}</p>
                   </div>
-                  <v-img 
-                    :src="`./assets/types/Types/${type_name(weakness.name)}.png`" width="50" inline />
+                  <v-tooltip location="top">
+                    <template #activator="{ props }">
+                      <v-img v-bind="props" :src="`./assets/types/Types/${type_name(weakness.name)}.png`" width="50"
+                        inline />
+                    </template>
+                    <span>{{ type_name(weakness.name) }}</span>
+                  </v-tooltip>
                 </div>
               </div>
             </v-container>
@@ -134,7 +143,9 @@ export default {
     },
     pokemon_weaknesses() {
       if (this.pokemon.battle_data && Array.isArray(this.pokemon.battle_data.weaknesses)) {
-        return this.pokemon.battle_data.weaknesses.filter(w => w.multiplier > 1);
+        return this.pokemon.battle_data.weaknesses
+          .filter(w => w.multiplier >= 0)
+          .sort((a, b) => b.multiplier - a.multiplier); // orden descendente
       }
       return [];
     },

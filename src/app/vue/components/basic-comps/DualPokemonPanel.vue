@@ -166,7 +166,11 @@ export default {
       return this.ally_data.team.filter(ally => ally && ally.dex_number === dex_number)[0]
     },
     normalizeSpeciesName(name) {
-      return name?.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
+      return String(name || '')
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // quita acentos
+        .toLowerCase()
+        .replace(/[\s.']/g, '-') // reemplaza espacios, puntos, comillas por guiones
+        .replace(/[^a-z0-9-]/g, ''); // elimina cualquier otro símbolo
     },
     translateStat(stat) {
       const translations = {
@@ -212,36 +216,38 @@ export default {
       }
       return this.pokemon.types || [];
     },
+    normalizedSpeciesKey() {
+      if (!this.pokemon) return '';
+      const base = this.normalizeSpeciesName(this.pokemon.species);
+      const suffix = this.pokemon.suffix ? `-${this.normalizeSpeciesName(this.pokemon.suffix)}` : '';
+      return `${base}${suffix}`;
+    },
     baseStats() {
       if (!this.pokemon) return {};
 
       let hp = this.pokemon.battle_data?.current_hp ?? this.pokemon.current_hp ?? 0;
 
-      // Si es mi equipo son datos del pokemon
-      if (this.team === 'you' && this.pokemon.battle_data?.stats) {
-        hp = this.pokemon.battle_data?.current_hp ?? 0;
-        return {
-          hp,
-          attack: this.pokemon.battle_data.stats.attack || 0,
-          defense: this.pokemon.battle_data.stats.defense || 0,
-          special_attack: this.pokemon.battle_data.stats.special_attack || 0,
-          special_defense: this.pokemon.battle_data.stats.special_defense || 0,
-          speed: this.pokemon.battle_data.stats.speed || 0,
-        };
-      }
-
       // Si es enemigo, usar los base_stats para todo menos HP
-      const species = this.normalizeSpeciesName(this.pokemon?.species);
+      const species = this.normalizedSpeciesKey;
 
       const entry = Object.values(VARIETIES_DATA)
         .flatMap(variant => Object.entries(variant))
         .find(([key]) => key.toLowerCase() === species);
 
-      if (!entry) {
-        hp = this.pokemon.current_hp ?? 0;
-        console.log("Esto no se que show:  ", this.pokemon);
-        console.log("El otro HP:  ", hp);
+      const dexEntry = Object.entries(VARIETIES_DATA)
+        .flatMap(([dex, entries]) =>
+          Object.entries(entries).map(([key, value]) => ({ dex, ...value, name: key }))
+        )
+        .find(entry => entry?.name?.toLowerCase() === species);
+      const dex_number = dexEntry?.dex || '000';
+      console.log("📘 dex_number del enemigo:", dex_number);
 
+      console.log("Esto no se que show:  ", this.pokemon);
+      console.log("El otro HP:  ", hp);
+      
+      if (!entry) {
+        console.warn("⚠️ No se encontró entry para:", species);
+        console.warn("Pokemon:", this.pokemon);
         return {
           hp,
           attack: 0,
@@ -251,14 +257,6 @@ export default {
           speed: 0,
         };
       }
-
-      const dexEntry = Object.entries(VARIETIES_DATA)
-        .flatMap(([dex, entries]) =>
-          Object.entries(entries).map(([key, value]) => ({ dex, ...value, name: key }))
-        )
-        .find(entry => entry?.name?.toLowerCase() === species);
-      const dex_number = dexEntry?.dex || '000';
-      console.log("📘 dex_number del enemigo:", dex_number);
 
       const baseStats = entry[1].base_stats || {};
 
