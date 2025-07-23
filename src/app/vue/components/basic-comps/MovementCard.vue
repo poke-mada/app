@@ -2,7 +2,7 @@
 <template>
   <v-tooltip location="top">
     <template v-slot:activator="{ props }">
-      <v-alert v-bind="props" class="containerMovPokeBattle pa-1" rounded="pill" elevation="1">
+      <v-alert v-bind="props" class="containerMovPokeBattle pa-1" :class="stab ? 'bg-amber' : ''" rounded="pill" elevation="1">
         <v-row align="center" no-gutters>
           <!-- Tipo -->
           <v-col cols="auto">

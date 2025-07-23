@@ -29,8 +29,14 @@
                   <p class="pokemon-name">{{ pokemon?.species || '???' }}</p>
                   <p class="pokemon-level">Nv. {{ pokemon?.level || '??' }}</p>
                   <div class="pokemon-type" v-if="pokemon_types.length">
-                    <v-img v-for="(type, i) in pokemon_types" :key="i"
-                      :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline />
+                    <div v-for="(type, i) in pokemon_types" :key="i" class="d-inline">
+                      <v-tooltip location="top">
+                        <template v-slot:activator="{props}">
+                          <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline v-bind="props" />
+                        </template>
+                        {{type_name_loc(type.name)}}
+                      </v-tooltip>
+                    </div>
                   </div>
                 </div>
               </v-col>
@@ -159,6 +165,9 @@ export default {
       }
       return this.team_data.team.filter(pokemon => pokemon && pokemon.dex_number.toString() === dex_number.toString())[0]
     },
+    type_name_loc(val) {
+      return val; // TODO: traducir de ingles a español
+    },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     },
@@ -212,7 +221,7 @@ export default {
       console.log("Este pokemon DOBLEE: ", this.pokemon);
       if (!this.pokemon) return [];
       if (this.pokemon.battle_data) {
-        return this.pokemon.types || [];
+        return this.pokemon.battle_data.types || [];
       }
       return this.pokemon.types || [];
     },
