@@ -4,13 +4,13 @@
     <v-alert :color="team === 'enemy' ? '#0600FF' : team === 'ally' ? 'info' : '#D5048D'"
       class="divCardSup pa-3 d-flex justify-center align-center">
       <span class="textTeamCombats" v-if="team === 'enemy'">
-        Pokemon enemigo
+        Pokémon enemigo
       </span>
       <span class="textTeamCombats" v-if="team === 'you'">
-        Pokemon atacando
+        Pokémon atacando
       </span>
       <span class="textTeamCombats" v-if="team === 'ally'">
-        Pokemon aliado atacando
+        Pokémon aliado atacando
       </span>
     </v-alert>
     <v-container class="pa-6">

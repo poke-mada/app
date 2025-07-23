@@ -18,7 +18,7 @@
                   <v-row>
                     <v-spacer/>
                     <v-col class="pa-0">
-                      <v-img :src="`./assets/types/${pokemon_type}.png`" width="32" aspect-ratio="1/1"/>
+                      <v-img :src="`./assets/types/Types/${pokemon_type}.png`" width="32" aspect-ratio="1/1"/>
                     </v-col>
                     <v-spacer/>
                   </v-row>

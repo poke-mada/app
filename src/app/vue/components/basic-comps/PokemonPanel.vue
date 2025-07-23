@@ -18,7 +18,7 @@
         <v-row justify="end">
           <v-col>
             <div v-if="pokemon">
-              <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
+              <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
                      width="32" inline></v-img>
             </div>
           </v-col>

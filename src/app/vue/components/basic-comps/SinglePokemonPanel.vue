@@ -4,10 +4,10 @@
     <v-alert :color="team === 'enemy' ? '#0600FF' : '#D5048D'"
       class="divCardSup pa-3 d-flex justify-center align-center">
       <h2 class="textTeamCombats" v-if="team === 'enemy'">
-        Pokemon Enemigo
+        Pokémon Enemigo
       </h2>
       <h2 class="textTeamCombats" v-if="team === 'you'">
-        Pokemon Atacando
+        Pokémon Atacando
       </h2>
     </v-alert>
 

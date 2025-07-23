@@ -1,41 +1,26 @@
+<!-- CUADRO PEQUEÑO DEL POKEMON DE LA HORDA -->
 <template>
-  <v-card type="primary" class="mt-2" border>
-    <template v-slot:title>
-      <v-alert color="primary" class="p-0">
-        Pokemon enemigo
-      </v-alert>
-    </template>
-    <template v-slot:text>
-      <v-row class="mt-0">
-        <v-col cols="6">
-          <v-row>
-            <v-spacer/>
-            <v-col class="w-100">
-              <v-img :src="pokemon ? pokemon.sprite_url : missingno" width="96"/>
-            </v-col>
-          </v-row>
-          <v-row class="w-100" justify="end" v-if="pokemon">
-            <v-img v-for="(type, i) in pokemon_types" :key="i"
-                   :src="`./assets/types/${type_name(type.name)}.png`"
-                   width="32" max-width="32"/>
-          </v-row>
-        </v-col>
-        <v-col cols="6">
-          <v-row>
-            <v-spacer/>
-            <v-col class="text-center">
-              <span class="justify-center mote" :class="team === 'enemy' ? 'info' : 'success'">
-                {{ pokemon ? pokemon.mote : '???' }}
-              </span>
-            </v-col>
-            <v-spacer/>
-          </v-row>
-          <p class="text-center font-weight-bold">{{ pokemon ? pokemon.species : '???' }}</p>
-          <p class="text-center">{{ pokemon ? pokemon_types.map((v) => v.name).join("/") : '???' }}</p>
-        </v-col>
-      </v-row>
-    </template>
-  </v-card>
+  <v-container  @click="$emit('showDetails', pokemon)" style="cursor: pointer;">
+    <v-row class="mt-0 cardPokemon2">
+      <v-col cols="4" class="minHeight">
+        <div class="cardImgPokeBattle">
+          <v-img :src="pokemon ? pokemon.sprite_url : missingno" />
+        </div>
+      </v-col>
+      <v-col cols="8">
+        <p class="pokemon-number">
+          #{{ pokemon ? String(pokemon.dex_number).padStart(4, '0') : '????' }}
+        </p>
+        <p class="pokemon-name">{{ pokemon ? pokemon.species : '???' }}</p>
+        <p class="pokemon-level">Nv. {{ pokemon.level }}</p>
+
+        <div class="pokemon-type" v-if="pokemon_types && pokemon_types.length">
+          <v-img v-for="(type, i) in pokemon_types" :key="i" :src="`./assets/types/Types/${type_name(type.name)}.png`"
+            width="50" inline />
+        </div>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 
@@ -43,7 +28,7 @@
 
 export default {
   name: "ShortPokemonPanel",
-  emits: [],
+  emits: ['showDetails'],
   components: {},
   props: {
     team: {
@@ -63,6 +48,10 @@ export default {
       required: true
     }
   },
+  // mounted() {
+  //   console.log('🔍 Pokémon al montar:', this.pokemon);
+  //   console.log('🔍 Tipos del Pokémon:', this.pokemon_types.map((v) => v.name));
+  // },
   methods: {
     get_imposter_pokemon(dex_number) {
       if (!dex_number) {
@@ -106,18 +95,42 @@ export default {
 </script>
 
 <style scoped>
-.mote {
-  border-radius: 10px;
-  padding: .2rem 1rem;
+.cardPokemon2 {
+  position: relative;
+  border-radius: 40px;
+  background-color: white;
+  padding: 1rem 0;
+  z-index: 1;
+  overflow: hidden;
+  text-align: center;
+  margin-bottom: 10px;
+  cursor: pointer;
 }
 
-.success {
-  background-color: rgba(76, 175, 80, 0.8);
-  color: white;
+.cardPokemon2::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  /* grosor del borde */
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--pink) 0%, var(--blue) 100%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  pointer-events: none;
 }
 
-.info {
-  background-color: rgba(33, 150, 243, 0.8);
-  color: white;
+.cardPokemon2 .cardImgPokeBattle2 {
+  width: 170%;
+  z-index: 100;
+  position: relative;
+}
+
+.minHeight {
+  max-height: 130px;
 }
 </style>
