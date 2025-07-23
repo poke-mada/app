@@ -4,10 +4,10 @@
     <v-alert :color="team === 'enemy' ? '#0600FF' : '#D5048D'"
       class="divCardSup pa-3 d-flex justify-center align-center">
       <h2 class="textTeamCombats" v-if="team === 'enemy'">
-        Pokemon Enemigo
+        Pokémon Enemigo
       </h2>
       <h2 class="textTeamCombats" v-if="team === 'you'">
-        Pokemon Atacando
+        Pokémon Atacando
       </h2>
     </v-alert>
 
@@ -261,39 +261,43 @@ export default {
 
       return (this.pokemon.types || []).filter(item => !!item?.name);
     },
+    normalizedSpeciesKey() {
+      if (!this.pokemon) return '';
+
+      const base = this.normalizeSpeciesName(this.pokemon.species);
+      const suffix = this.pokemon.suffix ? `-${this.normalizeSpeciesName(this.pokemon.suffix)}` : '';
+
+      return `${base}${suffix}`;
+    },
     baseStats() {
       if (!this.pokemon) return {};
 
+      // Siempre tomar el HP del Pokémon real
       let hp = this.pokemon.battle_data?.current_hp ?? this.pokemon.current_hp ?? 0;
 
       console.log("Mi pokemon:  ", this.pokemon);
       console.log("Mi pokemon:  ", hp);
 
-      // Si es mi equipo son datos del pokemon
-      if (this.team === 'you' && this.pokemon.battle_data?.stats) {
-        hp = this.pokemon.battle_data?.current_hp ?? 0;
-        return {
-          hp,
-          attack: this.pokemon.battle_data.stats.attack || 0,
-          defense: this.pokemon.battle_data.stats.defense || 0,
-          special_attack: this.pokemon.battle_data.stats.special_attack || 0,
-          special_defense: this.pokemon.battle_data.stats.special_defense || 0,
-          speed: this.pokemon.battle_data.stats.speed || 0,
-        };
-      }
-
       // Si es enemigo, usar los base_stats para todo menos HP
-      const species = this.normalizeSpeciesName(this.pokemon?.species);
+      const species = this.normalizedSpeciesKey;
+      console.log("LO QUE SEA QUE SPECIES SIGNIFIQUE: ", species);
 
       const entry = Object.values(VARIETIES_DATA)
         .flatMap(variant => Object.entries(variant))
         .find(([key]) => key.toLowerCase() === species);
 
-      if (!entry) {
-        hp = this.pokemon.current_hp ?? 0;
-        console.log("Esto no se que show:  ", this.pokemon);
-        console.log("El otro HP:  ", hp);
+      const dexEntry = Object.entries(VARIETIES_DATA)
+        .flatMap(([dex, entries]) =>
+          Object.entries(entries).map(([key, value]) => ({ dex, ...value, name: key }))
+        )
+        .find(entry => entry?.name?.toLowerCase() === species);
 
+      const dex_number = dexEntry?.dex || '000';
+
+      console.log("📘 dex_number del enemigo:", dex_number);
+
+      if (!entry) {
+        console.warn("⚠️ No se encontró entry en VARIETIES_DATA para:", species);
         return {
           hp,
           attack: 0,
@@ -303,14 +307,6 @@ export default {
           speed: 0,
         };
       }
-
-      const dexEntry = Object.entries(VARIETIES_DATA)
-        .flatMap(([dex, entries]) =>
-          Object.entries(entries).map(([key, value]) => ({ dex, ...value, name: key }))
-        )
-        .find(entry => entry?.name?.toLowerCase() === species);
-      const dex_number = dexEntry?.dex || '000';
-      console.log("📘 dex_number del enemigo:", dex_number);
 
       const baseStats = entry[1].base_stats || {};
 

@@ -605,7 +605,7 @@ div.templateCardDetails>div {
 }
 
 body>div.v-overlay-container>div.v-overlay.v-overlay--active.v-theme--light.v-locale--is-ltr.v-dialog.v-overlay--scroll-blocked>div.v-overlay__content>div>div>div.pa-4>div:nth-child(1)>div.v-col.v-col-5>div>div.fotoPokeInfo>div.cardImgPokeBattle>div>div {
-    padding-bottom: 80% !important;
+    padding-bottom: 85% !important;
 }
 
 .infoAdicional p {
@@ -663,23 +663,43 @@ div.pokemon-weaknesses>div {
     position: relative;
 }
 
+.pokemon-inmune {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+div.pokemon-inmune>div {
+    position: relative;
+}
+
 .badgeMulti{
     position: absolute;
     bottom: 0;
+    right: 0px;
     background-color: #eca3a3;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 100;
-    right: 0px;
 }
 .badgeMulti p{
     font-size: 12px;
     font-weight: bolder;
     color: white;
+}
+
+.badge-weakness {
+  background-color: #F44336;
+}
+.badge-resistance {
+  background-color: #4CAF50;
+}
+.badge-neutral {
+  background-color: #00BCD4;
 }
 
 .imgEnemyContainer{
@@ -689,7 +709,8 @@ div.pokemon-weaknesses>div {
 .imgEnemyContainer .bradgeMultiDos{
     position: absolute;
     top: 0;
-    right: 0;
+    right: 10px;
 }
+
 
 /* -------------- FIN SECTION DETAILS POKEMON -------------- */

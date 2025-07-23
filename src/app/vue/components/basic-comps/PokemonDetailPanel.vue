@@ -65,31 +65,40 @@
                     <v-tooltip location="top">
                       <template #activator="{ props }">
                         <v-progress-linear class="paddinBars" v-bind="props" :model-value="value.statValue"
-                          :max="stat === 'hp' ? pokemon.maxhp : 255" height="18"
+                          :max="stat === 'hp' ? maxHp : 255" height="18"
                           :color="stat === 'attack' ? '#0600FF' : '#D5048D'" rounded />
                       </template>
-                      <span>{{ value.statValue }} / {{ stat === 'hp' ? pokemon.maxhp : 255 }}</span>
+                      <span>{{ value.statValue }} / {{ stat === 'hp' ? maxHp : 255 }}</span>
                     </v-tooltip>
                   </v-col>
                 </v-row>
               </v-col>
             </v-row>
             <v-container class="tittleStats mt-5">
-              <h1>DEBILIDAD</h1>
+              <h1>DEBILIDADES Y RESISTENCIAS</h1>
               <v-divider class="mb-3"></v-divider>
               <div class="pokemon-weaknesses" v-if="pokemon_weaknesses.length">
                 <div v-for="(weakness, i) in pokemon_weaknesses" :key="i">
-                  <div class="badgeMulti">
-                    <p> x{{ weakness.multiplier }}</p>
+                  <div class="badgeMulti" :class="{
+                    'badge-weakness': weakness.multiplier > 1,
+                    'badge-resistance': weakness.multiplier < 1,
+                    'badge-neutral': weakness.multiplier === 1
+                  }">
+                    <p style="margin: 0;">x{{ weakness.multiplier }}</p>
                   </div>
-                  <v-img 
-                    :src="`./assets/types/Types/${type_name(weakness.name)}.png`" width="50" inline />
+                  <v-tooltip location="top">
+                    <template #activator="{ props }">
+                      <v-img v-bind="props" :src="`./assets/types/Types/${type_name(weakness.name)}.png`" width="50"
+                        inline />
+                    </template>
+                    <span>{{ type_name(weakness.name) }}</span>
+                  </v-tooltip>
                 </div>
               </div>
             </v-container>
           </v-col>
         </v-row>
-        <v-row>
+        <v-row v-if="combat_type !== 'HORDE'">
           <v-col cols="12" class="p-0">
             <v-container class="tittleMoves">
               <h1>MOVIMIENTOS</h1>
@@ -107,6 +116,7 @@
 
 <script>
 import MovementCard from "@/app/vue/components/basic-comps/MovementCard";
+import { VARIETIES_DATA } from "@/data/pokemon_varieties_data";
 
 export default {
   name: "PokemonCard",
@@ -126,12 +136,29 @@ export default {
     pokemon: {
       type: Object,
       required: true
+    },
+    combat_type: {
+      type: String,
+      default: null
+    },
+    team: {
+      type: String,
+      required: false
     }
   },
   methods: {
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     },
+    normalizeSpeciesName(name) {
+      return String(name || '')
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toLowerCase()
+        .replace(/[\s.']/g, '-')
+        .replace(/[^a-z0-9-]/g, '');
+    },
+  },
+  mounted() {
     type_name_loc(val) {
       return val; // TODO: traducir de ingles a español
     }
@@ -148,42 +175,68 @@ export default {
     },
     pokemon_weaknesses() {
       if (this.pokemon.battle_data && Array.isArray(this.pokemon.battle_data.weaknesses)) {
-        return this.pokemon.battle_data.weaknesses.filter(w => w.multiplier > 1);
+        return this.pokemon.battle_data.weaknesses
+          .filter(w => w.multiplier >= 0)
+          .sort((a, b) => b.multiplier - a.multiplier); // orden descendente
+      } else if (this.pokemon.weaknesses && Array.isArray(this.pokemon.weaknesses)) {
+        return this.pokemon.weaknesses
+          .filter(w => w.multiplier >= 0)
+          .sort((a, b) => b.multiplier - a.multiplier); // orden descendente
       }
       if (this.pokemon && Array.isArray(this.pokemon.weaknesses)) {
         return this.pokemon.weaknesses.filter(w => w.multiplier > 1);
       }
       return [];
     },
+    maxHp() {
+      if (this.combat_type === 'HORDE' && this.team === 'enemy') {
+        return this.pokemon?.stats?.max_hp ?? 1;
+      }
+      return this.pokemon?.max_hp ?? 1;
+    },
+    normalizedSpeciesKey() {
+      const base = this.normalizeSpeciesName(this.pokemon.species);
+      const suffix = this.pokemon.suffix ? `-${this.normalizeSpeciesName(this.pokemon.suffix)}` : '';
+      return `${base}${suffix}`;
+    },
     statsWithLabels() {
-      console.log("Pokemon PARA REVISAR HP: ", this.pokemon);
+      const speciesKey = this.normalizedSpeciesKey;
+
+      const entry = Object.values(VARIETIES_DATA)
+        .flatMap(variant => Object.entries(variant))
+        .find(([key]) => key.toLowerCase() === speciesKey);
+
+      const baseStats = entry?.[1]?.base_stats || {};
+
       return {
         hp: {
           label: 'PS',
-          statValue: this.pokemon.battle_data ? this.pokemon.battle_data.current_hp ?? 0 : this.pokemon.maxhp
+          statValue: this.combat_type === 'HORDE' && this.team === 'enemy'
+            ? this.pokemon?.stats.max_hp ?? 0
+            : this.pokemon?.battle_data?.stats.max_hp ?? 0
         },
         attack: {
           label: 'Ataque',
-          statValue: this.pokemon.attack ?? 0
+          statValue: baseStats.attack ?? 0
         },
         defense: {
           label: 'Defensa',
-          statValue: this.pokemon.defense ?? 0
+          statValue: baseStats.defense ?? 0
         },
         spatk: {
           label: 'Ataque Especial',
-          statValue: this.pokemon.spatk ?? 0
+          statValue: baseStats.special_attack ?? 0
         },
         spdef: {
           label: 'Defensa Especial',
-          statValue: this.pokemon.spdef ?? 0
+          statValue: baseStats.special_defense ?? 0
         },
         speed: {
           label: 'Velocidad',
-          statValue: this.pokemon.speed ?? 0
+          statValue: baseStats.speed ?? 0
         }
       };
-    }
+    },
   },
   data() {
     return {

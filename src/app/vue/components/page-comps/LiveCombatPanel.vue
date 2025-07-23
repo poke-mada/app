@@ -31,7 +31,7 @@
         </v-col>
         <!-- Log de combate en medio -->
         <v-col cols="4" v-if="game_data && game_data.combat_info.combat_type === 'DOUBLE'">
-          <v-card class="rounded-xl mb-6" elevation="6" style="position: relative;">
+          <v-card @click="combat_log_display = true" class="rounded-xl mb-6" elevation="6" style="position: relative;">
             <div class="divCardLog pa-3 d-flex justify-center align-center">
               <h2 class="textTeamCombatsLog">LOG DE BATALLA</h2>
               <v-img src="/assets/icons/ComatsWhite.svg" class="tamaImg" alt="Log icon" cover />

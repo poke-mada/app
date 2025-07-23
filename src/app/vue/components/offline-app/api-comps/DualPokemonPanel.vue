@@ -3,10 +3,10 @@
     <template v-slot:title>
       <v-alert :color="team === 'enemy' ? 'error' : 'success'" class="pa-0 pl-2">
       <span v-if="team === 'enemy'">
-        Pokemon enemigo
+        Pokémon enemigo
       </span>
         <span v-if="team === 'you'">
-        Pokemon atacando
+        Pokémon atacando
       </span>
       </v-alert>
     </template>
