@@ -138,7 +138,7 @@ class GameData {
     async detectAnyDeath(team) {
         const alreadyDeath = config.get('deaths');
         for (let pokemon of team) {
-            if (pokemon && !alreadyDeath.includes(pokemon.pid) && pokemon.battle_data && (pokemon.battle_data.current_hp <= 0)) {
+            if (pokemon && !alreadyDeath.includes(pokemon.pid) && pokemon.current_hp && pokemon.current_hp <= 0) {
                 const response = await session.post('/api/trainers/register_death/', {
                     pid: pokemon.pid,
                     mote: pokemon.mote,
