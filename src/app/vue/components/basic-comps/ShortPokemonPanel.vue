@@ -15,8 +15,14 @@
         <p class="pokemon-level">Nv. {{ pokemon.level }}</p>
 
         <div class="pokemon-type" v-if="pokemon_types && pokemon_types.length">
-          <v-img v-for="(type, i) in pokemon_types" :key="i" :src="`./assets/types/Types/${type_name(type.name)}.png`"
-            width="50" inline />
+          <div v-for="(type, i) in pokemon_types" :key="i" class="d-inline">
+            <v-tooltip location="top">
+              <template v-slot:activator="{props}">
+                <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline v-bind="props" />
+              </template>
+              {{type_name_loc(type.name)}}
+            </v-tooltip>
+          </div>
         </div>
       </v-col>
     </v-row>
@@ -25,6 +31,8 @@
 
 
 <script>
+
+import {TRANSLATIONS} from "@/data/type_data";
 
 export default {
   name: "ShortPokemonPanel",
@@ -67,6 +75,9 @@ export default {
     },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
+    },
+    type_name_loc(val) {
+      return TRANSLATIONS[val];
     }
   },
   computed: {
@@ -132,5 +143,8 @@ export default {
 
 .minHeight {
   max-height: 130px;
+}
+.cursor-pointer img {
+  cursor: pointer !important;
 }
 </style>

@@ -99,9 +99,24 @@ export function get_sprite(dex_number, form) {
     return '';
 }
 
+export function get_battle_form(pokemon) {
+    const lower_species = pokemon.species.toLowerCase();
+
+    const suffix = pokemon.battle_data?.suffix ?? pokemon.suffix;
+
+    if (suffix) {
+        return `${lower_species}-${suffix}`;
+    }
+    if (lower_species === 'basculin') {
+        return "basculin-red-striped";
+    }
+
+    return lower_species;
+}
+
 export function get_form(pokemon) {
     const lower_species = pokemon.species.toLowerCase();
-    const lower_item = pokemon.held_item_name.toLowerCase();
+    const lower_item = pokemon.held_item_name?.toLowerCase() ?? '';
 
     if (pokemon.suffix) {
         return `${lower_species}-${pokemon.suffix}`;

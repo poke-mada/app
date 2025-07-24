@@ -33,7 +33,7 @@
                     </v-tooltip>
                   </div>
                 </div>
-                <div class="infoAdicional">
+                <div class="infoAdicional" v-if="side === 'you'">
                   <p class="text-center"><strong>Naturaleza:</strong> {{ pokemon.nature_name }}</p>
                   <p class="text-center"><strong>Habilidad:</strong> {{ pokemon.ability_name }}</p>
                   <p class="text-center"><strong>Objeto:</strong> {{ pokemon.item_name }}</p>
@@ -49,8 +49,7 @@
             <v-divider class="mb-3"></v-divider>
             <div class="nivelMax">
               <img src="/imgs/Pokeball.png" />
-              <p v-if="this.side !== 'enemy'">Stats máximos al Nivel 100</p>
-              <p v-if="this.side === 'you'">Stats actuales</p>
+              <p>Stats base</p>
             </div>
             <v-row class="mt-2" dense>
               <v-col cols="12" v-for="(value, stat) in statsWithLabels" :key="stat">
@@ -91,14 +90,14 @@
                       <v-img v-bind="props" :src="`./assets/types/Types/${type_name(weakness.name)}.png`" width="50"
                         inline />
                     </template>
-                    <span>{{ type_name(weakness.name) }}</span>
+                    <span>{{ type_name_loc(weakness.name) }}</span>
                   </v-tooltip>
                 </div>
               </div>
             </v-container>
           </v-col>
         </v-row>
-        <v-row v-if="combat_type !== 'HORDE'">
+        <v-row v-if="side === 'you'">
           <v-col cols="12" class="p-0">
             <v-container class="tittleMoves">
               <h1>MOVIMIENTOS</h1>
@@ -117,6 +116,8 @@
 <script>
 import MovementCard from "@/app/vue/components/basic-comps/MovementCard";
 import { VARIETIES_DATA } from "@/data/pokemon_varieties_data";
+import {get_battle_form} from "@/data/mon_functions";
+import {TRANSLATIONS} from "@/data/type_data";
 
 export default {
   name: "PokemonCard",
@@ -140,10 +141,6 @@ export default {
     combat_type: {
       type: String,
       default: null
-    },
-    team: {
-      type: String,
-      required: false
     }
   },
   methods: {
@@ -157,10 +154,8 @@ export default {
         .replace(/[\s.']/g, '-')
         .replace(/[^a-z0-9-]/g, '');
     },
-  },
-  mounted() {
     type_name_loc(val) {
-      return val; // TODO: traducir de ingles a español
+      return TRANSLATIONS[val];
     }
   },
   computed: {
@@ -189,7 +184,7 @@ export default {
       return [];
     },
     maxHp() {
-      if (this.combat_type === 'HORDE' && this.team === 'enemy') {
+      if (this.combat_type === 'HORDE' && this.side === 'enemy') {
         return this.pokemon?.stats?.max_hp ?? 1;
       }
       return this.pokemon?.max_hp ?? 1;
@@ -200,20 +195,16 @@ export default {
       return `${base}${suffix}`;
     },
     statsWithLabels() {
-      const speciesKey = this.normalizedSpeciesKey;
+      const formKey = get_battle_form(this.pokemon)
+      const speciesCatalog = VARIETIES_DATA[this.pokemon.dex_number];
 
-      const entry = Object.values(VARIETIES_DATA)
-        .flatMap(variant => Object.entries(variant))
-        .find(([key]) => key.toLowerCase() === speciesKey);
-
-      const baseStats = entry?.[1]?.base_stats || {};
+      const entry = speciesCatalog[formKey];
+      const baseStats = entry.base_stats || {};
 
       return {
         hp: {
           label: 'PS',
-          statValue: this.combat_type === 'HORDE' && this.team === 'enemy'
-            ? this.pokemon?.stats.max_hp ?? 0
-            : this.pokemon?.battle_data?.stats.max_hp ?? 0
+          statValue: baseStats.hp ?? 0
         },
         attack: {
           label: 'Ataque',

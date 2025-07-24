@@ -79,9 +79,6 @@
       <v-alert color="error">WIP</v-alert>
     </v-col>
   </v-row>
-  <v-dialog v-model="coverage_table_display">
-    <CoverageTableDisplay :combat_data="this.game_data" @close_display="this.coverage_table_display = false;" />
-  </v-dialog>
   <v-dialog v-model="combat_log_display">
     <v-row>
       <v-spacer @click="combat_log_display = false;" />
@@ -103,7 +100,6 @@ import HordeAllyCombatPanel from "@/app/vue/components/live-combat/horde-combat/
 import DoubleCombatPanel from "@/app/vue/components/live-combat/dual-combat/DoubleCombatPanel";
 import LivePokemonTeamPanel from '@/app/vue/components/live-combat/LivePokemonTeamPanel';
 import PokemonTeamList from '@/app/vue/components/basic-comps/DetailPokemonTeamList';
-import CoverageTableDisplay from "@/app/vue/components/basic-comps/CoverageTableDisplay";
 import { useGameStore } from "@/stores/app";
 
 export default {
@@ -115,7 +111,6 @@ export default {
     DoubleCombatPanel,
     LivePokemonTeamPanel,
     PokemonTeamList,
-    CoverageTableDisplay,
   },
   computed: {
     store() {
