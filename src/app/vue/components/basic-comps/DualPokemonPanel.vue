@@ -19,8 +19,8 @@
           <div class="cardPokemon">
             <v-row>
               <v-col class="col" cols="4">
-                <div class="cardImgPokeBattle">
-                  <v-img :src="pokemon?.sprite_url || missingno" width="96" />
+                <div class="cardImgPokeBattle" @click="selectPokemon(pokemon)">
+                  <v-img :src="pokemon?.sprite_url || missingno" width="96" class="cursor-pointer" />
                 </div>
               </v-col>
               <v-col cols="8" class="pa-0">
@@ -94,23 +94,31 @@
             </v-col>
           </v-row>
         </v-col>
-
       </v-row>
     </v-container>
-
   </v-card>
+  <v-dialog v-model="display">
+    <v-row>
+      <v-spacer @click="display = false"/>
+      <PokemonDetailPanel tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" :side="team"/>
+      <v-spacer @click="display = false"/>
+    </v-row>
+  </v-dialog>
 </template>
 
 
 <script>
 import MovementCard from "@/app/vue/components/basic-comps/MovementCard";
 import { VARIETIES_DATA } from "@/data/pokemon_varieties_data";
+import {TRANSLATIONS} from "@/data/type_data";
+import PokemonDetailPanel from "@/app/vue/components/basic-comps/PokemonDetailPanel";
 
 export default {
   name: "DualPokemonPanel",
   emits: [],
   components: {
-    MovementCard
+    MovementCard,
+    PokemonDetailPanel
   },
   props: {
     team: {
@@ -166,7 +174,7 @@ export default {
       return this.team_data.team.filter(pokemon => pokemon && pokemon.dex_number.toString() === dex_number.toString())[0]
     },
     type_name_loc(val) {
-      return val; // TODO: traducir de ingles a español
+      return TRANSLATIONS[val];
     },
     type_name(val) {
       return String(val).charAt(0).toUpperCase() + String(val).slice(1);
@@ -180,6 +188,13 @@ export default {
         .toLowerCase()
         .replace(/[\s.']/g, '-') // reemplaza espacios, puntos, comillas por guiones
         .replace(/[^a-z0-9-]/g, ''); // elimina cualquier otro símbolo
+    },
+    selectPokemon: function (pokemon) {
+      if (!pokemon) {
+        return
+      }
+      this.selected_pokemon = pokemon;
+      this.display = true;
     },
     translateStat(stat) {
       const translations = {
@@ -284,7 +299,8 @@ export default {
   },
   data() {
     return {
-      dialog: false,
+      selected_pokemon: null,
+      display: false,
       missingno: 'https://static.wikia.nocookie.net/bec6f033-936d-48c5-9c1e-7fb7207e28af'
     }
   }
@@ -305,5 +321,8 @@ export default {
 .info {
   background-color: rgba(33, 150, 243, 0.8);
   color: white;
+}
+.cursor-pointer * {
+  cursor: pointer !important;
 }
 </style>

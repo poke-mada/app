@@ -81,7 +81,7 @@
   <v-dialog v-model="display">
     <v-row>
       <v-spacer @click="display = false"/>
-      <PokemonDetailPanel  tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data"/>
+      <PokemonDetailPanel  tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" :side="team"/>
       <v-spacer @click="display = false"/>
     </v-row>
   </v-dialog>

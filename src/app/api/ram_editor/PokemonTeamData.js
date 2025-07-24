@@ -31,7 +31,7 @@ export class PokemonTeamData {
         let raw_data = decryptPokemonData(data);
         this.dex_number = raw_data.subarray(8, 10).readUInt16LE()
 
-        if (this.dex_number === 0 || this.dex_number >= 808) {
+        if (this.dex_number === 0 || this.dex_number >= 822) {
             return;
         }
 
