@@ -1,13 +1,21 @@
 import {STATICS_URL} from "@/app/api/lib/poke-api";
-import {MON_DATA} from '@/data/mon_data';
+import {ABILITY_DATA, ITEM_DATA, MON_DATA} from '@/data/mon_data';
 import {validatePokemon} from "@/app/api/lib/validators";
 import {RAM_ROM2 as rom} from '@/stores/back_constants';
 import {WEAKNESS_DATA} from '@/data/type_data';
+import {Movement} from "@/app/api/ram_editor/movement";
 
 export class InBattlePokemonData {
     constructor(data) {
         this.original_data = data;
         this.dex_number = data.slice(rom.pokemon_battle_data.dex_number).readUInt16LE()
+        if (this.dex_number === 0 || this.dex_number >= 822) {
+            this.stats = {};
+            this.moves = [];
+            this.boosts = {};
+            this.weaknesses = [];
+            return;
+        }
         this.battle_slot = data.slice(rom.pokemon_battle_data.battle_slot).readUInt8()
         this.form = data.slice(rom.pokemon_battle_data.form).readUInt8()
         this.level = data.slice(rom.pokemon_battle_data.level).readUInt8()
@@ -20,6 +28,16 @@ export class InBattlePokemonData {
             special_defense: data.slice(rom.pokemon_battle_data.stats.special_defense).readUInt16LE(),
             speed: data.slice(rom.pokemon_battle_data.stats.speed).readUInt16LE(),
         }
+
+        this.held_item_num = data.subarray(rom.pokemon_battle_data.item).readUInt16LE()
+        this.ability_num = data.subarray(rom.pokemon_battle_data.ability).readUInt8()  // Ability
+
+        this.moves = [];
+
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 0, data.subarray(rom.pokemon_battle_data.moves.address +  0).readUInt16LE()));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 1, data.subarray(rom.pokemon_battle_data.moves.address + 14).readUInt16LE()));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 2, data.subarray(rom.pokemon_battle_data.moves.address + 28).readUInt16LE()));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 3, data.subarray(rom.pokemon_battle_data.moves.address + 42).readUInt16LE()));
 
         let is_burned = data.slice(rom.pokemon_battle_data.status.burned).readUInt8() === 1;
         this.is_burned = is_burned;
@@ -106,6 +124,23 @@ export class InBattlePokemonData {
             return {name: type, multiplier: multiplier}
         })
 
+        let ability;
+        let item;
+        try {
+            ability = ABILITY_DATA[this.ability_num.toString()];
+            item = ITEM_DATA[this.held_item_num.toString()];
+
+            this.ability_name = ability.name;
+            this.item_name = item.name;
+        } catch (e) {
+            console.log('==========================================')
+            console.log('error while getting ability and item names');
+            console.log('FAIILED FOR', this.dex_number)
+            console.log('ability_num', this.ability_num);
+            console.log('held_item_num', this.held_item_num)
+            console.log('ability', ability);
+            console.log('item', item);
+        }
 
         if (validatePokemon(this.dex_number)) {
             try {

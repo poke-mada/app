@@ -169,7 +169,14 @@ export const XY = Object.freeze(new RomData(
                 accuracy: 0x101,
                 evasion: 0x102,
             },
-            types: 0xF8
+            types: 0xF8,
+            item: 0xA,
+            ability: 0x146,
+            moves: {
+                address: 0x10E,
+                offset: 14,
+                pp: 0x10E + 2
+            }
         },
         box_data: {},
         wild_battle_data: {

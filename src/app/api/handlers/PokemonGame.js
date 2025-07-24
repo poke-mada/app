@@ -47,13 +47,18 @@ class GameData {
                 await this.enemy_data.startComms(rom, this, this.combat_info.addresses.enemy, this.combat_info.enemy_selected, citra);
                 await this.ally_data.startComms(rom, this, this.combat_info.addresses.ally, this.combat_info.ally_selected, citra);
 
-                let your_team_length = this.your_data.team.filter((pokemon) => pokemon && validatePokemon(pokemon.dex_number)).length
-                for (let slot = 0; slot < your_team_length; slot++) {
-                    let pokemon = this.your_data.team[slot];
-                    if (!pokemon) continue;
-                    pokemon.discovered = true;
-                    pokemon.battle_data = this.combat_info.your_battle_data[slot];
+                if (this.combat_info.combat_type !== CombatType.OFF) {
+
+                    // eslint-disable-next-line no-unused-vars
+                    for (const [slot, pkm] of Object.entries(this.combat_info.your_battle_data)) {
+                        const team_pkm = this.your_data.team.filter(pokemon => pokemon.dex_number === pkm.dex_number)[0];
+                        pkm.nature_name = team_pkm.nature_name
+                        pkm.nature_num = team_pkm.nature_num
+                    }
+
+                    this.your_data.team = Object.values(this.combat_info.your_battle_data);
                 }
+                
                 const enemy_data = Object.values(this.combat_info.enemy_battle_data);
                 if (enemy_data.length > 0) {
                     this.enemy_data.team = enemy_data;

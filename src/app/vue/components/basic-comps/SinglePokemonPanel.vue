@@ -138,7 +138,7 @@
   <v-dialog v-model="display">
     <v-row>
       <v-spacer @click="display = false"/>
-      <PokemonDetailPanel tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" :team="team"/>
+      <PokemonDetailPanel tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" :side="team"/>
       <v-spacer @click="display = false"/>
     </v-row>
   </v-dialog>
@@ -328,6 +328,9 @@ export default {
       display: false,
       missingno: 'https://static.wikia.nocookie.net/bec6f033-936d-48c5-9c1e-7fb7207e28af'
     }
+  },
+  mounted() {
+    console.log(this.pokemon)
   }
 }
 </script>
@@ -349,7 +352,7 @@ export default {
   background-color: rgba(33, 150, 243, 0.8);
   color: white;
 }
-.cursor-pointer img {
+.cursor-pointer * {
   cursor: pointer !important;
 }
 </style>

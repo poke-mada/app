@@ -5,10 +5,8 @@ import {COVERAGE_DATA} from '@/data/type_data';
 import {MOVE_DATA} from '@/data/move_data';
 import {FORCE_TYPE_ABILITIES, SPECIAL_MOVES} from '@/data/force_type_data';
 
-function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
+function Movement(item_held, ability, slot, move_id) {
     if (move_id === 0) return;
-
-    let move_current_pp = move_byte_data.slice(14 * slot).readUInt8();
 
     let move = MOVE_DATA[move_id];
     if (!move) {
@@ -74,9 +72,7 @@ function Movement(item_held, ability, slot, move_id, pp, move_byte_data) {
 
     let coverage_data = COVERAGE_DATA[move_type.toLowerCase()];
     return {
-        discovered: move_current_pp < move.movepp,
         slot: slot,
-        current_pp: move_current_pp,
         move_name: move.movename,
         max_pp: move.movepp,
         type: move_type,
