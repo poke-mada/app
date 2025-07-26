@@ -243,7 +243,10 @@ export class PokemonTeamData {
                 break;
 
             case 555:
-                if (form === 8 || form === 10) return "zen";
+                if (form === 0) return "standard";
+                if (form === 2) return "standard";
+                if (form === 1) return "zen";
+                if (form === 3) return "zen";
                 return null;
 
             case 646:

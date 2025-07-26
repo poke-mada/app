@@ -100,9 +100,9 @@ export function get_sprite(dex_number, form) {
 }
 
 export function get_battle_form(pokemon) {
-    const lower_species = pokemon.species.toLowerCase();
+    const lower_species = pokemon?.species?.toLowerCase();
 
-    const suffix = pokemon.battle_data?.suffix ?? pokemon.suffix;
+    const suffix = pokemon?.battle_data?.suffix ?? pokemon?.suffix;
 
     if (suffix) {
         return `${lower_species}-${suffix}`;

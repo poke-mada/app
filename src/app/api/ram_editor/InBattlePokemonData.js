@@ -96,7 +96,7 @@ export class InBattlePokemonData {
 
         let weaknesses = {};
         for (const type of types) {
-            if (!type.name) {
+            if (type && !type.name) {
                 continue
             }
             let weak = WEAKNESS_DATA[type.name.toLowerCase()];
@@ -248,7 +248,10 @@ export class InBattlePokemonData {
                 break;
 
             case 555:
-                if (form === 8 || form === 10) return "zen";
+                if (form === 0) return "standard";
+                if (form === 2) return "standard";
+                if (form === 1) return "zen";
+                if (form === 3) return "zen";
                 return null;
 
             case 646:
@@ -365,18 +368,6 @@ export class InBattlePokemonData {
         const bytes = Buffer.alloc(this.original_data.length)
         this.original_data.copy(bytes, 0, 0, this.original_data.length)
 
-        // bytes.writeUint16LE(this.dex_number, rom.pokemon_battle_data.dex_number);
-        // bytes.writeUint8(this.battle_slot, rom.pokemon_battle_data.battle_slot);
-        // bytes.writeUint8(this.form, rom.pokemon_battle_data.form)
-        // bytes.writeUint8(this.level, rom.pokemon_battle_data.level)
-
-        // bytes.writeUint16LE(this.stats.max_hp, rom.pokemon_battle_data.stats.max_hp)
-        // bytes.writeUint16LE(this.stats.attack, rom.pokemon_battle_data.stats.attack)
-        // bytes.writeUint16LE(this.stats.defense, rom.pokemon_battle_data.stats.defense)
-        // bytes.writeUint16LE(this.stats.special_attack, rom.pokemon_battle_data.stats.special_attack)
-        // bytes.writeUint16LE(this.stats.special_defense, rom.pokemon_battle_data.stats.special_defense)
-        // bytes.writeUint16LE(this.stats.speed, rom.pokemon_battle_data.stats.speed)
-
         bytes.writeUint8(this.boosts.attack + 6, rom.pokemon_battle_data.boosts.attack)
         bytes.writeUint8(this.boosts.defense + 6, rom.pokemon_battle_data.boosts.defense)
         bytes.writeUint8(this.boosts.special_attack + 6, rom.pokemon_battle_data.boosts.special_attack)
@@ -384,10 +375,6 @@ export class InBattlePokemonData {
         bytes.writeUint8(this.boosts.speed + 6, rom.pokemon_battle_data.boosts.speed)
         bytes.writeUint8(this.boosts.accuracy + 6, rom.pokemon_battle_data.boosts.accuracy)
         bytes.writeUint8(this.boosts.evasion + 6, rom.pokemon_battle_data.boosts.evasion)
-
-        // bytes.writeUint8(this.type1, rom.pokemon_battle_data.types)
-        // bytes.writeUint8(this.type2, rom.pokemon_battle_data.types + 1)
-        // bytes.writeUint8(this.type3, rom.pokemon_battle_data.types + 2)
 
         bytes.writeUint8(this.is_burned ? 1 : 0, rom.pokemon_battle_data.status.burned)
         bytes.writeUint8(this.is_paralized ? 1 : 0, rom.pokemon_battle_data.status.paralized)
