@@ -18,6 +18,7 @@ export class InBattlePokemonData {
         }
         this.battle_slot = data.slice(rom.pokemon_battle_data.battle_slot).readUInt8()
         this.form = data.slice(rom.pokemon_battle_data.form).readUInt8()
+        this.gender = data.slice(rom.pokemon_battle_data.gender).readUInt8()
         this.level = data.slice(rom.pokemon_battle_data.level).readUInt8()
         this.current_hp = data.slice(rom.pokemon_battle_data.current_hp).readUInt16LE()
         this.stats = {
@@ -34,7 +35,7 @@ export class InBattlePokemonData {
 
         this.moves = [];
 
-        this.moves.push(Movement(this.held_item_num, this.ability_num, 0, data.subarray(rom.pokemon_battle_data.moves.address +  0).readUInt16LE()));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 0, data.subarray(rom.pokemon_battle_data.moves.address + 0).readUInt16LE()));
         this.moves.push(Movement(this.held_item_num, this.ability_num, 1, data.subarray(rom.pokemon_battle_data.moves.address + 14).readUInt16LE()));
         this.moves.push(Movement(this.held_item_num, this.ability_num, 2, data.subarray(rom.pokemon_battle_data.moves.address + 28).readUInt16LE()));
         this.moves.push(Movement(this.held_item_num, this.ability_num, 3, data.subarray(rom.pokemon_battle_data.moves.address + 42).readUInt16LE()));
@@ -159,6 +160,12 @@ export class InBattlePokemonData {
     }
 
     getSuffix(dexNumber, form) {
+        if ([25, 658, 122, 143].includes(dexNumber)) {
+            if (form === 1) {
+                return 'ash'
+            }
+        }
+
         switch (dexNumber) {
             case 641:
             case 642:

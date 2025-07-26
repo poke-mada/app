@@ -257,6 +257,9 @@ export default {
       return this.get_pokemon(this.pk_slot);
     },
     pokemon_variety() {
+      if (!this.pokemon) {
+        return null;
+      }
       const formKey = get_battle_form(this.pokemon)
       const speciesCatalog = VARIETIES_DATA[this.pokemon?.dex_number ?? "0"];
 

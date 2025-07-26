@@ -54,11 +54,6 @@ class GameData {
                     }
                     this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
 
-                    console.log(enemy_data)
-                    for (let pk of enemy_data) {
-                        console.log(pk.original_data)
-                    }
-
                     // eslint-disable-next-line no-unused-vars
                     for (const [slot, pkm] of Object.entries(this.combat_info.your_battle_data)) {
                         if (!pkm) {
