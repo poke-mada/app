@@ -52,8 +52,14 @@
       </PkCard>
     </v-col>
   </v-row>
-  <v-dialog  class="hola" v-model="display_box_detail">
-    <PokemonDetailPanel :pokemon="selected_pokemon"/>
+  <v-dialog v-model="display_box_detail">
+    <v-row>
+      <v-spacer @click="display_box_detail = false"/>
+      <v-col>
+        <PokemonDetailPanel :pokemon="selected_pokemon"/>
+      </v-col>
+      <v-spacer @click="display_box_detail = false"/>
+    </v-row>
   </v-dialog>
   <v-dialog v-model="pokemon_team_display">
     <v-row>

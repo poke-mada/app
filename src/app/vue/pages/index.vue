@@ -120,7 +120,7 @@
         <v-row>
           <v-spacer v-on:click="display = false"/>
           <v-col>
-            <PokemonDetailPanel :pokemon="selected_pokemon" max-width="600"/>
+            <PokemonDetailPanel :pokemon="selected_pokemon"/>
           </v-col>
           <v-spacer v-on:click="display = false"/>
         </v-row>
