@@ -18,7 +18,7 @@
             </v-col>
             <v-col cols="2">
               <v-select
-                  v-model="rarity_filter"
+                  v-model="category_filter"
                   label="Filtrar comodines"
                   :items="common_filters"
                   :item-props="true"
@@ -31,7 +31,7 @@
                 <v-row>
                   <v-spacer/>
                   <v-col cols="6">
-                    <v-img :src="`https://pokemon.para-mada.com${item.sprite}`" height="300" class="cursor-pointer"
+                    <v-img :src="`${item.sprite}`" height="300" class="cursor-pointer"
                            :class="!item.always_available && !item.inventory ? 'disabled' : ''"
                            lazy-src="./wildcards/000-sin_hacer.png"
                            @click="display_card(item)"/>
@@ -57,7 +57,7 @@
     <v-row>
       <v-spacer @click="card_displayed = false;"/>
       <v-col lg="2">
-        <img :src="`https://pokemon.para-mada.com${selected_card.sprite}`" height="300"/>
+        <img :src="`${selected_card.sprite}`" height="300"/>
       </v-col>
       <v-col class="text-left text-white">
         <v-row>
@@ -93,11 +93,8 @@
           <v-col v-if="selected_card.price">
             <v-btn text="Comprar" color="success" @click="comprar()"/>
           </v-col>
-          <v-col v-if="selected_card.price">
-            <v-btn text="Comprar y usar" color="purple" @click="comprar_y_usar()"/>
-          </v-col>
         </v-row>
-        <v-row v-if="![25, 41, 42].includes(selected_card.id)">
+        <v-row v-if="![25, 41, 42].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2">
           <v-col>
             <v-text-field type="number" label="Cantidad" v-model="quantity"/>
           </v-col>
@@ -115,6 +112,11 @@
         <v-row v-if="selected_card.id === 42">
           <v-col>
             <v-autocomplete label="Objeto Fuerte" v-model="item_id" :items="strong_items" :item-props="true"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="selected_card.category === 6">
+          <v-col>
+            <v-autocomplete label="Objetivo" v-model="target_id" :items="possible_targets" :item-props="true"/>
           </v-col>
         </v-row>
       </v-col>
@@ -151,6 +153,8 @@ export default {
 
     return {
       config: config,
+      target_id: null,
+      possible_targets: [],
       item_id: null,
       quantity: 1,
       HOST_URL: SERVER_URL,
@@ -158,7 +162,7 @@ export default {
       selected_card: null,
       wildcard_search: '',
       list_wildcards: [],
-      rarity_filter: null,
+      category_filter: null,
       mega_stones: [],
       weak_items: [],
       strong_items: [],
@@ -169,22 +173,52 @@ export default {
         },
         {
           value: 0,
-          title: 'Común',
+          title: 'Esteticos',
           color: 'rgba(76, 175, 80, 1)'
         },
         {
           value: 1,
-          title: 'Poco Común',
+          title: 'Curacion',
           color: 'rgb(33, 150, 243)'
         },
         {
           value: 2,
-          title: 'Rara',
+          title: 'Protección',
           color: 'rgb(156, 39, 176)'
         },
         {
           value: 3,
-          title: 'Legendaria',
+          title: 'Boosteos',
+          color: 'rgb(251, 140, 0)'
+        },
+        {
+          value: 4,
+          title: 'Items',
+          color: 'rgb(33, 150, 243)'
+        },
+        {
+          value: 5,
+          title: 'Captura',
+          color: 'rgb(156, 39, 176)'
+        },
+        {
+          value: 6,
+          title: 'Ataque',
+          color: 'rgb(251, 140, 0)'
+        },
+        {
+          value: 7,
+          title: 'Economía',
+          color: 'rgb(33, 150, 243)'
+        },
+        {
+          value: 8,
+          title: 'Retos',
+          color: 'rgb(156, 39, 176)'
+        },
+        {
+          value: 9,
+          title: 'El Elegido',
           color: 'rgb(251, 140, 0)'
         },
       ]
@@ -200,6 +234,7 @@ export default {
       return './assets/coin.png'
     },
     display_card(wildcard) {
+      console.log(wildcard)
       this.card_displayed = true;
       this.selected_card = wildcard;
     },
@@ -214,6 +249,7 @@ export default {
       }
       session.post(`/api/wildcards/${this.selected_card.id}/use_card/`, {
         quantity: this.quantity,
+        target_id: this.target_id,
         item_id: this.item_id
       }, this.config).then(async (response) => {
         if (response.status === 200) {
@@ -263,29 +299,6 @@ export default {
         this.load_wildcards();
       })
     },
-    comprar_y_usar() {
-      session.post(`/api/wildcards/${this.selected_card.id}/buy_and_use_card/`, {
-        quantity: this.quantity,
-        item_id: this.item_id
-      }, this.config).then(async (response) => {
-        if (response.status === 200 && !this.selected_card.always_available) {
-
-          emitter.emit('action-notification', {
-            title: 'Compra exitosa',
-            message: `Has comprado ${response.data.amount} y usado x${this.quantity} veces la carta ${this.selected_card.name} `,
-          });
-        }
-
-        if (response.status !== 200) {
-          console.log(response)
-          emitter.emit('action-notification', {
-            title: 'Error!',
-            message: response.data,
-          });
-        }
-        this.load_wildcards();
-      })
-    },
     async load_mega_stones() {
       const response = await session.get('/api/wildcards/list_mega_stones/')
       this.mega_stones = response.data
@@ -297,6 +310,10 @@ export default {
     async load_strong_items() {
       const response = await session.get('/api/wildcards/list_strong_items/')
       this.strong_items = response.data
+    },
+    async load_targets() {
+      const response = await session.get('/api/trainers/list_streamers/')
+      this.possible_targets = response.data.map(trainer => ({value: trainer.id, title: trainer.streamer_name}))
     }
   },
   computed: {
@@ -305,8 +322,8 @@ export default {
       if (this.wildcard_search) {
         filtered_cards = filtered_cards.filter(item => item.name.toLowerCase().includes(this.wildcard_search.toLowerCase()));
       }
-      if (this.rarity_filter !== null) {
-        filtered_cards = filtered_cards.filter(item => item.quality === this.rarity_filter);
+      if (this.category_filter !== null) {
+        filtered_cards = filtered_cards.filter(item => item.category === this.category_filter);
       }
 
       return filtered_cards.sort((prev_card, card) => {
@@ -336,13 +353,14 @@ export default {
         }
         return 0
       });
-    }
+    },
   },
   mounted() {
     this.load_wildcards();
     this.load_mega_stones();
     this.load_weak_items();
     this.load_strong_items();
+    this.load_targets();
   },
   watch: {
     card_displayed() {

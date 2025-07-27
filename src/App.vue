@@ -163,6 +163,7 @@ export default {
       localStorage.removeItem('api_token');
       localStorage.removeItem('trainer_id');
       localStorage.removeItem('coins');
+      localStorage.removeItem('karma');
       this.$router.push('/login')
     }
   },
@@ -227,6 +228,9 @@ export default {
         case 'coins_notification':
           emitter.emit('coins_updated', data.data)
           break;
+        case 'karma':
+          emitter.emit('karma_updated', data.data)
+          break;
         case 'start_timer_notification':
           window.electron.sendMessage('notify', {
             title: '¡Empieza!',
@@ -246,9 +250,9 @@ export default {
 
     dataSocket.onopen = async () => {
       let response = await session.get(`api/trainers/get_economy/`);
-      if (this.coins !== response.data) {
-        emitter.emit('coins_updated', response.data)
-      }
+      emitter.emit('coins_updated', response.data)
+      let kresponse = await session.get(`api/trainers/get_karma/`);
+      emitter.emit('karma_updated', kresponse.data)
     }
 
     window.electron.startComms();

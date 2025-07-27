@@ -6,11 +6,13 @@
 </template>
 
 <script>
+import {emitter} from "@/stores";
+
 export default {
   name: "KarmaComponent",
   data() {
     return {
-      karma: 1
+      karma: 0
     }
   },
   methods: {
@@ -19,17 +21,9 @@ export default {
     },
   },
   async mounted() {
-    const streamer_name = localStorage.getItem('streamer_name');
-    const dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
-    dataSocket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      const data = JSON.parse(message.message);
-
-      if (data.type === 'karma') {
-        this.karma = data.data;
-      }
-
-    };
+    emitter.on('karma_updated', (data) => {
+      this.karma = data
+    })
   },
 }
 </script>
