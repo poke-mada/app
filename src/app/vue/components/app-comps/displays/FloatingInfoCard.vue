@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      coins: parseInt(localStorage.getItem('coins')),
+      coins: 0,
       wildcard_count: 0
     }
   }
