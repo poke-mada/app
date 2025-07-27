@@ -1,15 +1,24 @@
 import {STATICS_URL} from "@/app/api/lib/poke-api";
-import {MON_DATA} from '@/data/mon_data';
+import {ABILITY_DATA, ITEM_DATA, MON_DATA} from '@/data/mon_data';
 import {validatePokemon} from "@/app/api/lib/validators";
 import {RAM_ROM2 as rom} from '@/stores/back_constants';
 import {WEAKNESS_DATA} from '@/data/type_data';
+import {Movement} from "@/app/api/ram_editor/movement";
 
 export class InBattlePokemonData {
     constructor(data) {
         this.original_data = data;
         this.dex_number = data.slice(rom.pokemon_battle_data.dex_number).readUInt16LE()
+        if (this.dex_number === 0 || this.dex_number >= 822) {
+            this.stats = {};
+            this.moves = [];
+            this.boosts = {};
+            this.weaknesses = [];
+            return;
+        }
         this.battle_slot = data.slice(rom.pokemon_battle_data.battle_slot).readUInt8()
         this.form = data.slice(rom.pokemon_battle_data.form).readUInt8()
+        this.gender = data.slice(rom.pokemon_battle_data.gender).readUInt8()
         this.level = data.slice(rom.pokemon_battle_data.level).readUInt8()
         this.current_hp = data.slice(rom.pokemon_battle_data.current_hp).readUInt16LE()
         this.stats = {
@@ -20,6 +29,16 @@ export class InBattlePokemonData {
             special_defense: data.slice(rom.pokemon_battle_data.stats.special_defense).readUInt16LE(),
             speed: data.slice(rom.pokemon_battle_data.stats.speed).readUInt16LE(),
         }
+
+        this.held_item_num = data.subarray(rom.pokemon_battle_data.item).readUInt16LE()
+        this.ability_num = data.subarray(rom.pokemon_battle_data.ability).readUInt8()  // Ability
+
+        this.moves = [];
+
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 0, data.subarray(rom.pokemon_battle_data.moves.address + 0).readUInt16LE()));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 1, data.subarray(rom.pokemon_battle_data.moves.address + 14).readUInt16LE()));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 2, data.subarray(rom.pokemon_battle_data.moves.address + 28).readUInt16LE()));
+        this.moves.push(Movement(this.held_item_num, this.ability_num, 3, data.subarray(rom.pokemon_battle_data.moves.address + 42).readUInt16LE()));
 
         let is_burned = data.slice(rom.pokemon_battle_data.status.burned).readUInt8() === 1;
         this.is_burned = is_burned;
@@ -78,7 +97,7 @@ export class InBattlePokemonData {
 
         let weaknesses = {};
         for (const type of types) {
-            if (!type.name) {
+            if (type && !type.name) {
                 continue
             }
             let weak = WEAKNESS_DATA[type.name.toLowerCase()];
@@ -106,6 +125,23 @@ export class InBattlePokemonData {
             return {name: type, multiplier: multiplier}
         })
 
+        let ability;
+        let item;
+        try {
+            ability = ABILITY_DATA[this.ability_num.toString()];
+            item = ITEM_DATA[this.held_item_num.toString()];
+
+            this.ability_name = ability.name;
+            this.item_name = item.name;
+        } catch (e) {
+            console.log('==========================================')
+            console.log('error while getting ability and item names');
+            console.log('FAIILED FOR', this.dex_number)
+            console.log('ability_num', this.ability_num);
+            console.log('held_item_num', this.held_item_num)
+            console.log('ability', ability);
+            console.log('item', item);
+        }
 
         if (validatePokemon(this.dex_number)) {
             try {
@@ -124,6 +160,12 @@ export class InBattlePokemonData {
     }
 
     getSuffix(dexNumber, form) {
+        if ([25, 658, 122, 143].includes(dexNumber)) {
+            if (form === 1) {
+                return 'ash'
+            }
+        }
+
         switch (dexNumber) {
             case 641:
             case 642:
@@ -213,7 +255,10 @@ export class InBattlePokemonData {
                 break;
 
             case 555:
-                if (form === 8 || form === 10) return "zen";
+                if (form === 0) return "standard";
+                if (form === 2) return "standard";
+                if (form === 1) return "zen";
+                if (form === 3) return "zen";
                 return null;
 
             case 646:
@@ -330,18 +375,6 @@ export class InBattlePokemonData {
         const bytes = Buffer.alloc(this.original_data.length)
         this.original_data.copy(bytes, 0, 0, this.original_data.length)
 
-        // bytes.writeUint16LE(this.dex_number, rom.pokemon_battle_data.dex_number);
-        // bytes.writeUint8(this.battle_slot, rom.pokemon_battle_data.battle_slot);
-        // bytes.writeUint8(this.form, rom.pokemon_battle_data.form)
-        // bytes.writeUint8(this.level, rom.pokemon_battle_data.level)
-
-        // bytes.writeUint16LE(this.stats.max_hp, rom.pokemon_battle_data.stats.max_hp)
-        // bytes.writeUint16LE(this.stats.attack, rom.pokemon_battle_data.stats.attack)
-        // bytes.writeUint16LE(this.stats.defense, rom.pokemon_battle_data.stats.defense)
-        // bytes.writeUint16LE(this.stats.special_attack, rom.pokemon_battle_data.stats.special_attack)
-        // bytes.writeUint16LE(this.stats.special_defense, rom.pokemon_battle_data.stats.special_defense)
-        // bytes.writeUint16LE(this.stats.speed, rom.pokemon_battle_data.stats.speed)
-
         bytes.writeUint8(this.boosts.attack + 6, rom.pokemon_battle_data.boosts.attack)
         bytes.writeUint8(this.boosts.defense + 6, rom.pokemon_battle_data.boosts.defense)
         bytes.writeUint8(this.boosts.special_attack + 6, rom.pokemon_battle_data.boosts.special_attack)
@@ -349,10 +382,6 @@ export class InBattlePokemonData {
         bytes.writeUint8(this.boosts.speed + 6, rom.pokemon_battle_data.boosts.speed)
         bytes.writeUint8(this.boosts.accuracy + 6, rom.pokemon_battle_data.boosts.accuracy)
         bytes.writeUint8(this.boosts.evasion + 6, rom.pokemon_battle_data.boosts.evasion)
-
-        // bytes.writeUint8(this.type1, rom.pokemon_battle_data.types)
-        // bytes.writeUint8(this.type2, rom.pokemon_battle_data.types + 1)
-        // bytes.writeUint8(this.type3, rom.pokemon_battle_data.types + 2)
 
         bytes.writeUint8(this.is_burned ? 1 : 0, rom.pokemon_battle_data.status.burned)
         bytes.writeUint8(this.is_paralized ? 1 : 0, rom.pokemon_battle_data.status.paralized)

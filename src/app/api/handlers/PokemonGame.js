@@ -47,21 +47,33 @@ class GameData {
                 await this.enemy_data.startComms(rom, this, this.combat_info.addresses.enemy, this.combat_info.enemy_selected, citra);
                 await this.ally_data.startComms(rom, this, this.combat_info.addresses.ally, this.combat_info.ally_selected, citra);
 
-                let your_team_length = this.your_data.team.filter((pokemon) => pokemon && validatePokemon(pokemon.dex_number)).length
-                for (let slot = 0; slot < your_team_length; slot++) {
-                    let pokemon = this.your_data.team[slot];
-                    if (!pokemon) continue;
-                    pokemon.discovered = true;
-                    pokemon.battle_data = this.combat_info.your_battle_data[slot];
-                }
-                const enemy_data = Object.values(this.combat_info.enemy_battle_data);
-                if (enemy_data.length > 0) {
-                    this.enemy_data.team = enemy_data;
-                }
-                this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
-                await this.detectAnyDeath(this.your_data.team);
-                this.detectCurrentCombat(this.enemy_data);
+                if (this.combat_info.combat_type !== CombatType.OFF && this.combat_info.combat_env !== CombatEnv.OFF) {
+                    const enemy_data = Object.values(this.combat_info.enemy_battle_data);
+                    if (enemy_data.length > 0) {
+                        this.enemy_data.team = enemy_data;
+                    }
+                    this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
 
+                    // eslint-disable-next-line no-unused-vars
+                    for (const [slot, pkm] of Object.entries(this.combat_info.your_battle_data)) {
+                        if (!pkm) {
+                            continue
+                        }
+
+                        const possibles = this.your_data.team.filter(pokemon => pokemon && pokemon.dex_number === pkm.dex_number);
+                        const team_pkm = possibles[0];
+                        if (!team_pkm) {
+                            continue;
+                        }
+                        pkm.pid = team_pkm.pid
+                        pkm.nature_name = team_pkm.nature_name
+                        pkm.nature_num = team_pkm.nature_num
+                    }
+
+                    this.your_data.team = Object.values(this.combat_info.your_battle_data);
+                    await this.detectAnyDeath(this.your_data.team);
+                    this.detectCurrentCombat(this.enemy_data);
+                }
                 if (pokemon_game.alreadySent !== JSON.stringify(this)) {
                     ipc.reply('updated_game_data', this);
                     pokemon_game.alreadySent = JSON.stringify(this);
@@ -133,7 +145,7 @@ class GameData {
     async detectAnyDeath(team) {
         const alreadyDeath = config.get('deaths');
         for (let pokemon of team) {
-            if (pokemon && !alreadyDeath.includes(pokemon.pid) && pokemon.battle_data && (pokemon.battle_data.current_hp <= 0)) {
+            if (pokemon && !alreadyDeath.includes(pokemon.dex_number) && pokemon.current_hp === 0) {
                 const response = await session.post('/api/trainers/register_death/', {
                     pid: pokemon.pid,
                     mote: pokemon.mote,
@@ -143,9 +155,12 @@ class GameData {
                         'Authorization': `Token ${GLOBAL_CONFIG.token}`
                     }
                 }).catch(() => {
+                    console.log("no se pudo matar we")
                 })
                 if (response) {
-                    alreadyDeath.push(pokemon.pid)
+                    console.log("muerte registrada")
+                    console.log(response)
+                    alreadyDeath.push(pokemon.dex_number)
                 }
             }
         }
@@ -175,6 +190,7 @@ class TeamData {
         }
 
         if (game_data.combat_info.next_pokemon && this.owner === TeamOwner.ENEMY) {
+            console.log(game_data.combat_info.next_pokemon)
             const filtered = this.team_data.filter(pokemon => pokemon && pokemon.species.toLowerCase() === game_data.combat_info.next_pokemon);
             this.selected_pokemon.push(filtered[0].dex_number)
         } else {

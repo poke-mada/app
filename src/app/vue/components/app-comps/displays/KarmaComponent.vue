@@ -1,31 +1,32 @@
 <template>
   <div class="d-flex flex-row align-items-center">
-    <span class="mr-2 mr-1 font-weight-bold">Max Level:</span>
-    <span class="mr-2">{{ max_level }}</span>
+    <img class="mr-2 mt-1 mb-1" :src="get_asset()" height="16" width="16" />
+    <span class="mr-2">{{ karma }}</span>
   </div>
 </template>
 
 <script>
-import {session} from "@/stores";
-
 export default {
-  name: "MaxLevelComponent",
+  name: "KarmaComponent",
   data() {
     return {
-      max_level: 1
+      karma: 1
     }
   },
+  methods: {
+    get_asset() {
+      return './assets/karma.png'
+    },
+  },
   async mounted() {
-    let trainer_response = await session.get(`/api/trainers/get_profile/`);
-
-    const streamer_name = trainer_response.data.name;
+    const streamer_name = localStorage.getItem('streamer_name');
     const dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
     dataSocket.onmessage = (event) => {
       const message = JSON.parse(event.data);
       const data = JSON.parse(message.message);
 
-      if (data.type === 'level_cap') {
-        this.max_level = data.data;
+      if (data.type === 'karma') {
+        this.karma = data.data;
       }
 
     };

@@ -7,7 +7,6 @@ import fs from "fs";
 import {CitraClient} from "@/app/api/ram_editor/CitraClient";
 import {declareGlobalConfig, emmiter, GLOBAL_CONFIG, MODS_FILE_LIME3} from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
-import { Howl } from 'howler';
 import {compareVersions} from "compare-versions";
 import {
     getOrCreatePokemonItem, giveMoneyToPlayer,
@@ -141,8 +140,8 @@ async function exchangeRewardBundle(ipc, data) {
         const citra = new CitraClient();
 
         for (const reward of itemRewards) {
-            getOrCreatePokemonItem(reward.item_reward.bag, reward.item_reward.item, reward.item_reward.quantity, true, citra).then(() => {
-                console.log(`Added x${reward.item_reward.quantity} ${reward.item_reward.item} to ${reward.item_reward.bag}`)
+            getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
+                console.log(`Added x${reward.quantity} ${reward.item} to ${reward.bag}`)
             });
         }
 
@@ -151,9 +150,8 @@ async function exchangeRewardBundle(ipc, data) {
             let needsRestart = false;
             emmiter.removeAllListeners('perform_save')
             for (const reward of nonItemRewards) {
-                if (reward.reward_type === 0) {// item
-                } else if (reward.reward_type === 3) {// pokemon
-                    const pokemonData = Buffer.from(reward.pokemon_reward.pokemon_data);
+                if (reward.reward_type === 3) {// pokemon
+                    const pokemonData = Buffer.from(reward.pokemon_data);
                     // eslint-disable-next-line no-unused-vars
                     newData = addPokemonSaveData(pokemonData, true);
                     needsRestart = true;

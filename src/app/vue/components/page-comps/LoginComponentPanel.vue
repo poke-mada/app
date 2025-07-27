@@ -13,7 +13,8 @@
             <v-form fast-fail @submit.prevent="log_in">
               <v-row>
                 <v-col cols="12">
-                  <v-text-field name="username" variant="outlined" v-model="username" label="Usuario" hint="Usuario" clearable
+                  <v-text-field name="username" variant="outlined" v-model="username" label="Usuario" hint="Usuario"
+                                clearable
                                 :rules="general_rules">
                     <template v-slot:prepend>
                       <svg-icon type="mdi" :path="user_path"></svg-icon>
@@ -21,7 +22,8 @@
                   </v-text-field>
                 </v-col>
                 <v-col cols="12">
-                  <v-text-field name="password" variant="outlined" v-model="password" label="Contraseña" clearable type="password"
+                  <v-text-field name="password" variant="outlined" v-model="password" label="Contraseña" clearable
+                                type="password"
                                 :rules="general_rules">
                     <template v-slot:prepend>
                       <svg-icon type="mdi" :path="key_path"></svg-icon>
@@ -70,21 +72,26 @@ export default {
     }
   },
   methods: {
-    log_in() {
+    async log_in() {
       this.loading = true;
-      login_session.post('/user/login/', {
-        username: this.username,
-        password: this.password
-      }).then(async (response) => {
+      try {
+        const response = await login_session.post('/user/login/', {
+          username: this.username,
+          password: this.password
+        });
+
         window.electron.sendMessage('store', {
           token: response.data.token
-        })
+        });
+
         localStorage.setItem('api_token', response.data.token);
+
+        localStorage.setItem('streamer_name', this.username);
         this.$router.push('/');
-      }).catch((error_response) => {
+      } catch (error_response) {
         console.log(error_response)
         this.request = error_response.response
-      })
+      }
     }
   }
 }

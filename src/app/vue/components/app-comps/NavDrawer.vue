@@ -10,7 +10,7 @@
 
     <v-list density="compact" nav v-if="logged_in">
       <v-list-item class="marginLine" to="/" prepend-icon="mdi-pokeball" title="inicio" value="home"></v-list-item>
-      <v-list-item class="itemBox" to="/combat" title="combates" value="combats">
+      <v-list-item class="itemBox" to="/combat" title="combates" value="combats" v-if="emulator_on">
         <template #prepend>
           <v-img src="/assets/icons/Combats.svg" width="28" height="28" class="me-2" cover />
         </template>

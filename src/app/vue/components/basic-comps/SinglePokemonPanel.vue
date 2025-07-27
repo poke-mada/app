@@ -18,7 +18,7 @@
             <v-row>
               <v-col class="col" cols="4">
                 <div class="cardImgPokeBattle cursor-pointer" @click="selectPokemon(pokemon)">
-                  <v-img :src="pokemon?.sprite_url || missingno" class="cursor-pointer" width="96" />
+                  <v-img :src="pokemon_variety?.sprite_url || missingno" class="cursor-pointer" width="96" />
                 </div>
               </v-col>
               <v-col cols="8" class="pa-0">
@@ -138,7 +138,7 @@
   <v-dialog v-model="display">
     <v-row>
       <v-spacer @click="display = false"/>
-      <PokemonDetailPanel tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" :team="team"/>
+      <PokemonDetailPanel tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" :side="team"/>
       <v-spacer @click="display = false"/>
     </v-row>
   </v-dialog>
@@ -256,6 +256,19 @@ export default {
       }
       return this.get_pokemon(this.pk_slot);
     },
+    pokemon_variety() {
+      if (!this.pokemon) {
+        return null;
+      }
+      const formKey = get_battle_form(this.pokemon)
+      const speciesCatalog = VARIETIES_DATA[this.pokemon?.dex_number ?? "0"];
+
+      const entry = speciesCatalog[formKey];
+      if (!entry) {
+        return Object.values(speciesCatalog)[0]
+      }
+      return entry;
+    },
     pokemon_types() {
       if (!this.pokemon) return [];
 
@@ -276,21 +289,13 @@ export default {
     baseStats() {
       if (!this.pokemon) return {};
 
-      // usar los base_stats para todo
-      const species = this.normalizedSpeciesKey;
-      console.log("nombre de la especie: ", species);
-
-      const formKey = get_battle_form(this.pokemon)
-      const speciesCatalog = VARIETIES_DATA[this.pokemon.dex_number];
-
-      const entry = speciesCatalog[formKey];
+      const entry = this.pokemon_variety;
 
       const dex_number = this.pokemon.dex_number || '000';
 
       console.log("📘 dex_number del enemigo:", dex_number);
 
       if (!entry) {
-        console.warn("⚠️ No se encontró entry en VARIETIES_DATA para:", species);
         return {
           hp: 0,
           attack: 0,
@@ -328,6 +333,9 @@ export default {
       display: false,
       missingno: 'https://static.wikia.nocookie.net/bec6f033-936d-48c5-9c1e-7fb7207e28af'
     }
+  },
+  mounted() {
+    console.log(this.pokemon)
   }
 }
 </script>
@@ -349,7 +357,7 @@ export default {
   background-color: rgba(33, 150, 243, 0.8);
   color: white;
 }
-.cursor-pointer img {
+.cursor-pointer * {
   cursor: pointer !important;
 }
 </style>

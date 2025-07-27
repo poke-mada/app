@@ -3,7 +3,7 @@
     <VerticalPokemonTeamList @select_pokemon="select_pokemon" team="you" :data="team_data" />
   </v-col>
   <v-col md="8" sm="12" xs="12" lg="10">
-    <PokemonDetailPanel :pokemon="selected_pokemon" v-if="selected_pokemon" />
+    <PokemonDetailPanel :pokemon="selected_pokemon" v-if="selected_pokemon" side="you"/>
   </v-col>
 </template>
 

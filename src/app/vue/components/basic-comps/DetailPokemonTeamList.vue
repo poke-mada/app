@@ -19,7 +19,7 @@
         <v-col v-for="(pokemon, i) in this.data.team.slice(0, 3)" :key="i">
           <div class="position-relative d-inline-block">
             <!-- Imagen principal del Pokémon -->
-            <PokemonCard :pokemon="pokemon && pokemon.discovered ? pokemon : null" @click="selectPokemon(pokemon)"/>
+            <PokemonCard :pokemon="pokemon && (pokemon.discovered || team === 'you') ? pokemon : null" @click="selectPokemon(pokemon)"/>
             <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
 
             <!-- Badge solo si tiene held_item -->
@@ -32,7 +32,7 @@
         <v-col v-for="(pokemon, i) in this.data.team.slice(3, 6)" :key="i">
           <div class="position-relative d-inline-block">
             <!-- Imagen principal del Pokémon -->
-            <PokemonCard :pokemon="pokemon && pokemon.discovered ? pokemon : null" @click="selectPokemon(pokemon)"/>
+            <PokemonCard :pokemon="pokemon && (pokemon.discovered || team === 'you') ? pokemon : null" @click="selectPokemon(pokemon)"/>
             <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
 
             <!-- Badge solo si tiene held_item -->

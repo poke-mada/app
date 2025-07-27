@@ -173,9 +173,7 @@ export default {
     const sound = new Howl({
       src: ['./assets/sounds/alert.mp3']
     })
-    let trainer_response = await session.get(`/api/trainers/get_profile/`);
-
-    const streamer_name = trainer_response.data.name;
+    const streamer_name = localStorage.getItem('streamer_name');
     this.streamer_name = streamer_name;
     const dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
 

@@ -1,29 +1,26 @@
 <template>
   <div class="floating-card">
     <CoinsComponent :coins="this.coins" />
+    <KarmaComponent />
   </div>
 </template>
 
 <script>
 import CoinsComponent from '@/app/vue/components/offline-app/CoinsComponent'
+import KarmaComponent from '@/app/vue/components/app-comps/displays/KarmaComponent'
 import {emitter} from "@/stores";
 
 export default {
   name: "FloatingInfoCardComponent",
   components: {
     CoinsComponent,
+    KarmaComponent
   },
   methods: {
-    async refresh_wildcard_count() {
-      if (!localStorage.getItem('api_token')) {
-        return;
-      }
-    }
   },
   computed: {
   },
   async mounted() {
-    await this.refresh_wildcard_count();
     emitter.on('coins_updated', (data) => {
       console.log(data)
       this.coins = data

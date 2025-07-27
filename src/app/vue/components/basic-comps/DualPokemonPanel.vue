@@ -20,7 +20,7 @@
             <v-row>
               <v-col class="col" cols="4">
                 <div class="cardImgPokeBattle" @click="selectPokemon(pokemon)">
-                  <v-img :src="pokemon?.sprite_url || missingno" width="96" class="cursor-pointer" />
+                  <v-img :src="pokemon_variety?.sprite_url || missingno" width="96" class="cursor-pointer" />
                 </div>
               </v-col>
               <v-col cols="8" class="pa-0">
@@ -112,6 +112,7 @@ import MovementCard from "@/app/vue/components/basic-comps/MovementCard";
 import { VARIETIES_DATA } from "@/data/pokemon_varieties_data";
 import {TRANSLATIONS} from "@/data/type_data";
 import PokemonDetailPanel from "@/app/vue/components/basic-comps/PokemonDetailPanel";
+import {get_battle_form} from "@/data/mon_functions";
 
 export default {
   name: "DualPokemonPanel",
@@ -232,6 +233,19 @@ export default {
       }
       return this.get_pokemon(this.pk_dex);
     },
+    pokemon_variety() {
+      if (!this.pokemon) {
+        return null;
+      }
+      const formKey = get_battle_form(this.pokemon)
+      const speciesCatalog = VARIETIES_DATA[this.pokemon?.dex_number ?? "0"];
+
+      const entry = speciesCatalog[formKey];
+      if (!entry) {
+        return Object.values(speciesCatalog)[0]
+      }
+      return entry;
+    },
     pokemon_types() {
       console.log("Este pokemon DOBLEE: ", this.pokemon);
       if (!this.pokemon) return [];
@@ -252,28 +266,12 @@ export default {
       let hp = this.pokemon.battle_data?.current_hp ?? this.pokemon.current_hp ?? 0;
 
       // Si es enemigo, usar los base_stats para todo menos HP
-      const species = this.normalizedSpeciesKey;
-
-      const entry = Object.values(VARIETIES_DATA)
-        .flatMap(variant => Object.entries(variant))
-        .find(([key]) => key.toLowerCase() === species);
-
-      const dexEntry = Object.entries(VARIETIES_DATA)
-        .flatMap(([dex, entries]) =>
-          Object.entries(entries).map(([key, value]) => ({ dex, ...value, name: key }))
-        )
-        .find(entry => entry?.name?.toLowerCase() === species);
-      const dex_number = dexEntry?.dex || '000';
-      console.log("📘 dex_number del enemigo:", dex_number);
-
-      console.log("Esto no se que show:  ", this.pokemon);
       console.log("El otro HP:  ", hp);
-      
+      const entry = this.pokemon_variety;
       if (!entry) {
-        console.warn("⚠️ No se encontró entry para:", species);
         console.warn("Pokemon:", this.pokemon);
         return {
-          hp,
+          hp: 0,
           attack: 0,
           defense: 0,
           special_attack: 0,
@@ -282,10 +280,10 @@ export default {
         };
       }
 
-      const baseStats = entry[1].base_stats || {};
+      const baseStats = entry.base_stats || {};
 
       return {
-        hp,
+        hp: baseStats.hp,
         attack: baseStats.attack || 0,
         defense: baseStats.defense || 0,
         special_attack: baseStats.special_attack || 0,

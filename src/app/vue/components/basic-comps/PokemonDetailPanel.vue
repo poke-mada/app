@@ -14,7 +14,7 @@
             <div class="cardPokemon p-0">
               <div class="fotoPokeInfo">
                 <div class="cardImgPokeBattle">
-                  <v-img :src="pokemon?.sprite_url || missingno" />
+                  <v-img :src="pokemon_variety?.sprite_url || missingno" />
                 </div>
                 <div class="pokemon-number infoNumber">#{{ pokemon?.dex_number.toString().padStart(4, '0') || '????' }}
                 </div>
@@ -183,6 +183,16 @@ export default {
       }
       return [];
     },
+    pokemon_variety() {
+      const formKey = get_battle_form(this.pokemon)
+      const speciesCatalog = VARIETIES_DATA[this.pokemon.dex_number];
+
+      const entry = speciesCatalog[formKey];
+      if (!entry) {
+        return Object.values(speciesCatalog)[0]
+      }
+      return entry;
+    },
     maxHp() {
       if (this.combat_type === 'HORDE' && this.side === 'enemy') {
         return this.pokemon?.stats?.max_hp ?? 1;
@@ -195,10 +205,8 @@ export default {
       return `${base}${suffix}`;
     },
     statsWithLabels() {
-      const formKey = get_battle_form(this.pokemon)
-      const speciesCatalog = VARIETIES_DATA[this.pokemon.dex_number];
 
-      const entry = speciesCatalog[formKey];
+      const entry = this.pokemon_variety;
       const baseStats = entry.base_stats || {};
 
       return {
