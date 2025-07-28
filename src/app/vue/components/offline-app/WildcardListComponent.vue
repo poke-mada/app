@@ -94,29 +94,40 @@
             <v-btn text="Comprar" color="success" @click="comprar()"/>
           </v-col>
         </v-row>
-        <v-row v-if="![25, 41, 42].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2">
+        <v-row
+            v-if="![25, 41, 42, 5, 72].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2">
           <v-col>
             <v-text-field type="number" label="Cantidad" v-model="quantity"/>
           </v-col>
         </v-row>
-        <v-row v-if="selected_card.id === 25">
+        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 25">
           <v-col>
             <v-autocomplete label="Mega Piedra" v-model="item_id" :items="mega_stones" :item-props="true"/>
           </v-col>
         </v-row>
-        <v-row v-if="selected_card.id === 41">
+        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 41">
           <v-col>
             <v-autocomplete label="Objeto Debil" v-model="item_id" :items="weak_items" :item-props="true"/>
           </v-col>
         </v-row>
-        <v-row v-if="selected_card.id === 42">
+        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 42">
           <v-col>
             <v-autocomplete label="Objeto Fuerte" v-model="item_id" :items="strong_items" :item-props="true"/>
           </v-col>
         </v-row>
-        <v-row v-if="selected_card.category === 6">
+        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 5">
           <v-col>
-            <v-autocomplete label="Objetivo" v-model="target_id" :items="possible_targets" :item-props="true"/>
+            <v-autocomplete label="Objetivo" v-model="target_mon" :items="death_mons" :item-props="true"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="selected_card.id === 72">
+          <v-col>
+            <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_mons" :item-props="true"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="selected_card.inventory > 0 && (selected_card.category === 6 || [54].includes(selected_card.id))">
+          <v-col>
+            <v-autocomplete label="Objetivo" v-model="target_profile" :items="possible_targets" :item-props="true"/>
           </v-col>
         </v-row>
       </v-col>
@@ -153,7 +164,10 @@ export default {
 
     return {
       config: config,
-      target_id: null,
+      target_profile: null,
+      target_mon: null,
+      death_mons: [],
+      releasable_mons: [],
       possible_targets: [],
       item_id: null,
       quantity: 1,
@@ -225,11 +239,6 @@ export default {
     }
   },
   methods: {
-    load_wildcards() {
-      session.get('/api/trainers/wildcards_with_inventory/', this.config).then((response) => {
-        this.list_wildcards = response.data;
-      });
-    },
     get_coin_asset() {
       return './assets/coin.png'
     },
@@ -249,7 +258,8 @@ export default {
       }
       session.post(`/api/wildcards/${this.selected_card.id}/use_card/`, {
         quantity: this.quantity,
-        target_id: this.target_id,
+        target_id: this.target_profile,
+        dex_number: this.target_mon,
         item_id: this.item_id
       }, this.config).then(async (response) => {
         if (response.status === 200) {
@@ -275,7 +285,20 @@ export default {
         if (response.status !== 200) {
           console.log(response)
         }
-        this.load_wildcards();
+        this.full_reload();
+      }).catch(error => {
+        if (error.status === 400) {
+          emitter.emit('action-notification', {
+            type: 'error',
+            title: '¡Error!',
+            message: error.response.data.detail,
+          });
+        } else if (error.status === 500 && error.response.data.detail === 'contact_paramada') {
+          emitter.emit('custom-dialog', {
+            title: '¡Error!',
+            message: `Ha ocurrido un error, contacta a soporte y mandales este numero: ${error.response.data.error_id}`,
+          });
+        }
       })
     },
     comprar() {
@@ -314,6 +337,27 @@ export default {
     async load_targets() {
       const response = await session.get('/api/trainers/list_streamers/')
       this.possible_targets = response.data.map(trainer => ({value: trainer.id, title: trainer.streamer_name}))
+    },
+    async load_wildcards() {
+      const response = await session.get('/api/trainers/wildcards_with_inventory/', this.config)
+      this.list_wildcards = response.data;
+    },
+    async load_dead_mons() {
+      const response = await session.get('/api/trainers/list_revivable/')
+      this.death_mons = response.data
+    },
+    async load_releasable_mons() {
+      const response = await session.get('/api/trainers/list_releasable/')
+      this.releasable_mons = response.data
+    },
+    async full_reload() {
+      await this.load_wildcards();
+      await this.load_mega_stones();
+      await this.load_weak_items();
+      await this.load_strong_items();
+      await this.load_targets();
+      await this.load_dead_mons();
+      await this.load_releasable_mons();
     }
   },
   computed: {
@@ -356,11 +400,7 @@ export default {
     },
   },
   mounted() {
-    this.load_wildcards();
-    this.load_mega_stones();
-    this.load_weak_items();
-    this.load_strong_items();
-    this.load_targets();
+    this.full_reload();
   },
   watch: {
     card_displayed() {
@@ -395,6 +435,7 @@ export default {
 .legendary {
   color: rgb(251, 140, 0) !important;
 }
+
 * {
   /*border: 1px solid red;*/
 }
