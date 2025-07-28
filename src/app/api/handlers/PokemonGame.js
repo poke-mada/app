@@ -71,7 +71,6 @@ class GameData {
                     }
 
                     this.your_data.team = Object.values(this.combat_info.your_battle_data);
-                    await this.detectAnyDeath(this.your_data.team);
                     this.detectCurrentCombat(this.enemy_data);
                 }
                 if (pokemon_game.alreadySent !== JSON.stringify(this)) {
@@ -140,31 +139,6 @@ class GameData {
         await this.manageImposterLog(chatMessage1);
         await this.manageImposterLog(chatMessage2);
         await this.manageImposterLog(chatMessage3);
-    }
-
-    async detectAnyDeath(team) {
-        const alreadyDeath = config.get('deaths');
-        for (let pokemon of team) {
-            if (pokemon && !alreadyDeath.includes(pokemon.dex_number) && pokemon.current_hp === 0) {
-                const response = await session.post('/api/trainers/register_death/', {
-                    pid: pokemon.pid,
-                    mote: pokemon.mote,
-                    species: pokemon.dex_number
-                }, {
-                    headers: {
-                        'Authorization': `Token ${GLOBAL_CONFIG.token}`
-                    }
-                }).catch(() => {
-                    console.log("no se pudo matar we")
-                })
-                if (response) {
-                    console.log("muerte registrada")
-                    console.log(response)
-                    alreadyDeath.push(pokemon.dex_number)
-                }
-            }
-        }
-        config.set('deaths', alreadyDeath);
     }
 
     detectCurrentCombat(enemy_data) {

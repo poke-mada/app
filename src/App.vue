@@ -273,6 +273,11 @@ export default {
         persistent: data.persistent
       }
     });
+    emitter.on('custom-dialog', (data) => {
+      this.custom_dialog.display = true;
+      this.custom_dialog.title = data.title;
+      this.custom_dialog.message = data.message;
+    });
 
     emitter.on('action-notification', (data) => {
       this.action_notification_alert = true;
