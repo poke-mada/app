@@ -44,7 +44,7 @@ async function openMainChannel(ipc) {
     if (!process.env.WEBPACK_DEV_SERVER_URL) {
         autoUpdater.setFeedURL({
             provider: 'generic',
-            url: 'https://para-mada-deploy.s3.us-east-1.amazonaws.com/dedsafio/',
+            url: 'https://para-mada-deploy.s3-accelerate.amazonaws.com/dedsafio/',
         });
 
         let new_version = null;
