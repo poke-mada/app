@@ -123,6 +123,9 @@ export function get_form(pokemon) {
     const lower_item = pokemon.held_item_name?.toLowerCase() ?? '';
 
     if (pokemon.suffix) {
+        if (pokemon.dex_number === 648) {
+            return `meloetta-${pokemon.suffix}`;
+        }
         return `${lower_species}-${pokemon.suffix}`;
     }
 

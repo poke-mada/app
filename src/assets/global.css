@@ -353,11 +353,6 @@ img[src*="bgNew.png"] {
     position: relative;
 }
 
-.v-badge__wrapper {
-    position: absolute;
-    left: -30px;
-}
-
 .cardPokemon {
     position: relative;
     border-radius: 40px;

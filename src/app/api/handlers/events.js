@@ -5,7 +5,7 @@ import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
 import {CitraClient} from "@/app/api/ram_editor/CitraClient";
-import {declareGlobalConfig, emmiter, GLOBAL_CONFIG, MODS_FILE_LIME3} from "@/stores/back_constants";
+import {declareGlobalConfig, emmiter, GLOBAL_CONFIG, MODS_FILE_LIME3, SERVER_URL} from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
 import {
@@ -23,6 +23,7 @@ import {
 import {SavePokemon} from "@/app/api/save_editor/SavePokemon";
 import {PokemonGame} from "@/app/api/handlers/PokemonGame";
 import AdmZip from "adm-zip";
+import axios from "axios";
 
 function downloadSaveEvent(ipc, trainer_name) {
     session.get(`/last_save/${trainer_name}`, {
@@ -171,7 +172,7 @@ async function exchangeRewardBundle(ipc, data) {
 
 }
 
-async function extractZip(zipFilePath, destinationPath) {
+function extractZip(zipFilePath, destinationPath) {
     const zip = new AdmZip(zipFilePath);
 
     zip.extractAllTo(destinationPath, true);
@@ -179,25 +180,37 @@ async function extractZip(zipFilePath, destinationPath) {
 
 async function joinEvent(ipc, data) {
     const event_id = data.event_id;
-    const token = data.token;
-    const util = require('util');
-    const stream = require('stream');
-    const pipeline = util.promisify(stream.pipeline);
+    const https = require("https");
 
-    const response = await session.get(`/api/events/${event_id}/mod_file/`, {
-        headers: {
-            Authorization: `Token ${token}`
-        },
-        responseType: 'stream'
+    const zipfile = fs.createWriteStream('mod_zip.zip');
+    const event_response = await axios.get(`${SERVER_URL}/api/events/${event_id}/mod_file/`)
+    const s3_url = event_response.data;
+    console.log(s3_url)
+    https.get(s3_url,(response) => {
+        const total = parseInt(response.headers["content-length"], 10);
+        let received = 0;
+        response.on("data", (chunk) => {
+            received += chunk.length;
+            const percent = Math.round((received / total) * 100);
+            ipc.reply("download-progress", percent);
+        });
+        response.pipe(zipfile);
+        zipfile.on("finish", () => {
+            zipfile.close();
+            try {
+                extractZip('mod_zip.zip', MODS_FILE_LIME3)
+                ipc.reply("download-stop");
+                ipc.reply('notification', {
+                    title: '¡Reinicia Tu Partida!',
+                    message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
+                    persistent: true
+                })
+            } catch (e) {
+                console.log(e)
+            }
+        });
     });
-    await pipeline(response.data, fs.createWriteStream('mod_zip.zip'));
-    await extractZip('mod_zip.zip', MODS_FILE_LIME3)
 
-    ipc.reply('notification', {
-        title: '¡Reinicia Tu Partida!',
-        message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
-        persistent: true
-    })
 }
 
 async function leaveEvent(ipc) {

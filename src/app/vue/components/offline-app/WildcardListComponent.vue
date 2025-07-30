@@ -95,7 +95,7 @@
           </v-col>
         </v-row>
         <v-row
-            v-if="![25, 41, 42, 5, 72].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2">
+            v-if="![25, 41, 42, 5, 72].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2 && (selected_card.special_price && selected_card.inventory > 0)">
           <v-col>
             <v-text-field type="number" label="Cantidad" v-model="quantity"/>
           </v-col>
@@ -123,6 +123,11 @@
         <v-row v-if="selected_card.id === 72">
           <v-col>
             <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_mons" :item-props="true"/>
+          </v-col>
+        </v-row>
+        <v-row v-if="selected_card.id === 73">
+          <v-col>
+            <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_shinies" :item-props="true"/>
           </v-col>
         </v-row>
         <v-row v-if="selected_card.inventory > 0 && (selected_card.category === 6 || [54].includes(selected_card.id))">
@@ -169,6 +174,7 @@ export default {
       death_mons: [],
       releasable_mons: [],
       possible_targets: [],
+      releasable_shinies: [],
       item_id: null,
       quantity: 1,
       HOST_URL: SERVER_URL,
@@ -285,6 +291,10 @@ export default {
         if (response.status !== 200) {
           console.log(response)
         }
+        this.target_profile = null;
+        this.target_mon = null;
+        this.item_id = null;
+        this.quantity = 1;
         this.full_reload();
       }).catch(error => {
         if (error.status === 400) {
@@ -350,6 +360,10 @@ export default {
       const response = await session.get('/api/trainers/list_releasable/')
       this.releasable_mons = response.data
     },
+    async load_releasable_shinies() {
+      const response = await session.get('/api/trainers/list_shinies/')
+      this.releasable_shinies = response.data
+    },
     async full_reload() {
       await this.load_wildcards();
       await this.load_mega_stones();
@@ -358,6 +372,7 @@ export default {
       await this.load_targets();
       await this.load_dead_mons();
       await this.load_releasable_mons();
+      await this.load_releasable_shinies();
     }
   },
   computed: {

@@ -1,7 +1,7 @@
 import {CitraClient, InBattlePokemonData, PokemonTeamData} from '@/app/api/ram_editor'
 import {CombatEnv, CombatType} from "@/app/api/ram_editor/RamAccesor";
 import {decryptPokemonData as decryptData} from "@/app/api/lib/PokemonCrypt";
-import {getSaveName, watchSave} from "@/app/api/save_editor";
+import {getSaveName, stopWatching, watchSave} from "@/app/api/save_editor";
 import {logger, save_combat_log} from "@/app/api/handlers/logging";
 import {validateBattleData, validatePokemon} from "@/app/api/lib/validators";
 import {GLOBAL_CONFIG, RAM_ROM, RAM_ROM2 as rom} from "@/stores/back_constants";
@@ -31,6 +31,12 @@ class GameData {
 
     async startComms(rom, ipc, pokemon_game, save_file_path) {
         let citra = new CitraClient();
+        try {
+            stopWatching();
+        } catch (e) {
+            console.error('=============================')
+            console.error('Error ha ocurrido', e)
+        }
         watchSave();
         try {
             this.comms_closed = false;
