@@ -26,8 +26,11 @@
                       <h3 class="tittleTweet gradient-border mb-1 text-uppercase">
                         Noticias!
                       </h3>
-                      <p class="p-tweet" v-html="news.message">
-                      </p>
+                      <div class="delimitTweet">
+                        <p class="p-tweet" v-html="news.message"></p>
+
+                      </div>
+
                     </div>
                   </div>
                   <v-divider class="mt-3"></v-divider>

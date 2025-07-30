@@ -176,8 +176,22 @@ img[src*="bgNew.png"] {
     background: linear-gradient(90deg, var(--blue) -3.57%, var(--pink) 103.57%);
 }
 
+.noticiasSection {
+    height: 100vh;
+}
+
+.noticiasSection .vcard-pkm {
+    width: 80vw !important;
+}
+
+.delimitTweet {
+    max-width: 300px;
+}
+
 .p-tweet {
     font-size: 14px;
+    width: 100%;
+    height: auto;
 }
 
 .sectionVS {
@@ -543,8 +557,7 @@ div.v-col.v-col-4>div.statsContent>span {
 
 /* -------------- FIN SECTION COMBATS -------------- */
 /* -------------- SECTION DETAILS POKEMON -------------- */
-.templateCardDetails {
-}
+.templateCardDetails {}
 
 .cardsDetailsPokemon {
     width: 100% !important;
@@ -673,7 +686,7 @@ div.pokemon-inmune>div {
     position: relative;
 }
 
-.badgeMulti{
+.badgeMulti {
     position: absolute;
     bottom: 0;
     right: 0px;
@@ -686,27 +699,30 @@ div.pokemon-inmune>div {
     align-items: center;
     z-index: 100;
 }
-.badgeMulti p{
+
+.badgeMulti p {
     font-size: 12px;
     font-weight: bolder;
     color: white;
 }
 
 .badge-weakness {
-  background-color: #F44336;
-}
-.badge-resistance {
-  background-color: #4CAF50;
-}
-.badge-neutral {
-  background-color: #00BCD4;
+    background-color: #F44336;
 }
 
-.imgEnemyContainer{
+.badge-resistance {
+    background-color: #4CAF50;
+}
+
+.badge-neutral {
+    background-color: #00BCD4;
+}
+
+.imgEnemyContainer {
     position: relative;
 }
 
-.imgEnemyContainer .bradgeMultiDos{
+.imgEnemyContainer .bradgeMultiDos {
     position: absolute;
     top: 0;
     right: 10px;
@@ -714,3 +730,128 @@ div.pokemon-inmune>div {
 
 
 /* -------------- FIN SECTION DETAILS POKEMON -------------- */
+/* -------------- EVENTOS POKEMON -------------- */
+.delimitEvent {
+    width: 100%;
+}
+
+.delimitEvent .alertCars {
+    background-color: transparent;
+    width: 100%;
+}
+
+.btnColorEvent {
+    min-width: 200px;
+    background: linear-gradient(to right, var(--pink), var(--blue));
+    display: inline-block;
+    color: white;
+    border-radius: 9999px;
+    /* Súper redondeado */
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: auto;
+    font-size: 14px;
+    border: none;
+    transition: background 1s ease;
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.btnColorEvent:hover {
+    transition: background 1s ease;
+    background: linear-gradient(to right, var(--blue), var(--pink));
+}
+
+.btnColorEvent::before {
+    cursor: pointer;
+    content: "";
+    position: absolute;
+    inset: 2px;
+    /* Espacio para el borde */
+    background: transparent;
+    border-radius: inherit;
+    z-index: -1;
+    transition: background 1s ease;
+}
+
+.btnColorEvent:hover::before {
+    opacity: 1;
+}
+
+.btnColorEvent.finish {
+    color: black;
+}
+
+.btnColorEvent.finish::before {
+    background: white;
+}
+
+.btnColorEvent:focus {
+    outline: none;
+}
+
+.eventInfoAlert {
+    position: relative;
+    left: 43px;
+}
+
+.divBtnEvent {
+    display: flex;
+    height: 100%;
+    align-items: center;
+    margin-top: 40px;
+}
+
+.textInfoEvent {
+    font-size: 15px;
+    font-family: 'POKMNFont';
+    color: #000000;
+    font-weight: 400;
+    letter-spacing: 2px;
+}
+
+#event {
+    border-radius: 20px;
+}
+
+.tittleDobleColor {
+    padding-left: 0;
+}
+
+.tittleDobleColor h1 {
+    font-size: 20px;
+    letter-spacing: 2px;
+    background: linear-gradient(270deg, #0600FF 20%, #D5048D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    width: fit-content;
+}
+
+#event .v-card-title {
+    padding-bottom: 0;
+    padding-left: 24px;
+}
+
+#event .v-card-text {
+    padding-top: 0;
+}
+
+.gradient-border-text {
+    width: 100%;
+    padding: 20px 30px;
+    border-radius: 9999px;
+    /* Súper redondeado */
+    border: 1px solid transparent;
+    background:
+        linear-gradient(white, white) padding-box,
+        linear-gradient(to right, var(--pink), var(--blue)) border-box;
+    font-size: 14px;
+    color: #333;
+    text-align: start;
+}
+
+/* -------------- FIN EVENTOS POKEMON -------------- */
