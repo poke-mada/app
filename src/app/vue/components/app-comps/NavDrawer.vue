@@ -35,9 +35,16 @@
           <v-img src="/assets/icons/Comodin.svg" width="28" height="28" class="me-2" cover />
         </template>
       </v-list-item>
-      <v-list-item class="itemBox" to="/rewards" prepend-icon="mdi-package-variant-closed" title="Buzón"
-        value="inventory"></v-list-item>
-      <v-list-item class="itemBox" to="/market" prepend-icon="mdi-store" title="Mercado" value="market"></v-list-item>
+      <v-list-item class="itemBox" to="/rewards" title="Buzón" value="inventory">
+        <template #prepend>
+          <v-img src="/assets/icons/Buzon.svg" width="28" height="28" class="me-2" cover />
+        </template>
+      </v-list-item>
+      <v-list-item class="itemBox" to="/market" title="Mercado" value="market">
+        <template #prepend>
+          <v-img src="/assets/icons/store.svg" width="28" height="28" class="me-2" cover />
+        </template>
+      </v-list-item>
     </v-list>
 
     <template v-slot:append>
@@ -51,7 +58,8 @@
         <div class="bgProfile" v-if="logged_in">
           <v-img src="./assets/img/profile/ProfilePicture.png" width="56" height="56"></v-img>
         </div>
-        <v-list-item class="nameProfile" v-if="logged_in" lines="two" subtitle="Pokemon X" to="/profile" :title="streamer_name">
+        <v-list-item class="nameProfile" v-if="logged_in" lines="two" subtitle="Pokemon X" to="/profile"
+          :title="streamer_name">
           <template #append>
             <v-img src="./assets/img/profile/pointsProfile.png" width="28" height="28" class="me-2" cover />
           </template>

@@ -286,16 +286,13 @@ export default {
       imposter_dialog: false,
       team_slot_selected: null,
       dialog: false,
-      missingno: 'https://static.wikia.nocookie.net/bec6f033-936d-48c5-9c1e-7fb7207e28af'
+      missingno: 'https://res.cloudinary.com/dtattuxue/image/upload/v1753918578/Pokeball_qi5tk3.svg'
     }
   }
 }
 </script>
 
 <style scoped>
-* {
-  //border: 1px solid red;
-}
 @media (max-width: 1600px) {
   .mote {
     font-size: 6px !important;

@@ -90,7 +90,7 @@ img[src*="bgNew.png"] {
 
 #app>div>div>div>nav.v-navigation-drawer--rail>div.v-navigation-drawer__content>div.v-list.v-list--nav.v-theme--dark.bg-transparent.v-list--density-compact.v-list--one-line>a>div.v-list-item__prepend>div.v-responsive.v-img.me-2>img,
 #app>div>div>div>nav>div.v-navigation-drawer__append>div>div.v-list-item.v-list-item--link.v-list-item--nav.v-theme--dark.v-list-item--density-compact.v-list-item--one-line.v-list-item--rounded.v-list-item--variant-text>div.v-list-item__prepend>div.v-responsive.v-img.me-2>img {
-    width: 32px !important;
+    width: 30px !important;
     margin-left: 5px !important;
 }
 
@@ -181,7 +181,7 @@ img[src*="bgNew.png"] {
 }
 
 .noticiasSection .vcard-pkm {
-    width: 80vw !important;
+    width: 70vw !important;
 }
 
 .delimitTweet {
@@ -855,3 +855,81 @@ div.pokemon-inmune>div {
 }
 
 /* -------------- FIN EVENTOS POKEMON -------------- */
+/* -------------- CAJAS POKEMON -------------- */
+.custom-row {
+    align-items: center;
+}
+
+.custom-select {
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background: white;
+    background-clip: padding-box;
+    padding: 4px 12px;
+    transition: 0.3s;
+    position: relative;
+}
+
+.custom-select::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    padding: 2px;
+    background: linear-gradient(to right, var(--pink), var(--blue));
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+}
+
+.select-text {
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.divSelectIcon {
+    background-color: var(--pink);
+    border-radius: 50%;
+}
+
+.select-icon {
+    color: white;
+}
+
+.gradient-btn {
+    border-radius: 9999px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    background: linear-gradient(to right, var(--pink), var(--blue));
+    color: white;
+}
+
+#app>div>div>div>main>div>div>div.pa-4>div.v-row.justify-space-between.custom-row>div:nth-child(1)>div>div>div>div.v-field__append-inner>i.mdi-menu-down.mdi.v-icon.notranslate.v-theme--light.v-icon--size-default.v-icon--clickable.v-autocomplete__menu-icon,
+#app > div > div > div > main > div > div > div.pa-4 > div.v-row.justify-space-between.custom-row > div.v-col.v-col-6 > div > div > div > div.v-field__append-inner > i{
+    display: none;
+}
+
+.custom-select .v-field__field {
+    height: 35px;
+    position: relative;
+}
+
+.custom-select .v-field__input {
+    position: absolute;
+    padding: 0;
+    top: -10px;
+}
+
+.custom-select .select-text{
+    color: black;
+    font-size: 14px;
+    letter-spacing: 2px;
+    font-weight: 800;
+}
+
+/* -------------- FIN CAJAS POKEMON -------------- */
