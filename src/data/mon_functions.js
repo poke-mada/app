@@ -133,6 +133,10 @@ export function get_form(pokemon) {
         return "basculin-red-striped";
     }
 
+    if (lower_species === 'mr. mime') {
+        return "mr-mime";
+    }
+
     let form = null;
     if (lower_item === 'alakazite' && lower_species === 'alakazam') {
         return 'alakazam-mega';

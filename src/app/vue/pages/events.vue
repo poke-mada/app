@@ -1,3 +1,4 @@
+<!--suppress JSUnresolvedVariable -->
 <template>
   <v-layout>
     <v-main>
@@ -21,23 +22,28 @@
                     <v-alert class="alertCars">
                       <v-alert-title>
                         <v-icon color="#D5048D" class="me-3">
-                          <img src="/assets/img/combat/PokeballLog1.png" style="width: 50%; height: 50%" />
+                          <img v-if="event.sub_type === 'Captura'" src="/assets/img/combat/PokeballLog1.png" style="width: 50%; height: 50%"/>
+                          <img v-if="event.sub_type === 'Combate'" src="/assets/icons/Combats.svg"/>
+                          <img v-if="event.sub_type === 'Especial'" src="/assets/icons/Events.svg"/>
                         </v-icon>
                         <h3 class="tittleTweet gradient-border mb-1 text-uppercase">
-                          {{ event.game_mod.mod_name }}
+                          {{ event.name }}
                         </h3>
                       </v-alert-title>
                       <v-alert-body class="eventInfoAlert">
                         <p>
-                          DEDsafio Pokémon Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                          sed do Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod duis aute
-                          irure.
+                          {{ event.description }}
                         </p>
                         <a href="#" @click.prevent="openModal(event)">Leer más</a>
                       </v-alert-body>
                       <template #append>
-                        <div class="divBtnEvent">
-                          <v-btn class="btnColorEvent" @click="join_event(event.id)">Unirse</v-btn>
+                        <div class="divBtnEvent" v-if="event.type === 'Juego'">
+                          <v-btn class="btnColorEvent" v-if="joined_event === null && registered_to === null && is_registerable(event)" @click="register_event(event.id)">Registrarse</v-btn>
+                          <v-btn class="btnColorEvent" v-if="joined_event === null && can_join(event)" @click="join_event(event.id)">Entrar</v-btn>
+                          <v-btn class="btnColorEvent" v-if="joined_event === event.id" @click="leave_event()">Salir</v-btn>
+                        </div>
+                        <div class="divBtnEvent" v-if="event.type === 'Tramo'">
+                          <v-btn class="btnColorEvent">Enviar Evidencia</v-btn>
                         </div>
                       </template>
                     </v-alert>
@@ -48,7 +54,7 @@
 
               <!-- Paginación -->
               <v-pagination v-model="currentPage" :length="totalPages" class="mt-4 justify-center"
-                color="#D5048D"></v-pagination>
+                            color="#D5048D"></v-pagination>
             </div>
           </div>
         </v-card>
@@ -58,29 +64,51 @@
           <v-card class="cardBorderInfo" id="event">
             <v-alert color="#FFC81F" class="divCardSup pa-3 d-flex justify-center align-center">
               <h2 class="textInfoEvent">
-                Detalles del Evento
+                {{ selectedEvent.name }}
               </h2>
             </v-alert>
-            <v-card-title class="text-h6">
-              {{ selectedEvent?.game_mod.mod_name }}
-            </v-card-title>
             <v-card-text>
               <v-container class="tittleDobleColor">
                 <h1>INFORMACIÓN</h1>
-                 <v-divider class="mb-3"></v-divider>
+                <v-divider class="mb-3"></v-divider>
               </v-container>
-              <p v-if="selectedEvent">
-                {{ selectedEvent.description || 'DEDsafio Pokémon Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod duis aute irure. in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est.' }}
-              </p>
+              <v-container class="d-flex">
+                <div>
+                  <p>
+                    {{ selectedEvent.description }}
+                  </p>
+                </div>
+              </v-container>
               <v-container class="tittleDobleColor">
-                <h1>REQUISITO</h1>
-                 <v-divider class="mb-3"></v-divider>
+                <h1>REQUISITOS</h1>
+                <v-divider class="mb-3"></v-divider>
+              </v-container>
+              <v-container class="d-flex">
+                <p v-html="selectedEvent.requirements"></p>
+              </v-container>
+              <v-container class="tittleDobleColor">
+                <h1>Recompensas</h1>
+                <v-divider class="mb-3"></v-divider>
               </v-container>
               <v-container class="d-flex justify-center">
-                <div class="gradient-border-text">
-                  <p>
-                    Queda entre <strong>primeros 10</strong> de la competencia para calificar.
-                  </p>
+                <div class="gradient-border-text" v-if="selectedEvent.rewards.length <= 0">
+                  <p>{{selectedEvent.text_reward}}</p>
+                </div>
+                <div class="gradient-border-text" v-else>
+                  <v-data-table
+                      :items="as_data_table(selectedEvent.rewards)"
+                      :headers="rewards_headers"
+                      hide-default-footer>
+                    <template #item="{item}">
+                      <tr>
+                        <td class="pa-0">
+                          <v-img :src="item.image" height="48"/>
+                        </td>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                      </tr>
+                    </template>
+                  </v-data-table>
                 </div>
               </v-container>
             </v-card-text>
@@ -95,7 +123,9 @@
 </template>
 
 <script>
-import { session } from "@/stores";
+import {session} from "@/stores";
+import {STATICS_URL} from "@/app/api/lib/poke-api";
+import {useGameStore} from "@/stores/app";
 
 
 export default {
@@ -104,24 +134,92 @@ export default {
     return {
       available_events: [],
       currentPage: 1,
-      perPage: 3, // Número de eventos por página
+      perPage: 4, // Número de eventos por página
       showModal: false, // Control del modal
       selectedEvent: null, // Evento seleccionado
+      rewards_headers: [
+        {
+          title: '',
+          key: 'image'
+        },
+        {
+          title: 'Nombre',
+          key: 'name'
+        },
+        {
+          title: 'Cantidad',
+          key: 'quantity'
+        },
+      ]
     }
   },
   computed: {
     totalPages() {
       return Math.ceil(this.available_events.length / this.perPage);
     },
+    joined_event() {
+      return this.store.event_id;
+    },
+    registered_to() {
+      return this.store.registered_to;
+    },
     paginatedEvents() {
       const start = (this.currentPage - 1) * this.perPage;
       return this.available_events.slice(start, start + this.perPage);
     },
+    store: () => useGameStore(),
   },
   async mounted() {
     await this.load_events();
   },
   methods: {
+    can_join(event) {
+      if (event.type === 'Tramo') {
+        return false;
+      }
+
+      if (this.registered_to !== event.id) {
+        return false;
+      }
+
+      if (!event.can_join) {
+        return false;
+      }
+
+      if (event.free_join) {
+        return event.is_available
+      }
+      return new Date() < new Date(event.available_date_from)
+    },
+    get_reward_image(reward) {
+      switch (reward.reward_type) {
+        case 0: // ITEM
+          return `${STATICS_URL}/sprites/master/sprites/items/${reward.item.index}.png`
+        case 1: // WILDCARD
+          return reward.wildcard.sprite
+        case 2: // MONEY
+          return './assets/coin.png'
+        case 3: // POKEMON
+          return `${STATICS_URL}/sprites/master/sprites/pokemon/${reward.pokemon.dex_number}.png`
+      }
+    },
+    get_reward_name(reward) {
+      switch (reward.reward_type) {
+        case 0: // ITEM
+          return reward.item.name
+        case 1: // WILDCARD
+          return reward.wildcard.name
+        case 3: // POKEMON
+          return reward.pokemon.mote
+      }
+    },
+    as_data_table(rewards) {
+      return rewards.map((reward) => ({
+        image: this.get_reward_image(reward),
+        name: this.get_reward_name(reward),
+        quantity: reward.quantity
+      }))
+    },
     async load_events() {
       const response = await session.get('/api/events/list_available/');
       this.available_events = response.data;
@@ -131,11 +229,33 @@ export default {
         event_id: event_id,
         token: localStorage.getItem('api_token')
       };
+      this.store.join_event(event_id);
       window.electron.sendMessage('event', event_data);
+    },
+    is_registerable(event) {
+      if (event.type === 'Tramo') {
+        return false;
+      }
+
+      if (!event.can_join) {
+        return false;
+      }
+
+      if (event.free_join) {
+        return event.is_available
+      }
+      return new Date() < new Date(event.available_date_from)
     },
     openModal(event) {
       this.selectedEvent = event;
       this.showModal = true;
+    },
+    leave_event() {
+      this.store.leave_event();
+      window.electron.sendMessage('leave_event');
+    },
+    register_event(event_id) {
+      this.store.register_to_event(event_id);
     }
   }
 }

@@ -83,13 +83,16 @@
   </v-dialog>
   <v-dialog v-model="pokemon_team_display">
     <v-row>
+      <v-spacer @click="pokemon_team_display = false"/>
       <v-col cols="3">
         <VerticalPokemonTeamList team="you" :data="{ team: this.box_data.team }"
           @select_pokemon="select_pokemon_team" />
       </v-col>
+      <v-spacer @click="pokemon_team_display = false"/>
       <v-col>
         <PokemonDetailPanel v-if="selected_pokemon" :pokemon="selected_pokemon" />
       </v-col>
+      <v-spacer @click="pokemon_team_display = false"/>
     </v-row>
   </v-dialog>
 </template>
