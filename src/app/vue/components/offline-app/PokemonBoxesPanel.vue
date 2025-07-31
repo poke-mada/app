@@ -1,84 +1,104 @@
 <!--suppress JSUnresolvedVariable -->
 <template>
-  <v-row>
-    <v-col cols="12">
-      <PkCard>
-        <template v-slot:title>
-          <v-alert type="success" class="p-0">
-            <template v-slot:prepend>
-            </template>
-            <span>
-            Caja Pokemon
-          </span>
-          </v-alert>
-        </template>
-        <div class="pa-4">
-          <v-row justify="space-between">
-            <v-col>
-              <v-autocomplete label="Cajas" :items="this.box_data.selectable_boxes" item-value="box_number"
-                              item-title="box_identifier"
-                              v-model="selected_box" @update:modelValue="open_box"></v-autocomplete>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col>
-              <v-btn @click="pokemon_team_display = true; selected_pokemon = null">Ver Equipo</v-btn>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col>
-              <v-autocomplete label="Entrenadores" :items="trainers" item-value="id" item-title="streamer_name"
-                              v-model="selected_trainer" @update:modelValue="selected_box = 0;open_box();"></v-autocomplete>
-            </v-col>
-          </v-row>
-          <v-row v-if="loading_box" class="w-100 h-100" justify="center" align="center">
-            <v-col>
-              <v-progress-linear indeterminate height="25">
-                Loading...
-              </v-progress-linear>
-            </v-col>
-          </v-row>
-          <v-row v-if="box_data.box && !loading_box">
-            <v-col cols="2" v-for="(slot, index) in [...Array(30)].keys()" :key="index"
-                   style="border: 1px solid #CACACACA">
-              <v-row>
-                <v-spacer></v-spacer>
-                <v-col>
-                  <PokemonCard :pokemon="get_slot(slot) ? get_slot(slot).pokemon : null" @click="select_pokemon"/>
-                </v-col>
-                <v-spacer></v-spacer>
-              </v-row>
-            </v-col>
-          </v-row>
-        </div>
-      </PkCard>
-    </v-col>
-  </v-row>
+  <div class="noticiasSection d-flex align-items-center justify-center align-center">
+    <v-card class="rounded-xl vcard-pkm" elevation="6" style="position: relative;">
+      <!-- Encabezado con ícono flotante -->
+      <div class="divCardSup pa-5 d-flex justify-center align-center">
+        <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
+          <v-img src="/assets/img/Home/Pokeball.png"></v-img>
+        </v-avatar>
+        <h2 class="textNoticias">Cajas</h2>
+      </div>
+
+      <div class="pa-4">
+        <v-row justify="space-between" class="custom-row">
+          <!-- Select Caja -->
+          <v-col cols="3">
+            <v-autocomplete class="custom-select" variant="solo" hide-details flat :items="box_data.selectable_boxes"
+              item-value="box_number" item-title="box_identifier" v-model="selected_box" @update:modelValue="open_box">
+              <template #selection="{ item }">
+                <span class="select-text">{{ item.box_identifier || 'CAJA' }}</span>
+              </template>
+              <template #append-inner>
+                <div class="divSelectIcon">
+                  <v-icon class="select-icon">mdi-chevron-down</v-icon>
+                </div>
+              </template>
+            </v-autocomplete>
+          </v-col>
+          <v-spacer></v-spacer>
+          <!-- Select Entrenadores -->
+          <v-col cols="6">
+            <v-autocomplete class="custom-select" variant="solo" hide-details flat :items="trainers" item-value="id"
+              item-title="streamer_name" v-model="selected_trainer" @update:modelValue="selected_box = 0; open_box();">
+              <template #selection="{ item }">
+                <span class="select-text">{{ item.streamer_name || 'SELECCIONAR PARTICIPANTE' }}</span>
+              </template>
+              <template #append-inner>
+                <div class="divSelectIcon">
+                  <v-icon class="select-icon">mdi-chevron-down</v-icon>
+                </div>
+              </template>
+            </v-autocomplete>
+          </v-col>
+          <!-- Botón Ver Equipo -->
+          <v-col cols="3">
+            <v-btn class="gradient-btn" @click="pokemon_team_display = true; selected_pokemon = null">
+              VER EQUIPO
+              <v-icon end>mdi-chevron-right</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-row v-if="loading_box" class="w-100 h-100" justify="center" align="center">
+          <v-col>
+            <v-progress-linear indeterminate height="25">
+              Loading...
+            </v-progress-linear>
+          </v-col>
+        </v-row>
+        <v-row v-if="box_data.box && !loading_box">
+          <v-col cols="2" v-for="(slot, index) in [...Array(30)].keys()" :key="index"
+            style="border: 1px solid #CACACACA">
+            <v-row>
+              <v-spacer></v-spacer>
+              <v-col>
+                <PokemonCard :pokemon="get_slot(slot) ? get_slot(slot).pokemon : null" @click="select_pokemon" />
+              </v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-col>
+        </v-row>
+      </div>
+    </v-card>
+  </div>
   <v-dialog v-model="display_box_detail">
     <v-row>
-      <v-spacer @click="display_box_detail = false"/>
+      <v-spacer @click="display_box_detail = false" />
       <v-col>
-        <PokemonDetailPanel :pokemon="selected_pokemon"/>
+        <PokemonDetailPanel :pokemon="selected_pokemon" />
       </v-col>
-      <v-spacer @click="display_box_detail = false"/>
+      <v-spacer @click="display_box_detail = false" />
     </v-row>
   </v-dialog>
   <v-dialog v-model="pokemon_team_display">
     <v-row>
       <v-col cols="3">
-        <VerticalPokemonTeamList team="you" :data="{team: this.box_data.team}" @select_pokemon="select_pokemon_team"/>
+        <VerticalPokemonTeamList team="you" :data="{ team: this.box_data.team }"
+          @select_pokemon="select_pokemon_team" />
       </v-col>
       <v-col>
-        <PokemonDetailPanel v-if="selected_pokemon" :pokemon="selected_pokemon"/>
+        <PokemonDetailPanel v-if="selected_pokemon" :pokemon="selected_pokemon" />
       </v-col>
     </v-row>
   </v-dialog>
 </template>
 
 <script>
-import {session} from '@/stores'
+import { session } from '@/stores'
 import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
 import VerticalPokemonTeamList from "@/app/vue/components/offline-app/api-comps/VerticalPokemonTeamList";
-import PkCard from "@/app/vue/components/custom-comps/pk-card";
 
 export default {
   name: "PokemonTeamPanel",
@@ -86,7 +106,6 @@ export default {
     VerticalPokemonTeamList,
     PokemonCard,
     PokemonDetailPanel,
-    PkCard
   },
   props: {
     api_token: {
@@ -189,5 +208,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
