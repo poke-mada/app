@@ -251,11 +251,31 @@ export default {
           });
           sound.play();
           break;
+        case 'stolen_attack_notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Te han atacado!',
+            message: `¡${data.data.user_name} te ha atacado! \n¡Pero robaste el comodin ${data.data.wildcard.name} con tu reversa!`
+          });
+          sound.play();
+          break;
+        case 'shielded_attack_notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Te has protegido de un ataque!',
+            message: `¡${data.data.user_name} te ha intentado atacar!`
+          });
+          sound.play();
+          break;
         case 'coins_notification':
           emitter.emit('coins_updated', data.data)
           break;
         case 'karma':
           emitter.emit('karma_updated', data.data)
+          break;
+        case 'notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Notificacion!',
+            message: data.data
+          });
           break;
         case 'start_timer_notification':
           window.electron.sendMessage('notify', {

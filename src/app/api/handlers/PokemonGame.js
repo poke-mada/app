@@ -145,6 +145,41 @@ class GameData {
         await this.manageImposterLog(chatMessage1);
         await this.manageImposterLog(chatMessage2);
         await this.manageImposterLog(chatMessage3);
+        await this.manageLyssonWin(chatMessage1);
+        await this.manageLyssonWin(chatMessage2);
+        await this.manageLyssonWin(chatMessage3);
+    }
+
+    async manageLyssonWin(chatMessage) {
+        if (!chatMessage) {
+            return;
+        }
+        const lowerMsg = chatMessage.toLowerCase()
+        const foundData = lowerMsg.match(rom.game_data.already_won_lysson_message);
+
+        if (!foundData) {
+            return;
+        }
+
+        const lysson_defeated = config.get('lysson_defeated');
+        if (lysson_defeated) {
+            return;
+        }
+
+        const response = await session.post('/api/trainers/register_lysson/', {
+        }, {
+            headers: {
+                'Authorization': `Token ${GLOBAL_CONFIG.token}`,
+                "Content-Type": 'multipart/form-data'
+            }
+        }).catch((res) => {
+            console.log(res)
+            console.log('Failed for Found a new one!')
+        });
+
+        if (response) {
+            config.set('lysson_defeated', true);
+        }
     }
 
     detectCurrentCombat(enemy_data) {

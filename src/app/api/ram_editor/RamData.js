@@ -283,8 +283,9 @@ export const XY = Object.freeze(new RomData(
         },
         game: {
             chat_address1: 0x8804906,
-            chat_address2: 0x8805DFE,
-            chat_length: 500
+            chat_address2: 0x8805DF8,
+            chat_length: 500,
+            already_won_lysson_message: /oye\.\.\. sé que no es gran cosa, pero creo que es mejor compartirlo\./
         }
     }
 ));
