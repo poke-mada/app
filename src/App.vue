@@ -50,6 +50,7 @@
       </template>
     </v-snackbar>
     <UpdateDialog :update_data="update_data" v-if="update_dialog"/>
+    <DownloadDialog :download_data="download_data" v-if="download_dialog"/>
     <v-dialog v-model="logoff_dialog">
       <v-row class="h-100 w-100" justify="center" align="center">
         <v-col cols="6">
@@ -114,6 +115,7 @@
 <script>
 import NavDrawer from "@/app/vue/components/app-comps/NavDrawer";
 import UpdateDialog from '@/app/vue/components/page-comps/UpdateDialog';
+import DownloadDialog from '@/app/vue/components/page-comps/DownloadDialog';
 import FloatingInfoCard from '@/app/vue/components/app-comps/displays/FloatingInfoCard.vue'
 import {emitter, session} from "@/stores";
 import {Howl} from 'howler';
@@ -125,7 +127,8 @@ export default {
   components: {
     UpdateDialog,
     NavDrawer,
-    FloatingInfoCard
+    FloatingInfoCard,
+    DownloadDialog
   },
   data() {
     return {
@@ -134,6 +137,11 @@ export default {
       update_data: {
         progress: 69,
         version: '0.0.0'
+      },
+      download_dialog: false,
+      download_data: {
+        progress: 69,
+        message: 'Descargando'
       },
       save_dialog: false,
       logoff_dialog: false,
@@ -196,6 +204,24 @@ export default {
       return this.store.set_trainer_name(trainer_name);
     });
 
+    window.electron.onDataReceived('download-progress', (event, data) => {
+      if (!this.download_dialog) {
+        this.download_dialog = true;
+      }
+      let download_message = 'Descargando';
+      if (data === 100) {
+        download_message = 'Extrayendo archivo'
+      }
+      this.download_data = {
+        progress: data,
+        message: download_message
+      };
+    });
+
+    window.electron.onDataReceived('download-stop', () => {
+      this.download_dialog = false;
+    });
+
     window.electron.onDataReceived('update-progress', (event, data) => {
       if (!this.update_dialog) {
         this.update_dialog = true;
@@ -225,11 +251,31 @@ export default {
           });
           sound.play();
           break;
+        case 'stolen_attack_notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Te han atacado!',
+            message: `¡${data.data.user_name} te ha atacado! \n¡Pero robaste el comodin ${data.data.wildcard.name} con tu reversa!`
+          });
+          sound.play();
+          break;
+        case 'shielded_attack_notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Te has protegido de un ataque!',
+            message: `¡${data.data.user_name} te ha intentado atacar!`
+          });
+          sound.play();
+          break;
         case 'coins_notification':
           emitter.emit('coins_updated', data.data)
           break;
         case 'karma':
           emitter.emit('karma_updated', data.data)
+          break;
+        case 'notification':
+          window.electron.sendMessage('notify', {
+            title: '¡Notificacion!',
+            message: data.data
+          });
           break;
         case 'start_timer_notification':
           window.electron.sendMessage('notify', {

@@ -1,8 +1,8 @@
 <template>
-  <v-tooltip location="bottom">
+  <v-tooltip location="bottom" v-if="pokemon">
     <template v-slot:activator="{ props }">
       <div class="badge-container">
-        <v-img :src="pokemon ? get_sprite() ? get_sprite() : missingno : missingno" width="70" alt=""
+        <v-img :src="get_sprite() ? get_sprite() : missingno" width="70" alt=""
           :class="this.selected ? 'bordered' : ''" @click="$emit('click', pokemon)" v-bind="props"
           class="cursor-pointer" />
         <!-- Badge solo si tiene held_item -->
@@ -11,6 +11,11 @@
     </template>
     {{ pokemon ? pokemon.mote : '' }}
   </v-tooltip>
+  <v-row v-else>
+    <v-col>
+      <img :src="missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''" />
+    </v-col>
+  </v-row>
 </template>
 
 <script>

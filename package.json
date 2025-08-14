@@ -4,9 +4,9 @@
     "email": "para.mada4721@gmail.com",
     "url": "https://www.para-mada.com"
   },
-  "description": "Pokemon Assistant to ease your pokemon newbie experience",
+  "description": "Assistant for Dedsafio Pokemon",
   "name": "dedsafio-pokemon",
-  "version": "0.13.3",
+  "version": "0.16.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

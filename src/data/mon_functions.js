@@ -118,17 +118,39 @@ export function get_battle_form(pokemon) {
     return lower_species;
 }
 
-export function get_form(pokemon) {
-    const lower_species = pokemon.species.toLowerCase();
-    const lower_item = pokemon.held_item_name?.toLowerCase() ?? '';
+export function get_form(pokemon, skip_mega_calc=true) {
+    let lower_species = pokemon.species.toLowerCase();
+
+    if (lower_species === 'mr. mime') {
+        lower_species = "mr-mime";
+    }
 
     if (pokemon.suffix) {
+        if (pokemon.dex_number === 648) {
+            return `meloetta-${pokemon.suffix}`;
+        }
         return `${lower_species}-${pokemon.suffix}`;
     }
 
     if (lower_species === 'basculin') {
         return "basculin-red-striped";
     }
+
+    if (lower_species === 'darmanitan') {
+        return "darmanitan-standard";
+    }
+
+    if (lower_species.startsWith('aegislash')) {
+        let private_form = lower_species.replace('aegislash (', '').replace(' form)', '');
+        form = `aegislash-${private_form}`
+    }
+
+    if (skip_mega_calc) {
+        return lower_species;
+    }
+
+    const lower_item = pokemon.held_item_name?.toLowerCase() ?? '';
+
 
     let form = null;
     if (lower_item === 'alakazite' && lower_species === 'alakazam') {
@@ -140,10 +162,7 @@ export function get_form(pokemon) {
         let special_mega_evo = lower_item.replace(`${lower_species}ite `, '').toLowerCase();
         form = `${lower_species}-mega-${special_mega_evo}`;
     }
-    if (lower_species.startsWith('aegislash')) {
-        let private_form = lower_species.replace('aegislash (', '').replace(' form)', '');
-        form = `aegislash-${private_form}`
-    }
+
     return form || lower_species;
 }
 

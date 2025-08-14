@@ -117,9 +117,9 @@ export function watchSave() {
     watchSaveFile(SAVE_FILE);
 }
 
-export const stopWatching = function (FILE_NAME) {
+export const stopWatching = function () {
     try {
-        fs.unwatchFile(FILE_NAME)
+        fs.unwatchFile(SAVE_FILE)
     } catch (e) {
         console.log('file not read')
         logger.error(e)

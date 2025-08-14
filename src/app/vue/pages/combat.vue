@@ -33,3 +33,9 @@ export default {
 }
 
 </script>
+<style scoped>
+  .v-badge__wrapper {
+    position: absolute;
+    left: -30px;
+  }
+</style>

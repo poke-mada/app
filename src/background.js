@@ -1,4 +1,4 @@
-import {app, BrowserWindow, protocol, Menu, Tray} from 'electron'
+import {app, BrowserWindow, protocol} from 'electron'
 import {createProtocol} from 'vue-cli-plugin-electron-builder/lib'
 import installExtension, {VUEJS3_DEVTOOLS} from 'electron-devtools-installer'
 import {autoUpdater} from "electron-updater";
@@ -14,6 +14,7 @@ const isDevelopment = process.env.NODE_ENV !== 'production'
 protocol.registerSchemesAsPrivileged([
     {scheme: 'app', privileges: {secure: true, standard: true}}
 ])
+
 
 async function createWindow() {
     // Create the browser window.
@@ -65,6 +66,10 @@ app.on('activate', async () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
+    if (process.platform === 'win32')
+    {
+        app.setAppUserModelId("DEDsafío Pokémon");
+    }
     let win = await createWindow();
     declareGlobalConfig('window', win);
     if (isDevelopment && !process.env.IS_TEST) {
