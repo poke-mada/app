@@ -309,8 +309,4 @@ body {
 ::-webkit-scrollbar {
   display: none;
 }
-
-* {
-  cursor: default;
-}
 </style>

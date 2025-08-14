@@ -141,6 +141,28 @@ img[src*="bgNew.png"] {
     background-color: var(--pink);
 }
 
+.divCardSupPurple {
+    background-color: var(--purple);
+    border: 2px solid var(--purple);
+    padding: 10px;
+    color: white;
+}
+
+.tittleCardPurple {
+    padding-left: 30px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    font-size: 20px !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.hoverCard:hover {
+    background-color: #f3f3f3da;
+}
+
 .divCardLog {
     background-color: var(--purple);
 }
@@ -151,6 +173,15 @@ img[src*="bgNew.png"] {
     color: var(--white);
     font-weight: 100;
     letter-spacing: 2px;
+}
+
+.cardPadingInventory {
+    padding: 20px 50px;
+}
+
+.ptb {
+    padding-top: 20px;
+    padding-bottom: 10px;
 }
 
 .tittleTweet {
@@ -177,7 +208,7 @@ img[src*="bgNew.png"] {
 }
 
 .noticiasSection {
-    height: 100vh;
+    min-height: 100vh;
 }
 
 .noticiasSection .vcard-pkm {
@@ -291,6 +322,41 @@ img[src*="bgNew.png"] {
     font-weight: 700;
 }
 
+.btnHome2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 30px;
+    padding: 10px 20px;
+    background-color: white;
+    font-weight: bold;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.btnHome2::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 30px;
+    padding: 1px;
+    /* grosor del borde */
+    background: linear-gradient(90deg, var(--pink) 0%, var(--blue) 100%);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+    z-index: 0;
+    font-weight: 700;
+}
+
 .btnHome .btn-text {
     position: relative;
     z-index: 1;
@@ -315,6 +381,13 @@ img[src*="bgNew.png"] {
     cursor: pointer;
     font-weight: 800;
     text-shadow: 0 0 2px white;
+}
+
+.ofertasDivPoke {
+    border: 1px solid var(--pink);
+    border-radius: 8px;
+    margin-bottom: 30px;
+    padding: 20px;
 }
 
 .custom-badge {
@@ -452,6 +525,54 @@ img[src*="bgNew.png"] {
     pointer-events: none;
 }
 
+.cardColores {
+    position: relative;
+    border-radius: 40px;
+    background-color: white;
+    padding: 1rem;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+    width: 100%;
+}
+
+.cardColores::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1px;
+    /* grosor del borde */
+    border-radius: inherit;
+    background: linear-gradient(180deg, var(--pink) 0%, var(--blue) 100%);
+    -webkit-mask:
+        linear-gradient(#fff 0 0) content-box,
+        linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.cardColores>div>p.bold {
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.cardColores>div>p.f-sm {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 2px;
+}
+
+.paddingCardOferta {
+    padding: 30px 50px;
+}
+
+.borderPink {
+    border-top: 1px solid transparent !important;
+    border: 1px solid var(--pink);
+}
+
 .cardImgPokeBattle {
     width: 114px;
     display: flex;
@@ -505,7 +626,38 @@ div.v-col.v-col-4>div.statsContent>span {
     -webkit-text-fill-color: transparent;
     font-weight: 900 !important;
     width: fit-content;
+}
 
+.tittleColores h1 {
+    font-size: 20px;
+    letter-spacing: 2px;
+    background: linear-gradient(270deg, #0600FF 20%, #D5048D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    width: fit-content;
+}
+
+#app>div>div>div>main>div>div>div.pa-4>div:nth-child(1)>div.v-col.v-col-6>div>div.v-input__control>div>div.v-field__field>label:nth-child(2) {
+    font-size: 20px;
+    letter-spacing: 2px;
+    background: linear-gradient(270deg, #0600FF 20%, #D5048D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    width: fit-content;
+}
+
+#app>div>div>div>main>div>div>div.pa-4>div:nth-child(1)>div.v-col.v-col-6>div>div.v-input__control>div>div.v-field__field>label.v-label.v-field-label.v-field-label--floating {
+    background: linear-gradient(270deg, #0600FF 20%, #D5048D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 900 !important;
+    width: fit-content;
+}
+
+#app>div>div>div>main>div>div>div.pa-4>div:nth-child(1)>div.v-col.v-col-6>div>div.v-input__control>div>div.v-field__overlay {
+    background-color: transparent;
 }
 
 .containerLogsCombats {
@@ -910,7 +1062,7 @@ div.pokemon-inmune>div {
 }
 
 #app>div>div>div>main>div>div>div.pa-4>div.v-row.justify-space-between.custom-row>div:nth-child(1)>div>div>div>div.v-field__append-inner>i.mdi-menu-down.mdi.v-icon.notranslate.v-theme--light.v-icon--size-default.v-icon--clickable.v-autocomplete__menu-icon,
-#app > div > div > div > main > div > div > div.pa-4 > div.v-row.justify-space-between.custom-row > div.v-col.v-col-6 > div > div > div > div.v-field__append-inner > i{
+#app>div>div>div>main>div>div>div.pa-4>div.v-row.justify-space-between.custom-row>div.v-col.v-col-6>div>div>div>div.v-field__append-inner>i {
     display: none;
 }
 
@@ -925,11 +1077,403 @@ div.pokemon-inmune>div {
     top: -10px;
 }
 
-.custom-select .select-text{
+.custom-select .select-text {
     color: black;
     font-size: 14px;
-    letter-spacing: 2px;
+    letter-spacing: 1px;
     font-weight: 800;
 }
 
+.scrollable {
+    overflow-y: auto;
+}
+
+.divComodinesCards {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+}
+
+.cardComodinesTam {
+    /* width: 50%; */
+    width: clamp(200px, 18vw, 200px);
+}
+
+.divCardsComodinesBadge {
+    position: relative;
+}
+
+.badgeCuantityCards {
+    /* position: absolute; */
+    /* top: 0; */
+}
+
+.btnReclamarDiv {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.btn-grad-contact {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 32px;
+    border: 1px solid transparent;
+    border-radius: 30px;
+    font-weight: bold;
+    color: black;
+    background-color: transparent;
+    background:
+        linear-gradient(#ffff, #fff) padding-box,
+        linear-gradient(to right, var(--pink), var(--blue)) border-box;
+    cursor: pointer;
+    font-size: 14px;
+    letter-spacing: 3px;
+    gap: 12px;
+    margin-top: 0 !important;
+    box-shadow: none;
+}
+
+.btn-icon {
+    background-color: var(--pink);
+    color: white;
+    font-size: 12px;
+    font-weight: 800;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    stroke-width: 3px;
+    padding: 3px;
+    margin-left: 20px;
+}
+
+.paddinP1 {
+    padding: 30px 50px;
+}
+
+.mail-header .th {
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+}
+
+.divSectionMerch {
+    height: 80px;
+}
+
+#app>div>div>div>main>div>div>div.v-slide-group.v-tabs.v-tabs--horizontal.v-tabs--align-tabs-center.v-tabs--density-default.divCardSup.divSectionMerch.d-flex.justify-center.align-center>div>div>button {
+    height: 80px;
+    padding: 0 50px;
+}
+
+.divSectionMerch .v-btn__content {
+    font-family: 'POKMNFont', arial;
+    text-transform: capitalize;
+    font-size: 20px;
+    color: white;
+}
+
+.nameOfertaSection {
+    margin-left: 10px;
+}
+
+.nameOfertaSection h2,
+.nameOfertaSection p {
+    color: white;
+}
+
+.nameOfertaSection h2 {
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.nameOfertaSection p {
+    font-size: 12px;
+}
+
+button.v-btn.v-tab-item--selected.v-tab--selected.v-theme--light.text-deep-purple-accent-4.v-btn--density-default.v-btn--size-default.v-btn--variant-text.v-tab>span.v-btn__content {
+    text-decoration: underline;
+    text-underline-offset: 12px;
+    color: black;
+    font-weight: 500;
+}
+
+button.v-btn.v-tab-item--selected.v-tab--selected.v-theme--light.text-deep-purple-accent-4.v-btn--density-default.v-btn--size-default.v-btn--variant-text.v-tab {
+    background-color: var(--yellow);
+}
+
+div.v-window.v-theme--light.v-tabs-window.paddinP1.h-100>div>div.v-window-item.v-window-item--active.v-tabs-window-item>div>div>div.v-col.v-col-2>div>img {
+    position: absolute;
+    left: -52px;
+}
+
+.v-tab__slider {
+    background: transparent !important;
+}
+
+/* En móviles muy chicos puedes ajustar un poco más */
+@media (max-width: 600px) {
+    .wc__img {
+        height: clamp(140px, 40vw, 260px);
+    }
+}
+
+@media(max-width: 1100px) {
+    .noticiasSection .vcard-pkm {
+        width: 90vw !important;
+    }
+}
+
+.paddingCardOferta .v-card-actions {
+    width: 100%;
+    padding: 0;
+}
+
+.paddingCardOferta .v-card-actions .btnColorEvent {
+    width: 100%;
+}
+
+.ofertasDiv {
+    padding: 0;
+}
+
+.ofertasDiv>button {
+    border: 1px solid transparent;
+}
+
+.ofertasDiv>button>span {
+    color: black;
+}
+
+.v-input__details {
+    display: none;
+}
+
+div.v-autocomplete__content>div.v-list>div.v-list-item>div.v-list-item__prepend {
+    display: none;
+}
+
+.filterTitle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 0;
+    padding: 6px 8px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: #3c3c3c;
+    cursor: pointer;
+}
+
+.filterIcon {
+    color: #e6007a;
+}
+
+.filterTitle:focus {
+    outline: none;
+}
+
+/* tarjeta del menú */
+.filterCard {
+    overflow: hidden;
+}
+
+/* franja superior con degradado */
+.filterHeader {
+    height: 46px;
+    background: linear-gradient(135deg, #e6007a 0%, #7a1fc5 100%);
+}
+
+/* items estilo grande en mayúsculas */
+.filterItem {
+    padding: 14px 16px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    font-weight: 700;
+}
+
+.filterItem:hover {
+    background: rgba(0, 0, 0, .04);
+}
+
+.filterItem.active {
+    color: #e6007a;
+}
+
+.filterActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 12px 12px;
+}
+
+.imgTypeMov {
+    margin-right: 15px;
+}
+
+.badge-container {
+    position: relative;
+    width: 70px;
+    height: 70px;
+}
+
 /* -------------- FIN CAJAS POKEMON -------------- */
+/* -------------- INVENTORY POKEMON -------------- */
+/* Altura del card y layout */
+.inventory-card {
+    height: 500px;
+    /* <- ajusta a tu gusto */
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Zona scrolleable */
+.inventory-body {
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* Encabezado pegado */
+.inventory-header {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    /* o el color de tu card */
+    z-index: 1;
+    padding-top: 8px;
+}
+
+.inventory-body::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.inventory-body::-webkit-scrollbar-corner {
+    background: red;
+}
+
+/* Scrollbar (WebKit: Chrome/Edge/Safari) */
+.inventory-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.inventory-body::-webkit-scrollbar-track {
+    background: rgba(124, 58, 237, 0.15);
+    border-radius: 999px;
+}
+
+.inventory-body::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--purple), var(--pink));
+    border-radius: 999px;
+}
+
+.inventory-body::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--purple), var(--pink));
+}
+
+/* Scrollbar (Firefox) */
+.inventory-body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--purple) rgba(124, 58, 237, 0.15);
+}
+
+.inventory-body::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+}
+
+.monedasOfertaDiv {
+    justify-content: space-between;
+}
+
+.monedasOfertaDiv .pPersonalizadoBtn {
+    padding: 10px 15px !important;
+    height: 52px;
+}
+
+.monedasOfertaDiv .v-input {
+    width: 100px;
+    grid-template-areas: none;
+}
+
+.sectionOfertas .v-card-text {
+    padding: 10px;
+}
+
+.ofertasDivSeparacion {
+    height: 85%;
+    display: flex;
+    flex-direction: column;
+}
+
+.btnMonedasOferta .btnHome2 {
+    height: 46px;
+    background-color: transparent;
+}
+
+
+.btnColorEvent.pPersonalizadoBtn .btn-icon {
+    background-color: transparent;
+}
+
+/* Pastilla con borde degradado */
+.money-chip {
+    width: 110px;
+    /* ajusta el ancho que quieras */
+}
+
+.money-chip .v-field {
+    border-radius: 9999px;
+}
+
+.money-chip .v-field--variant-outlined {
+    border: 2px solid transparent;
+    background:
+        linear-gradient(#fff, #fff) padding-box,
+        linear-gradient(90deg, #ff2ea6, #5b5eff) border-box;
+    /* rosa → azul */
+    border-radius: 9999px;
+}
+
+.money-chip .v-field__outline__start,
+.money-chip .v-field__outline__end,
+.money-chip .v-field__outline__notch {
+    border: none;
+    /* quitamos el outline de Vuetify */
+}
+
+.money-chip input {
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Ajuste del icono */
+.coin-icon {
+    margin-left: 4px;
+}
+
+/* Quitar flechas del input number (opcional) */
+.money-chip input[type="number"]::-webkit-outer-spin-button,
+.money-chip input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.money-chip input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* -------------- FIN INVENTORY POKEMON -------------- */

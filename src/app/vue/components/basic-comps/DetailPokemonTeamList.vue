@@ -21,10 +21,6 @@
             <!-- Imagen principal del Pokémon -->
             <PokemonCard :pokemon="pokemon && (pokemon.discovered || team === 'you') ? pokemon : null" @click="selectPokemon(pokemon)"/>
             <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
-
-            <!-- Badge solo si tiene held_item -->
-            <img v-if="pokemon && pokemon.held_item && pokemon.held_item !== '0'" src="/assets/img/Home/itemPoke.png"
-                 width="22" class="custom-badge"/>
           </div>
         </v-col>
       </v-row>
@@ -34,10 +30,6 @@
             <!-- Imagen principal del Pokémon -->
             <PokemonCard :pokemon="pokemon && (pokemon.discovered || team === 'you') ? pokemon : null" @click="selectPokemon(pokemon)"/>
             <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
-
-            <!-- Badge solo si tiene held_item -->
-            <img v-if="pokemon && pokemon.held_item && pokemon.held_item !== '0'" src="/assets/img/Home/itemPoke.png"
-                 width="22" class="custom-badge"/>
           </div>
         </v-col>
       </v-row>
