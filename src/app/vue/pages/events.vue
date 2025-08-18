@@ -123,7 +123,7 @@
 </template>
 
 <script>
-import {session} from "@/stores";
+import {getAxios} from "@/stores";
 import {STATICS_URL} from "@/app/api/lib/poke-api";
 import {useGameStore} from "@/stores/app";
 
@@ -221,13 +221,13 @@ export default {
       }))
     },
     async load_events() {
-      const response = await session.get('/api/events/list_available/');
+      const response = await getAxios().get('/api/events/list_available/');
       this.available_events = response.data;
     },
     join_event(event_id) {
       const event_data = {
         event_id: event_id,
-        token: localStorage.getItem('api_token')
+        token: this.store.api_token
       };
       this.store.join_event(event_id);
       window.electron.sendMessage('event', event_data);

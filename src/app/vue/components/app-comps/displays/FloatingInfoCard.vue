@@ -22,7 +22,6 @@ export default {
   },
   async mounted() {
     emitter.on('coins_updated', (data) => {
-      console.log(data)
       this.coins = data
     })
   },

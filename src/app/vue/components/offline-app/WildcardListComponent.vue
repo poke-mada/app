@@ -142,8 +142,13 @@
 </template>
 
 <script>
+<<<<<<< Updated upstream
 import {session, emitter} from "@/stores";
 import {SERVER_URL} from '@/stores/constants';
+=======
+import { getAxios, emitter } from "@/stores";
+import { SERVER_URL } from '@/stores/constants';
+>>>>>>> Stashed changes
 import CoinsComponent from "@/app/vue/components/offline-app/CoinsComponent";
 import PkCard from "@/app/vue/components/custom-comps/pk-card";
 
@@ -262,12 +267,12 @@ export default {
         });
         return;
       }
-      session.post(`/api/wildcards/${this.selected_card.id}/use_card/`, {
+      getAxios().post(`/api/wildcards/${this.selected_card.id}/use_card/`, {
         quantity: this.quantity,
         target_id: this.target_profile,
         dex_number: this.target_mon,
         item_id: this.item_id
-      }, this.config).then(async (response) => {
+      }).then(async (response) => {
         if (response.status === 200) {
           if (!this.selected_card.always_available) {
             this.selected_card.inventory = parseInt(this.selected_card.inventory) - this.quantity;
@@ -312,9 +317,9 @@ export default {
       })
     },
     comprar() {
-      session.post(`/api/wildcards/${this.selected_card.id}/buy_card/`, {
+      getAxios().post(`/api/wildcards/${this.selected_card.id}/buy_card/`, {
         quantity: this.quantity
-      }, this.config).then(async (response) => {
+      }).then(async (response) => {
         if (response.status === 200 && !this.selected_card.always_available) {
           this.selected_card.inventory = parseInt(this.selected_card.inventory) + this.quantity;
 
@@ -333,35 +338,40 @@ export default {
       })
     },
     async load_mega_stones() {
-      const response = await session.get('/api/wildcards/list_mega_stones/')
+      const response = await getAxios().get('/api/wildcards/list_mega_stones/')
       this.mega_stones = response.data
     },
     async load_weak_items() {
-      const response = await session.get('/api/wildcards/list_weak_items/')
+      const response = await getAxios().get('/api/wildcards/list_weak_items/')
       this.weak_items = response.data
     },
     async load_strong_items() {
-      const response = await session.get('/api/wildcards/list_strong_items/')
+      const response = await getAxios().get('/api/wildcards/list_strong_items/')
       this.strong_items = response.data
     },
     async load_targets() {
+<<<<<<< Updated upstream
       const response = await session.get('/api/trainers/list_streamers/')
       this.possible_targets = response.data.map(trainer => ({value: trainer.id, title: trainer.streamer_name}))
+=======
+      const response = await getAxios().get('/api/trainers/list_streamers/')
+      this.possible_targets = response.data.map(trainer => ({ value: trainer.id, title: trainer.streamer_name }))
+>>>>>>> Stashed changes
     },
     async load_wildcards() {
-      const response = await session.get('/api/trainers/wildcards_with_inventory/', this.config)
+      const response = await getAxios().get('/api/trainers/wildcards_with_inventory/')
       this.list_wildcards = response.data;
     },
     async load_dead_mons() {
-      const response = await session.get('/api/trainers/list_revivable/')
+      const response = await getAxios().get('/api/trainers/list_revivable/')
       this.death_mons = response.data
     },
     async load_releasable_mons() {
-      const response = await session.get('/api/trainers/list_releasable/')
+      const response = await getAxios().get('/api/trainers/list_releasable/')
       this.releasable_mons = response.data
     },
     async load_releasable_shinies() {
-      const response = await session.get('/api/trainers/list_shinies/')
+      const response = await getAxios().get('/api/trainers/list_shinies/')
       this.releasable_shinies = response.data
     },
     async full_reload() {

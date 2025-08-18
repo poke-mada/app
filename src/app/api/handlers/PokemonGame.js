@@ -55,7 +55,7 @@ class GameData {
 
                 if (this.combat_info.combat_type !== CombatType.OFF && this.combat_info.combat_env !== CombatEnv.OFF) {
                     const enemy_data = Object.values(this.combat_info.enemy_battle_data);
-                    if (enemy_data.length > 0) {
+                    if (enemy_data.filter(pk => pk !== null && pk.is_valid).length > 0) {
                         this.enemy_data.team = enemy_data;
                     }
                     this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
@@ -75,8 +75,9 @@ class GameData {
                         pkm.nature_name = team_pkm.nature_name
                         pkm.nature_num = team_pkm.nature_num
                     }
-
-                    this.your_data.team = Object.values(this.combat_info.your_battle_data);
+                    if (Object.values(this.combat_info.your_battle_data).filter(pk => pk !== null).length === this.your_data.team) {
+                        this.your_data.team = Object.values(this.combat_info.your_battle_data);
+                    }
                     this.detectCurrentCombat(this.enemy_data);
                 }
                 if (pokemon_game.alreadySent !== JSON.stringify(this)) {

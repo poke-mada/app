@@ -14,8 +14,10 @@ export class InBattlePokemonData {
             this.moves = [];
             this.boosts = {};
             this.weaknesses = [];
+            this.is_valid = false;
             return;
         }
+        this.is_valid = true;
         this.battle_slot = data.slice(rom.pokemon_battle_data.battle_slot).readUInt8()
         this.form = data.slice(rom.pokemon_battle_data.form).readUInt8()
         this.gender = data.slice(rom.pokemon_battle_data.gender).readUInt8()

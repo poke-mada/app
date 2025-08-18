@@ -41,9 +41,13 @@
 </template>
 
 <script>
+<<<<<<< Updated upstream
 import {session} from "@/stores";
 import PkCard from "@/app/vue/components/custom-comps/pk-card";
 
+=======
+import {getAxios} from "@/stores";
+>>>>>>> Stashed changes
 
 export default {
   name: 'RewardsAppPage',
@@ -60,7 +64,12 @@ export default {
   },
   methods: {
     async load_rewards() {
+<<<<<<< Updated upstream
       const response = await session.get('/api/trainers/get_rewards/');
+=======
+      const response = await getAxios().get('/api/trainers/get_rewards/');
+      console.log("Respuesta Buzon: ", this.available_rewards);
+>>>>>>> Stashed changes
       this.available_rewards = response.data;
     },
     claim_reward(bundle_id) {

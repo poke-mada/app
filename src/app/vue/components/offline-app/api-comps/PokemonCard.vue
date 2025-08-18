@@ -40,7 +40,19 @@ export default {
       return _get_sprite(this.pokemon.dex_number, form)
     },
   },
+<<<<<<< Updated upstream
   created() {
+=======
+  computed: {
+    spriteSrc() {
+      if (!this.pokemon) return this.missingno;
+      const form = get_form(this.pokemon);
+      return _get_sprite(this.pokemon.dex_number, form) || this.missingno;
+    },
+    hasHeldItem() {
+      return this.pokemon?.held_item >= 1;
+    }
+>>>>>>> Stashed changes
   },
   data() {
     return {

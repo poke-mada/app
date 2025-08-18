@@ -1,4 +1,6 @@
 import {defineStore} from "pinia/dist/pinia";
+import {Howl} from "howler";
+import {emitter, getAxios} from "@/stores/index";
 
 export const useGameStore = defineStore('game', {
     state: () => ({
@@ -7,11 +9,14 @@ export const useGameStore = defineStore('game', {
         inlive: false,
         emulatoron: false,
         registeredto: null,
+        streamername: localStorage.getItem('streamer_name'),
+        apitoken: localStorage.getItem('api_token'),
         gamedata: {
             combat_info: {
 
             }
-        }
+        },
+        dataSocket: null,
     }),
     getters: {
         in_live: state => state.inlive,
@@ -19,7 +24,10 @@ export const useGameStore = defineStore('game', {
         trainer_name: state => state.trainername,
         emulator_on: state => state.emulatoron,
         event_id: state => state.joined_event_id,
-        registered_to: state => state.registeredto
+        registered_to: state => state.registeredto,
+        streamer_name: state => state.streamername,
+        api_token: state => state.apitoken,
+        data_socket: state => state.dataSocket,
     },
     actions: {
         activate(game_data) {
@@ -41,6 +49,101 @@ export const useGameStore = defineStore('game', {
         },
         leave_event() {
             this.joined_event_id = null;
+        },
+        start_websocket() {
+            const streamer_name = this.streamername;
+            if (streamer_name) {
+                const sound = new Howl({
+                    src: ['./assets/sounds/alert.mp3']
+                });
+
+                this.dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
+
+                this.dataSocket.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    const data = JSON.parse(message.message);
+                    switch (data.type) {
+                        case 'event_notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Nuevo Evento!',
+                                message: `¡Un nuevo evento está por comenzar!`
+                            });
+                            sound.play();
+                            break;
+                        case 'attack_notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Te han atacado!',
+                                message: `¡${data.data.user_name} te ha atacado!`
+                            });
+                            sound.play();
+                            break;
+                        case 'stolen_attack_notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Te han atacado!',
+                                message: `¡${data.data.user_name} te ha atacado! \n¡Pero robaste el comodin ${data.data.wildcard.name} con tu reversa!`
+                            });
+                            sound.play();
+                            break;
+                        case 'shielded_attack_notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Te has protegido de un ataque!',
+                                message: `¡${data.data.user_name} te ha intentado atacar!`
+                            });
+                            sound.play();
+                            break;
+                        case 'coins_notification':
+                            emitter.emit('coins_updated', data.data)
+                            break;
+                        case 'karma':
+                            emitter.emit('karma_updated', data.data)
+                            break;
+                        case 'notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Notificacion!',
+                                message: data.data
+                            });
+                            break;
+                        case 'start_timer_notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Empieza!',
+                                message: `Ya puedes recibir ayuda de tu coach`
+                            });
+
+                            setTimeout(() => {
+                                window.electron.sendMessage('notify', {
+                                    title: '¡Se acabó el tiempo!',
+                                    message: `Ya no puedes recibir ayuda del coach`
+                                });
+                                sound.play();
+                            }, data.data * 1000)
+                            break;
+                    }
+                }
+
+                this.dataSocket.onopen = async () => {
+                    let response = await getAxios().get(`api/trainers/get_economy/`);
+                    emitter.emit('coins_updated', response.data)
+                    let kresponse = await getAxios().get(`api/trainers/get_karma/`);
+                    emitter.emit('karma_updated', kresponse.data)
+                }
+            }
+        },
+        login(streamer_name, token) {
+            localStorage.setItem('streamer_name', streamer_name)
+            localStorage.setItem('api_token', token);
+
+            this.streamername = streamer_name;
+            this.apitoken = token;
+            this.start_websocket();
+        },
+        logout() {
+            localStorage.removeItem('streamer_name')
+            localStorage.removeItem('api_token')
+
+            this.streamername = null;
+            this.apitoken = null;
+            this.dataSocket.close();
+            this.dataSocket = null;
         }
     }
 })
