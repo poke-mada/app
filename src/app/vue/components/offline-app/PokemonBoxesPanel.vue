@@ -14,7 +14,7 @@
         <v-row justify="space-between" class="custom-row">
           <!-- Select Caja -->
           <v-col cols="3">
-            <v-autocomplete class="custom-select" variant="solo" hide-details flat :items="box_data.selectable_boxes"
+            <v-autocomplete id="cajasSelect" class="custom-select" variant="solo" hide-details flat :items="box_data.selectable_boxes"
               item-value="box_number" item-title="box_identifier" v-model="selected_box" @update:modelValue="open_box">
               <template #selection="{ item }">
                 <span class="select-text">{{ item.box_identifier || 'CAJA' }}</span>

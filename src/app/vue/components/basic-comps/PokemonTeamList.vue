@@ -66,9 +66,9 @@ export default {
     },
     computed_color() {
       if (this.team === 'enemy') {
-        return 'error';
+        return '#D5048D';
       }
-      return 'success';
+      return '#0600FF';
     },
     computed_text() {
       if (!this.trainer_name) {
