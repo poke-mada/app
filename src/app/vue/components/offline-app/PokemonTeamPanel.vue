@@ -12,7 +12,7 @@
 <script>
 import VerticalPokemonTeamList from '@/app/vue/components/offline-app/api-comps/VerticalPokemonTeamList';
 import PokemonDetailPanel from '@/app/vue/components/offline-app/api-comps/PokemonDetailPanel';
-import {session} from "@/stores";
+import {getAxios} from "@/stores";
 
 export default {
   name: "PokemonTeamPanel",
@@ -41,13 +41,13 @@ export default {
     },
   },
   mounted() {
-    session.get(`/api/trainers/get_trainer/`).then((response) => {
+    getAxios().get(`/api/trainers/get_trainer/`).then((response) => {
       this.team_data.team = response.data.current_team.team;
     }).catch(() => {
     })
     this.interval = setInterval(() => {
       if (!this.active) return;
-      session.get(`/api/trainers/get_trainer/`).then((response) => {
+      getAxios().get(`/api/trainers/get_trainer/`).then((response) => {
         this.team_data.team = response.data.current_team.team;
       }).catch(() => {
       })

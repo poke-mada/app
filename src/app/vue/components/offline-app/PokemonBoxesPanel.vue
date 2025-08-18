@@ -17,7 +17,7 @@
             <v-autocomplete id="cajasSelect" class="custom-select" variant="solo" hide-details flat :items="box_data.selectable_boxes"
               item-value="box_number" item-title="box_identifier" v-model="selected_box" @update:modelValue="open_box">
               <template #selection="{ item }">
-                <span class="select-text">{{ item.box_identifier || 'CAJA' }}</span>
+                <span class="select-text">{{ item.title || 'CAJA' }}</span>
               </template>
               <template #append-inner>
                 <div class="divSelectIcon">
@@ -32,7 +32,7 @@
             <v-autocomplete class="custom-select" variant="solo" hide-details flat :items="trainers" item-value="id"
               item-title="streamer_name" v-model="selected_trainer" @update:modelValue="selected_box = 0; open_box();">
               <template #selection="{ item }">
-                <span class="select-text">{{ item.streamer_name || 'SELECCIONAR PARTICIPANTE' }}</span>
+                <span class="select-text">{{ item.title || 'SELECCIONAR PARTICIPANTE' }}</span>
               </template>
               <template #append-inner>
                 <div class="divSelectIcon">
@@ -98,7 +98,7 @@
 </template>
 
 <script>
-import { session } from '@/stores'
+import { getAxios } from '@/stores'
 import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
 import VerticalPokemonTeamList from "@/app/vue/components/offline-app/api-comps/VerticalPokemonTeamList";
@@ -125,15 +125,7 @@ export default {
     }
   },
   data() {
-    const token = this.api_token || localStorage.getItem('api_token');
-    let config = {
-      headers: {
-        Authorization: `Token ${token}`
-      }
-    }
-
     return {
-      config: config,
       loading_box: true,
       selected_trainer: 0,
       trainers: [],
@@ -148,27 +140,27 @@ export default {
     }
   },
   updated() {
-    session.get('/api/trainers/list_trainers/', this.config).then((response) => {
+    getAxios().get('/api/trainers/list_trainers/').then((response) => {
       this.trainers = response.data
     });
   },
   async mounted() {
-    const response = await session.get('/api/trainers/get_trainer')
+    const response = await getAxios().get('/api/trainers/get_trainer')
     this.selected_trainer = response.data.id;
     await this.load_trainers();
     await this.open_box();
   },
   methods: {
     async load_trainer_team() {
-      const response = await session.get(`/api/trainers/${this.selected_trainer}/`, this.config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/`);
       this.box_data.team = response.data.current_team.team
     },
     async load_trainers() {
-      const response = await session.get('/api/trainers/list_trainers/', this.config);
+      const response = await getAxios().get('/api/trainers/list_trainers/');
       this.trainers = response.data;
     },
     async load_boxes() {
-      const response = await session.get(`/api/trainers/${this.selected_trainer}/list_boxes/`, this.config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/list_boxes/`);
       this.box_data.selectable_boxes = response.data;
     },
     async open_box() {
@@ -177,9 +169,8 @@ export default {
         params: {
           box: this.selected_box
         },
-        headers: this.config.headers
       };
-      const response = await session.get(`/api/trainers/${this.selected_trainer}/box/`, config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/box/`, config);
 
       this.box_data.box = response.data;
       this.loading_box = false;

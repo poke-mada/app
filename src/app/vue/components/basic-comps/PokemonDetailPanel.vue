@@ -261,4 +261,8 @@ export default {
   background-color: rgba(33, 150, 243, 0.8);
   color: white;
 }
+.templateCardDetails {
+  min-width: 800px;
+  max-width: 800px;
+}
 </style>

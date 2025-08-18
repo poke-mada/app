@@ -10,17 +10,11 @@ import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
 import {
     getOrCreatePokemonItem, giveMoneyToPlayer,
-    modifyPokemonBattleData,
-    modifyPokemonData,
-    setPokemon
 } from "@/app/api/ram_editor/RamAccesor";
 import {
     addPokemonSaveData,
-    clearPokemonSaveData,
-    modifyPokemonSaveData,
     writeSaveBytes
 } from "@/app/api/save_editor/SaveAccesor";
-import {SavePokemon} from "@/app/api/save_editor/SavePokemon";
 import {PokemonGame} from "@/app/api/handlers/PokemonGame";
 import AdmZip from "adm-zip";
 import axios from "axios";
@@ -70,45 +64,6 @@ async function openMainChannel(ipc) {
     await game.startComms(ipc);
 }
 
-
-async function inventoryModificationEvent(data) {
-    let citra = new CitraClient();
-    await getOrCreatePokemonItem(19, data.event_qty, true, citra)
-}
-
-async function pokemonModificationEvent(ipc, data) {
-    const pokemonData = fs.readFileSync('E:\\pkhex\\pkmn\\charmeleon.ek6');
-    if (data.level === 'ram') {
-        const citra = new CitraClient();
-        switch (data.effect) {
-            case 'boosts':
-                await modifyPokemonBattleData(data.slot, data.boosts, citra);
-                break;
-            case 'clean':
-                await setPokemon(SavePokemon.getEmptySlot(), data.slot, citra)
-                break;
-            case 'edit':
-                await modifyPokemonData(data.slot, data.new_data, citra)
-                break;
-            case 'add':
-                //await addPokemonData(pokemonData, citra)
-                break;
-        }
-    } else if (data.level === 'save') {
-        switch (data.effect) {
-            case 'clean':
-                clearPokemonSaveData(data.slot)
-                break;
-            case 'edit':
-                modifyPokemonSaveData(data.slot, data.new_data);
-                break;
-            case 'add':
-            default:
-                addPokemonSaveData(pokemonData)
-                break;
-        }
-    }
-}
 
 function storeFrontData(ipc, data) {
     for (const [key, value] of Object.entries(data)) {

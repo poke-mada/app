@@ -20,7 +20,7 @@
                 <div v-for="news in newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
                   <div class="d-flex align-start">
                     <v-icon color="#D5048D" class="me-3">
-                      <img :src="Showdown" style="width: 100%; height: 100%" />
+                      <img :src="Showdown" style="width: 100%; height: 100%"/>
                     </v-icon>
                     <div>
                       <h3 class="tittleTweet gradient-border mb-1 text-uppercase">
@@ -134,7 +134,7 @@ import Showdown from '@/icons/Showdown.svg';
 
 <script>
 import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
-import {session} from "@/stores";
+import {getAxios} from "@/stores";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
 import {useGameStore} from "@/stores/app";
 
@@ -163,9 +163,19 @@ export default {
     game_data() {
       return this.store ? this.store.game_data : null;
     },
+    api_token() {
+      return this.store ? this.store.api_token : null;
+    },
+    logged_in() {
+      return this.api_token && this.api_token.length > 0;
+    }
   },
   async mounted() {
-    const token = localStorage.getItem("api_token");
+    if (!this.logged_in) {
+      this.$router.push('/login')
+    }
+
+    const token = this.api_token;
 
     if (token) {
       const config = {
@@ -173,15 +183,14 @@ export default {
       };
 
       try {
-        const res = await session.get(`/api/trainers/get_team/`, config);
+        const res = await getAxios().get(`/api/trainers/get_team/`, config);
         this.team = res.data;
-        console.log("Tu equipo cargado:", this.team);
       } catch (err) {
         console.error("Error al cargar el equipo:", err);
       }
     }
 
-    session.get('/api/newsletter/').then(json_data => {
+    getAxios().get('/api/newsletter/').then(json_data => {
       this.newsletter = json_data.data;
     });
   },

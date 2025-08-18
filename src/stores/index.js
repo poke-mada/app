@@ -5,12 +5,24 @@ import mitt from 'mitt';
 
 export default createPinia()
 
-export const session = axios.create({
-    baseURL: SERVER_URL,
-    headers: {
-        'Authorization': `Token ${localStorage.getItem('api_token')}`
+let custom_session = null;
+
+export function getAxios() {
+    const {useGameStore} = require('@/stores/app');
+    if (custom_session !== null) {
+        return custom_session
     }
-});
+
+    let store = useGameStore()
+    custom_session = axios.create({
+        baseURL: SERVER_URL,
+        headers: {
+            'Authorization': `Token ${store.api_token}`
+        }
+    })
+
+    return custom_session
+}
 
 export const login_session = axios.create({
     baseURL: SERVER_URL,

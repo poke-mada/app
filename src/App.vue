@@ -23,7 +23,7 @@
     </v-snackbar>
     <v-layout>
       <NavDrawer :streamer_name="this.streamer_name" style="height: 100vh; position: fixed"/>
-      <FloatingInfoCard/>
+      <FloatingInfoCard v-if="logged_in"/>
       <v-main style="min-height: 100vh; background: url('./assets/bgDif.jpg') no-repeat fixed; background-size: cover">
         <router-view/>
       </v-main>
@@ -117,8 +117,7 @@ import NavDrawer from "@/app/vue/components/app-comps/NavDrawer";
 import UpdateDialog from '@/app/vue/components/page-comps/UpdateDialog';
 import DownloadDialog from '@/app/vue/components/page-comps/DownloadDialog';
 import FloatingInfoCard from '@/app/vue/components/app-comps/displays/FloatingInfoCard.vue'
-import {emitter, session} from "@/stores";
-import {Howl} from 'howler';
+import {emitter} from "@/stores";
 
 const {useGameStore} = require("@/stores/app");
 
@@ -132,6 +131,7 @@ export default {
   },
   data() {
     return {
+      dataSocket: null,
       trainer_name: null,
       update_dialog: false,
       update_data: {
@@ -157,7 +157,6 @@ export default {
         persistent: false,
       },
       economy: 0,
-      streamer_name: '',
       notification_alert: false,
       notification: {
         type: 'success',
@@ -168,24 +167,22 @@ export default {
   },
   methods: {
     log_off() {
-      localStorage.removeItem('api_token');
-      localStorage.removeItem('trainer_id');
-      localStorage.removeItem('coins');
-      localStorage.removeItem('karma');
+      this.store.logout()
       this.$router.push('/login')
     }
   },
   computed: {
     store: () => useGameStore(),
+    logged_in() {
+      const token = this.store.api_token
+      return token && token.length > 0
+    },
+    streamer_name() {
+      return this.store.streamer_name;
+    }
   },
   async mounted() {
-    const sound = new Howl({
-      src: ['./assets/sounds/alert.mp3']
-    })
-    const streamer_name = localStorage.getItem('streamer_name');
-    this.streamer_name = streamer_name;
-    const dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
-
+    this.store.start_websocket();
     window.electron.onDataReceived('updated_game_data', async (event, data) => {
       this.store.activate(data);
     });
@@ -232,74 +229,6 @@ export default {
     window.electron.sendMessage('store', {
       token: localStorage.getItem('api_token')
     });
-
-    dataSocket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      const data = JSON.parse(message.message);
-      switch (data.type) {
-        case 'event_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Nuevo Evento!',
-            message: `¡Un nuevo evento está por comenzar!`
-          });
-          sound.play();
-          break;
-        case 'attack_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Te han atacado!',
-            message: `¡${data.data.user_name} te ha atacado!`
-          });
-          sound.play();
-          break;
-        case 'stolen_attack_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Te han atacado!',
-            message: `¡${data.data.user_name} te ha atacado! \n¡Pero robaste el comodin ${data.data.wildcard.name} con tu reversa!`
-          });
-          sound.play();
-          break;
-        case 'shielded_attack_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Te has protegido de un ataque!',
-            message: `¡${data.data.user_name} te ha intentado atacar!`
-          });
-          sound.play();
-          break;
-        case 'coins_notification':
-          emitter.emit('coins_updated', data.data)
-          break;
-        case 'karma':
-          emitter.emit('karma_updated', data.data)
-          break;
-        case 'notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Notificacion!',
-            message: data.data
-          });
-          break;
-        case 'start_timer_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Empieza!',
-            message: `Ya puedes recibir ayuda de tu coach`
-          });
-
-          setTimeout(() => {
-            window.electron.sendMessage('notify', {
-              title: '¡Se acabó el tiempo!',
-              message: `Ya no puedes recibir ayuda del coach`
-            });
-            sound.play();
-          }, data.data * 1000)
-          break;
-      }
-    }
-
-    dataSocket.onopen = async () => {
-      let response = await session.get(`api/trainers/get_economy/`);
-      emitter.emit('coins_updated', response.data)
-      let kresponse = await session.get(`api/trainers/get_karma/`);
-      emitter.emit('karma_updated', kresponse.data)
-    }
 
     window.electron.startComms();
 

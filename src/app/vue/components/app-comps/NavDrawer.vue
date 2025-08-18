@@ -40,7 +40,7 @@
           <v-img src="/assets/icons/Buzon.svg" width="28" height="28" class="me-2" cover />
         </template>
       </v-list-item>
-      <v-list-item class="itemBox" to="/market" title="Mercado" value="market">
+      <v-list-item class="itemBox" to="/market" title="Mercado" value="market" v-if="streamer_name === 'para_mada'">
         <template #prepend>
           <v-img src="/assets/icons/store.svg" width="28" height="28" class="me-2" cover />
         </template>
@@ -94,15 +94,13 @@ export default {
       return this.store.emulator_on
     },
     logged_in() {
-      const token = localStorage.getItem('api_token');
+      const token = this.store.api_token
       return token && token.length > 0
     }
   },
   methods: {
     log_off() {
-      localStorage.removeItem('api_token');
-      localStorage.removeItem('trainer_id');
-      localStorage.removeItem('coins');
+      this.store.logout();
       this.$router.push('/login');
     }
   }

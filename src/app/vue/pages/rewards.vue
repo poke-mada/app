@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import { session } from "@/stores";
+import {getAxios} from "@/stores";
 
 export default {
   name: 'RewardsAppPage',
@@ -66,7 +66,7 @@ export default {
   },
   methods: {
     async load_rewards() {
-      const response = await session.get('/api/trainers/get_rewards/');
+      const response = await getAxios().get('/api/trainers/get_rewards/');
       console.log("Respuesta Buzon: ", this.available_rewards);
       this.available_rewards = response.data;
     },

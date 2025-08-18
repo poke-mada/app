@@ -17,15 +17,7 @@ export default {
     },
   },
   data() {
-    const token = this.api_token || localStorage.getItem('api_token');
-    let config = {
-      headers: {
-        Authorization: `Token ${token}`
-      }
-    }
-
     return {
-      config: config,
       interval: 0,
       trainer_data: {
       },

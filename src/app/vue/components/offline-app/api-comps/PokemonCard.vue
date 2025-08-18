@@ -43,7 +43,6 @@ export default {
       return _get_sprite(this.pokemon.dex_number, form) || this.missingno;
     },
     hasHeldItem() {
-      console.log("Item del pokemon:", this.pokemon?.held_item);
       return this.pokemon?.held_item >= 1;
     }
   },

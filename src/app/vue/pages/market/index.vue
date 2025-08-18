@@ -23,8 +23,6 @@
               </v-col>
               <v-divider class="mb-2" />
             </v-row>
-
-
             <!-- Lista -->
             <v-row v-for="post in posts" :key="post.id"
               class="d-flex flex-row justify-center align-center border-bottom">
@@ -140,6 +138,7 @@
                 <v-col cols="2">IMAGEN</v-col>
                 <v-col cols="3">NOMBRE</v-col>
                 <v-col cols="3">CANTIDAD/MOTE</v-col>
+                <v-col cols="3">Estatus</v-col>
                 <v-col cols="3">PROPIETARIO</v-col>
                 <v-col cols="1">
                   <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
@@ -147,21 +146,20 @@
                 <v-divider class="mb-2" />
               </v-row>
 
-
               <!-- Lista -->
-              <v-row v-for="post in posts" :key="post.id"
+              <v-row v-for="post in my_posts" :key="post.id"
                 class="d-flex flex-row justify-center align-center border-bottom">
                 <v-col cols="2">
-                  <v-img :src="post.sprite" max-height="60" aspect-ratio="1/1" />
+                  <v-img :src="post.items[0].sprite" max-height="60" aspect-ratio="1/1" />
                 </v-col>
                 <v-col cols="3">
-                  {{ post.item_name }}
+                  {{ post.items[0].name }}
                 </v-col>
                 <v-col cols="3">
-                  {{ post.mote_or_quantity }}
+                  {{ post.items[0].mote_or_quantity }}
                 </v-col>
                 <v-col cols="2">
-                  {{ post.creator_name }}
+                  {{ post.status_display }}
                 </v-col>
                 <v-col cols="2">
                   <v-btn @click="select_post(post)" class="btn-grad-contact mt-4">
@@ -205,6 +203,20 @@
                   </v-col>
                   <v-col cols="3" class="d-flex justify-center">
                     {{ selected_post.creator_name }}
+                  </v-col>
+                </v-row>
+              </div>
+              <!-- Encabezado -->
+              <div>
+                <v-container class="tittleColores p-0 mb-5">
+                  <h1>OFERTAS</h1>
+                  <v-divider class="mb-2" />
+                </v-container>
+                <v-row>
+                  <v-col v-for="item in selected_post.items" :key="item.id" cols="6"
+                         class="d-flex flex-column justify-center align-items-center">
+                    <v-img :src="item.sprite" max-height="40"/>
+                    <span class="text-center">{{ item.mote_or_quantity }}</span>
                   </v-col>
                 </v-row>
               </div>
@@ -348,8 +360,14 @@
   </div>
 </template>
 
+<script setup>
+import {ref} from 'vue'
+const tab = ref(null)
+</script>
+
 <script>
 import { defineAsyncComponent } from 'vue'
+import {getAxios} from "@/stores";
 
 export default {
   name: 'MarketPage',
@@ -377,200 +395,16 @@ export default {
           ],
           profile_picture: './assets/temp/maikiki perfil.png',
         },
-        {
-          id: 1,
-          owner_name: 'Terremoto',
-          type_offer: 'Object',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-              item_name: 'Baya Rimoya',
-              mote_or_quantity: '2',
-              type: '',
-              level: ''
-            }
-          ],
-          profile_picture: './assets/temp/guti perfil.png',
-        },
-        {
-          id: 2,
-          owner_name: 'Maryblog',
-          type_offer: 'Object',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-              item_name: 'Baya Rimoya',
-              mote_or_quantity: '2',
-              type: '',
-              level: '',
-            }
-          ],
-          profile_picture: './assets/temp/mary perfil.jpg',
-        },
-        {
-          id: 3,
-          owner_name: 'Danohyuga',
-          type_offer: 'Object',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-              item_name: 'Baya Rimoya',
-              mote_or_quantity: '2',
-              type: '',
-              level: '',
-            }
-          ],
-          profile_picture: './assets/temp/dano perfil.jpg',
-        },
-        {
-          id: 4,
-          owner_name: 'JuanSGuarnizo',
-          type_offer: 'Object',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-              item_name: 'Baya Rimoya',
-              mote_or_quantity: '2',
-              type: '',
-              level: '',
-            }
-          ],
-          profile_picture: './assets/temp/juan perfil.png',
-        },
-        {
-          id: 5,
-          owner_name: 'elded',
-          type_offer: 'Object',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-              item_name: 'Baya Rimoya',
-              mote_or_quantity: '2',
-              type: '',
-              level: '',
-            }
-          ],
-          profile_picture: './assets/temp/ded perfil.webp',
-        },
-        {
-          id: 6,
-          owner_name: 'RenRize',
-          type_offer: 'Object',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-              item_name: 'Baya Rimoya',
-              mote_or_quantity: '2',
-              type: '',
-              level: '',
-            }
-          ],
-          profile_picture: './assets/temp/ren perfil.jpg',
-        },
-        {
-          id: 7,
-          owner_name: 'Maikikii',
-          type_offer: 'Pokemon',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-              item_name: 'Garchomp',
-              mote_or_quantity: 'Tiburoncin',
-              type: 'Dragon',
-              level: '50',
-            },
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-              item_name: 'Garchomp',
-              mote_or_quantity: 'Tiburoncin',
-              type: 'Dragon',
-              level: '53',
-            },
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-              item_name: 'Garchomp',
-              mote_or_quantity: 'Tiburoncin',
-              type: 'Dragon',
-              level: '55',
-            },
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-              item_name: 'Garchomp',
-              mote_or_quantity: 'Tiburoncin',
-              type: 'Dragon',
-              level: '43',
-            },
-          ],
-          profile_picture: './assets/temp/barca perfil.jpg',
-        }
       ],
-      posts: [
-        {
-          id: 1,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/260.png',
-          item_name: 'Swampert',
-          mote_or_quantity: 'Sapapitas',
-          creator_name: 'Maryblog'
-        },
-        {
-          id: 2,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-          item_name: 'Garchomp',
-          mote_or_quantity: 'Tiburoncin',
-          creator_name: 'elded'
-        },
-        {
-          id: 3,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/kings-rock.png',
-          item_name: 'Roca del Rey',
-          mote_or_quantity: '2',
-          creator_name: 'Danohyuga'
-        },
-        {
-          id: 4,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-          item_name: 'Baya Rimoya',
-          mote_or_quantity: '2',
-          creator_name: 'Danohyuga'
-        },
-      ],
+      posts: [],
+      my_posts: [],
       inventory: [
         {
           id: 4,
           sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
           item_name: 'Baya Rimoya',
           mote_or_quantity: '2',
-        },
-        {
-          id: 3,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/kings-rock.png',
-          item_name: 'Roca del Rey',
-          mote_or_quantity: '2',
-        },
-        {
-          id: 1,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/260.png',
-          item_name: 'Swampert',
-          mote_or_quantity: '9',
-        },
-        {
-          id: 2,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-          item_name: 'Garchomp',
-          mote_or_quantity: '1',
-        },
-                {
-          id: 5,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-          item_name: 'Garchomp',
-          mote_or_quantity: '1',
-        },
-                {
-          id: 6,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/445.png',
-          item_name: 'Garchomp',
-          mote_or_quantity: '1',
-        },
+        }
       ],
       selected_post: null,
     }
@@ -581,6 +415,8 @@ export default {
     },
   },
   mounted() {
+    this.load_posts();
+    this.load_my_posts();
     if (this.$route.name === 'market-create' || this.$route.meta?.openCreate) {
       this.tab = 2
       this.showCreate = true
@@ -605,6 +441,14 @@ export default {
     },
     closeCreate() {
       this.$router.push({ name: 'market' })
+    },
+    async load_posts() {
+      const response = await getAxios().get('/api/market/')
+      this.posts = response.data;
+    },
+    async load_my_posts() {
+      const response = await getAxios().get('/api/market/list_mine/')
+      this.my_posts = response.data;
     }
   }
 }

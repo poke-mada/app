@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import {session} from "@/stores";
+import {getAxios} from "@/stores";
 import PkCard from "@/app/vue/components/custom-comps/pk-card";
 
 export default {
@@ -61,7 +61,7 @@ export default {
     }
   },
   created() {
-    session.get('/api/trainers/list_trainers/', this.config).then((response) => {
+    getAxios().get('/api/trainers/list_trainers/').then((response) => {
       this.trainers = response.data
     });
   },

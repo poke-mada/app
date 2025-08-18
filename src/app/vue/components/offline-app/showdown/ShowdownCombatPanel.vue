@@ -75,7 +75,7 @@ import DetailPokemonTeamList from '@/app/vue/components/offline-app/api-comps/De
 import SpeedTable from "@/app/vue/components/offline-app/api-comps/SpeedTable";
 import CoverageTableDisplay from "@/app/vue/components/offline-app/api-comps/CoverageTableDisplay.vue";
 import { POKEMON_TYPES } from '@/data/type_data';
-import { session } from "@/stores";
+import {getAxios} from "@/stores";
 
 export default {
   name: "ShowdownCombatPanel",
@@ -115,14 +115,12 @@ export default {
   },
   methods: {
     async search_combat(data) {
-      let enemy_trainer = await session.get(`/api/trainers/${data.selected_enemy_trainer}/`, {
+      let enemy_trainer = await getAxios().get(`/api/trainers/${data.selected_enemy_trainer}/`, {
         params: { localization: 'en' },
-        headers: this.config.headers
       }).then((response) => response.data);
 
-      let your_trainer = await session.get(`/api/trainers/${data.selected_trainer}/`, {
+      let your_trainer = await getAxios().get(`/api/trainers/${data.selected_trainer}/`, {
         params: { localization: 'en' },
-        headers: this.config.headers
       }).then((response) => response.data);
 
       for (const pokemon of enemy_trainer.current_team.team) {

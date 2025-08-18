@@ -31,6 +31,17 @@
                   </v-text-field>
                 </v-col>
               </v-row>
+              <v-row v-if="request.non_field_errors.length > 0">
+                <v-col cols="12">
+                  <v-alert color="error">
+                    <ul>
+                      <li v-for="i in request.non_field_errors" :key="i">
+                        <span class="text-danger">{{i}}</span>
+                      </li>
+                    </ul>
+                  </v-alert>
+                </v-col>
+              </v-row>
               <v-row>
                 <v-col sm='12' md="12">
                   <v-btn variant="outlined" :loading="loading" text="Iniciar Sesión" type="submit" block/>
@@ -49,6 +60,7 @@
 import {login_session} from "@/stores";
 import SvgIcon from '@jamescoyle/vue-icon';
 import {mdiKey, mdiAccount} from '@mdi/js';
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "LoginComponentPanel",
@@ -67,8 +79,20 @@ export default {
       username: '',
       password: '',
       request: {
-        non_field_errors: ['asdasdasda']
+        non_field_errors: []
       }
+    }
+  },
+  computed: {
+    store: () => useGameStore(),
+    logged_in() {
+      const token = this.store.api_token;
+      return token && token.length > 0;
+    }
+  },
+  mounted() {
+    if (this.logged_in) {
+      this.$router.push('/')
     }
   },
   methods: {
@@ -78,19 +102,20 @@ export default {
         const response = await login_session.post('/user/login/', {
           username: this.username,
           password: this.password
+        }).catch(reason => {
+          this.loading = false;
+          console.log(reason.response.data)
+          this.request = reason.response.data
         });
 
         window.electron.sendMessage('store', {
           token: response.data.token
         });
 
-        localStorage.setItem('api_token', response.data.token);
-
-        localStorage.setItem('streamer_name', this.username);
+        this.store.login(this.username, response.data.token)
         this.$router.push('/');
       } catch (error_response) {
-        console.log(error_response)
-        this.request = error_response.response
+        this.loading = false;
       }
     }
   }
