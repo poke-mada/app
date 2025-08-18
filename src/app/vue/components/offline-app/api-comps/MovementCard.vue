@@ -16,7 +16,7 @@
 
           <!-- Categoría (si no es status) -->
           <v-col cols="auto" v-if="category !== 'Status'">
-            <v-img :src="getCategoryIcon(category)" width="32" height="32" :title="category" class="ml-2" />
+            <v-img :src="getCategoryIcon(category)" width="32" height="32" :title="category" class="ml-2 imgTypeMov" />
           </v-col>
         </v-row>
       </v-alert>

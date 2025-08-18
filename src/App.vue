@@ -157,7 +157,6 @@ export default {
         persistent: false,
       },
       economy: 0,
-      streamer_name: '',
       notification_alert: false,
       notification: {
         type: 'success',
@@ -177,6 +176,9 @@ export default {
     logged_in() {
       const token = this.store.api_token
       return token && token.length > 0
+    },
+    streamer_name() {
+      return this.store.streamer_name;
     }
   },
   async mounted() {
@@ -281,9 +283,5 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
-}
-
-* {
-  cursor: default;
 }
 </style>

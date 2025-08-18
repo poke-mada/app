@@ -1,58 +1,60 @@
 <template>
-  <v-layout>
-    <v-main>
-      <v-row class="mt-16 pl-2 pr-2">
-        <v-col>
-          <PkCard>
-            <template v-slot:title>
-              <v-alert type="success" class="p-0">
-                <template v-slot:prepend>
-                </template>
-                <span>
-              Inventario de premios
-                </span>
-              </v-alert>
-            </template>
-            <template v-slot:default>
-              <v-row>
-                <v-col>
-                  <v-row v-for="(bundle, index) in available_rewards" :key="index">
-                    <v-alert>
-                      <template v-slot:title>
-                        <v-alert-title>{{ bundle.name }}</v-alert-title>
-                      </template>
-                      <template v-slot:append>
-                        <v-btn text="Reclamar" @click="claim_reward(bundle.id)"/>
-                      </template>
-                    </v-alert>
-                  </v-row>
-                </v-col>
-                <v-divider vertical/>
-                <v-col>
+  <div class="noticiasSection mt-5 d-flex align-items-center justify-center align-center  rounded-xl scrollable">
+    <v-card class="rounded-xl vcard-pkm" elevation="6" style="position: relative;">
+      <!-- Encabezado con ícono flotante -->
+      <div class="divCardSup pa-5 d-flex justify-center align-center">
+        <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
+          <v-img src="/assets/img/Home/Pokeball.png"></v-img>
+        </v-avatar>
+        <h2 class="textNoticias">Buzon</h2>
+      </div>
+      <div class="paddinP1">
+        <v-row class="mail-header align-center">
+          <v-col cols="2" class="th">Imagen</v-col>
+          <v-col cols="3" class="th">Título</v-col>
+          <v-col cols="3" class="th">Remitente</v-col>
+          <v-col cols="4" class="th d-flex justify-end">
+            <!-- (opcional) botón de filtro a la derecha -->
+            <v-btn icon variant="text" class="filter-btn" density="comfortable">
+              <v-icon>mdi-filter-variant</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+        <v-divider class="mb-2" />
+        <v-row class="pa-4" v-for="(bundle, index) in available_rewards" :key="index">
+          <v-col cols="2">
+            <img src="/assets/icons/BuzonCard.svg" alt="">
+          </v-col>
+          <v-col cols="3" class="d-flex align-center">
+            {{ bundle.name }}
+          </v-col>
+          <v-col cols="3" class="d-flex align-center">
+            <p>Staff</p>
+          </v-col>
+          <v-col cols="4" class="btnReclamarDiv">
+            <v-btn @click="claim_reward(bundle.id)" className="btn-grad-contact mt-4">
+              <span className="btn-text">RECLAMAR</span>
+              <span className="btn-icon">
+                <svg className="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeWidth="3px" strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                </svg>
+              </span>
+            </v-btn>
+          </v-col>
+          <v-divider class="mb-2" />
+        </v-row>
+      </div>
 
-                </v-col>
-              </v-row>
-            </template>
-          </PkCard>
-        </v-col>
-      </v-row>
-    </v-main>
-  </v-layout>
+    </v-card>
+  </div>
 </template>
 
 <script>
-<<<<<<< Updated upstream
-import {session} from "@/stores";
-import PkCard from "@/app/vue/components/custom-comps/pk-card";
-
-=======
 import {getAxios} from "@/stores";
->>>>>>> Stashed changes
 
 export default {
   name: 'RewardsAppPage',
   components: {
-    PkCard
   },
   data() {
     return {
@@ -64,12 +66,8 @@ export default {
   },
   methods: {
     async load_rewards() {
-<<<<<<< Updated upstream
-      const response = await session.get('/api/trainers/get_rewards/');
-=======
       const response = await getAxios().get('/api/trainers/get_rewards/');
       console.log("Respuesta Buzon: ", this.available_rewards);
->>>>>>> Stashed changes
       this.available_rewards = response.data;
     },
     claim_reward(bundle_id) {
