@@ -109,6 +109,9 @@ export const useGameStore = defineStore('game', {
                         case 'karma':
                             emitter.emit('karma_updated', data.data)
                             break;
+                        case 'exp':
+                            emitter.emit('exp_updated', data.data)
+                            break;
                         case 'notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Notificacion!',
@@ -137,6 +140,8 @@ export const useGameStore = defineStore('game', {
                     emitter.emit('coins_updated', response.data)
                     let kresponse = await getAxios().get(`api/trainers/get_karma/`);
                     emitter.emit('karma_updated', kresponse.data)
+                    let eresponse = await getAxios().get(`api/trainers/get_exp/`);
+                    emitter.emit('exp_updated', eresponse.data)
                 }
             }
         },
