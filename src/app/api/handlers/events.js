@@ -1,11 +1,18 @@
 // noinspection JSUnresolvedVariable
 
-import {ipcMain, Notification} from "electron";
+import {BrowserWindow, ipcMain, Notification, session as el_session} from "electron";
 import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
 import {CitraClient} from "@/app/api/ram_editor/CitraClient";
-import {declareGlobalConfig, emmiter, GLOBAL_CONFIG, MODS_FILE_LIME3, SERVER_URL} from "@/stores/back_constants";
+import {
+    APPDATA_FOLDER,
+    declareGlobalConfig,
+    emmiter,
+    GLOBAL_CONFIG,
+    MODS_FILE_LIME3,
+    SERVER_URL, TEST_CLIENT_PATH
+} from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
 import {
@@ -18,6 +25,8 @@ import {
 import {PokemonGame} from "@/app/api/handlers/PokemonGame";
 import AdmZip from "adm-zip";
 import axios from "axios";
+import https from "https";
+import config from "@/app/api/lib/config";
 
 function downloadSaveEvent(ipc, trainer_name) {
     session.get(`/last_save/${trainer_name}`, {
@@ -31,6 +40,40 @@ function downloadSaveEvent(ipc, trainer_name) {
             })
         })
     })
+}
+
+async function downloadShowdownClient(ipc) {
+    console.log('[SHOWDOWN-APP] started showdown download process')
+    let showdownClientDownloaded = config.get('showdown-client-downloaded', false)
+    if (!showdownClientDownloaded) {
+        console.log('[SHOWDOWN-APP] showdown download allowed')
+        const zip_file_path = path.join(APPDATA_FOLDER, 'showdown-client.zip');
+        const zipfile = fs.createWriteStream(zip_file_path);
+
+        const lambda_response = await axios.get('https://5j5zxvz74jvbztrrhh6wjt2iji0apnuz.lambda-url.us-east-1.on.aws/');
+
+        const s3_url = lambda_response.data;
+
+        https.get(s3_url, (response) => {
+            response.on("data", (chunk) => {
+                console.log('[SHOWDOWN-APP] downloading showdown client...')
+            });
+            response.pipe(zipfile);
+            zipfile.on("finish", () => {
+                zipfile.close();
+                try {
+                    ipc.reply('enable-showdown-module')
+                    extractZip(zip_file_path, APPDATA_FOLDER)
+                    console.log('[SHOWDOWN-APP] showdown client downloaded!')
+                    config.set('showdown-client-downloaded', true)
+                } catch (e) {
+                    console.log(e)
+                }
+            });
+        });
+    } else {
+        console.log('[SHOWDOWN-APP] showdown client already downloaded!')
+    }
 }
 
 async function openMainChannel(ipc) {
@@ -59,6 +102,7 @@ async function openMainChannel(ipc) {
             });
         });
     }
+    await downloadShowdownClient(ipc);
 
     emmiter.removeAllListeners('perform_save')
     await game.startComms(ipc);
@@ -129,7 +173,6 @@ async function exchangeRewardBundle(ipc, data) {
 
 function extractZip(zipFilePath, destinationPath) {
     const zip = new AdmZip(zipFilePath);
-
     zip.extractAllTo(destinationPath, true);
 }
 
@@ -140,8 +183,7 @@ async function joinEvent(ipc, data) {
     const zipfile = fs.createWriteStream('mod_zip.zip');
     const event_response = await axios.get(`${SERVER_URL}/api/events/${event_id}/mod_file/`)
     const s3_url = event_response.data;
-    console.log(s3_url)
-    https.get(s3_url,(response) => {
+    https.get(s3_url, (response) => {
         const total = parseInt(response.headers["content-length"], 10);
         let received = 0;
         response.on("data", (chunk) => {
@@ -225,6 +267,47 @@ function showNotification(ipc, data) {
     }
 }
 
+async function fetchSidFromDRF(data) {
+    const token = data.token;
+    const response = await session.get('/api/trainers/showdown_key/', {
+        headers: {
+            Authorization: `Token ${token}`
+        }
+    })
+    return response.data
+}
+
+async function openShowdownClient(ipc, data, opts = {}) {
+    const {
+        width = 1200,
+        height = 800,
+        passKeyVia = 'query', // 'cookie' (recomendado) | 'query' | 'configjs'
+    } = opts
+    const part = `persist:ps-client-${Date.now()}`
+    const ses = el_session.fromPartition(part, { cache: true })
+    const win = new BrowserWindow({
+        width,
+        height,
+        autoHideMenuBar: true,
+        webPreferences: {
+            contextIsolation: true,
+            nodeIntegration: false,
+            devTools: false,       // en prod quedará false
+            sandbox: true,
+            preload: path.join(__dirname, 'preload-client.js'), // si lo necesitas
+            session: ses,
+        }
+    });
+    console.log('abriendo cliente de showdown...')
+
+    const SID = await fetchSidFromDRF(data);
+    const baseUrl = 'file://' + TEST_CLIENT_PATH.replace(/\\/g, '/')
+    const url = passKeyVia === 'query'
+        ? `${baseUrl}?~~158.69.213.100:8000&client_key=${encodeURIComponent(SID)}`
+        : baseUrl
+    await win.loadURL(url)
+}
+
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);
     ipcMain.on('download_save', downloadSaveEvent);
@@ -234,4 +317,5 @@ export function registerEvents() {
     ipcMain.on('reward', exchangeRewardBundle);
     ipcMain.on('wildcard', manageWildcardEvents);
     ipcMain.on('notify', showNotification);
+    ipcMain.on('open-showdown', openShowdownClient);
 }

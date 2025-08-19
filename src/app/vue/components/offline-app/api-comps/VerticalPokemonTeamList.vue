@@ -48,7 +48,6 @@ export default {
   },
   methods: {
     selectPokemon: function (pokemon) {
-      console.log("Pokemin Sleccionad: ", pokemon);
       this.$emit('select_pokemon', pokemon);
     }
   },

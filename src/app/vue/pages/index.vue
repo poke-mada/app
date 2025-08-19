@@ -186,8 +186,11 @@ export default {
         const res = await getAxios().get(`/api/trainers/get_team/`, config);
         this.team = res.data;
       } catch (err) {
+        this.team = [];
         console.error("Error al cargar el equipo:", err);
       }
+      const trainer_response = await getAxios().get('/api/trainers/get_trainer', config);
+      this.store.set_my_trainer_id(trainer_response.data.id)
     }
 
     getAxios().get('/api/newsletter/').then(json_data => {

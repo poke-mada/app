@@ -107,6 +107,15 @@
             <MovementCard :pokemon="pokemon" :movement="move" v-if="move"/>
           </v-col>
         </v-row>
+        <v-row>
+          <v-col>
+            <v-btn @click="perform_steal" class="gradient-btn" v-if="allow_steal && can_robo && pokemon.stealable">ROBAR</v-btn>
+          </v-col>
+          <v-col>
+            <v-btn @click="perform_karma_steal" class="gradient-btn" v-if="allow_steal && can_robo_justo && pokemon.stealable">ROBO JUSTO
+            </v-btn>
+          </v-col>
+        </v-row>
       </div>
     </v-card>
   </div>
@@ -125,6 +134,7 @@ import {
 } from "@/data/mon_functions";
 import {VARIETIES_DATA} from "@/data/pokemon_varieties_data";
 import {TRANSLATIONS, WEAKNESS_DATA} from "@/data/type_data";
+import {emitter, getAxios} from "@/stores";
 
 export default {
   name: "PokemonCard",
@@ -136,6 +146,18 @@ export default {
     pokemon: {
       type: Object,
       required: true
+    },
+    allow_steal: {
+      type: Boolean,
+      required: false
+    },
+    can_robo: {
+      type: Boolean,
+      required: false
+    },
+    can_robo_justo: {
+      type: Boolean,
+      required: false
     }
   },
   methods: {
@@ -170,7 +192,59 @@ export default {
     },
     type_name_loc(val) {
       return TRANSLATIONS[val];
-    }
+    },
+    perform_steal() {
+      getAxios().post('/api/wildcards/68/use_card/', {
+        target_id: this.pokemon.profile_owner,
+        dex_number: this.pokemon.dex_number
+      }).catch(error => {
+        if (error.status === 400) {
+          emitter.emit('action-notification', {
+            type: 'error',
+            title: '¡Error!',
+            message: error.response.data.detail,
+          });
+        } else if (error.status === 500 && error.response.data.detail === 'contact_paramada') {
+          emitter.emit('custom-dialog', {
+            title: '¡Error!',
+            message: `Ha ocurrido un error, contacta a soporte y mandales este numero: ${error.response.data.error_id}`,
+          });
+        }
+      }).then(async (response) => {
+        if (response.status === 200) {
+          emitter.emit('action-notification', {
+            title: 'Canjeado con Éxito',
+            message: `Has canjeado Robo Pokemon`,
+          });
+        }
+      })
+    },
+    perform_karma_steal() {
+      getAxios().post('/api/wildcards/53/use_card/', {
+        target_id: this.pokemon.profile_owner,
+        dex_number: this.pokemon.dex_number
+      }).catch(error => {
+        if (error.status === 400) {
+          emitter.emit('action-notification', {
+            type: 'error',
+            title: '¡Error!',
+            message: error.response.data.detail,
+          });
+        } else if (error.status === 500 && error.response.data.detail === 'contact_paramada') {
+          emitter.emit('custom-dialog', {
+            title: '¡Error!',
+            message: `Ha ocurrido un error, contacta a soporte y mandales este numero: ${error.response.data.error_id}`,
+          });
+        }
+      }).then(async (response) => {
+        if (response.status === 200) {
+          emitter.emit('action-notification', {
+            title: 'Canjeado con Éxito',
+            message: `Has canjeado Robo Justo`,
+          });
+        }
+      })
+    },
   },
   computed: {
     pokemon_types() {
@@ -205,7 +279,6 @@ export default {
       });
     },
     pokemon_weaknesses() {
-      console.log(this.weaknesses)
       if (this.weaknesses && Array.isArray(this.weaknesses)) {
         return this.weaknesses
             .filter(w => w.multiplier >= 0)

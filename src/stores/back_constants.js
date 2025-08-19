@@ -15,9 +15,8 @@ if (DEV) {
 }
 
 
-const MODS_FILE_PATH_LIME = path.join(
-    process.env.APPDATA, 'Lime3DS', 'load', 'mods', '0004000000055D00'
-)
+const MODS_FILE_PATH_LIME = path.join(process.env.APPDATA, 'Lime3DS', 'load', 'mods', '0004000000055D00')
+
 
 let globalConfigObject = {}
 
@@ -30,7 +29,8 @@ export const SERVER_URL = BASE_URL;
 export const IS_DEV = DEV;
 export const SAVE_FILE_LIME3 = config.get("savePath");
 export const MODS_FILE_LIME3 = MODS_FILE_PATH_LIME;
-
+export const APPDATA_FOLDER = path.join(process.env.APPDATA, 'dedsafio-pokemon');
+export const TEST_CLIENT_PATH = path.join(APPDATA_FOLDER, 'play.pokemonshowdown.com', 'testclient.html')
 export function declareGlobalConfig(name, value) {
     globalConfigObject[name] = value;
 }

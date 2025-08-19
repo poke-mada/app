@@ -131,34 +131,52 @@ export class InBattlePokemonData {
         let item;
         try {
             ability = ABILITY_DATA[this.ability_num.toString()];
-            item = ITEM_DATA[this.held_item_num.toString()];
 
             this.ability_name = ability.name;
+        } catch (e) {
+            console.log('==========================================')
+            console.log('error while getting ability name');
+            console.log('FAIILED FOR', this.dex_number, ' ', this.mote)
+            console.log('ability_num', this.ability_num);
+            console.log('ability', ability);
+        }
+        try {
+            item = ITEM_DATA[this.held_item_num.toString()];
             this.item_name = item.name;
         } catch (e) {
             console.log('==========================================')
-            console.log('error while getting ability and item names');
-            console.log('FAIILED FOR', this.dex_number)
-            console.log('ability_num', this.ability_num);
+            console.log('error while getting item name');
+            console.log('FAIILED FOR', this.dex_number, ' ', this.mote)
             console.log('held_item_num', this.held_item_num)
-            console.log('ability', ability);
             console.log('item', item);
         }
 
+        this.suffix = this.getSuffix(this.dex_number, this.form)
         if (validatePokemon(this.dex_number)) {
-            try {
-                this.species = MON_DATA[this.dex_number.toString()][this.form].name;
-                this.mote = MON_DATA[this.dex_number.toString()][this.form].name;
-            } catch (e) {
-                this.species = MON_DATA[this.dex_number.toString()]['0'].name;
-                this.mote = MON_DATA[this.dex_number.toString()]['0'].name;
+            const specific_mon_data = MON_DATA[this.dex_number.toString()];
+            if (specific_mon_data) {
+                if (this.form in specific_mon_data) {
+                    this.species = specific_mon_data[this.form].name;
+                    this.mote = specific_mon_data[this.form].name;
+                } else if ('0' in specific_mon_data) {
+                    this.species = specific_mon_data['0'].name;
+                    this.mote = specific_mon_data['0'].name;
+                } else if (this.suffix in specific_mon_data) {
+                    this.species = specific_mon_data[this.suffix].name;
+                    this.mote = specific_mon_data[this.suffix].name;
+                } else {
+                    console.log('==========================================')
+                    console.log('error while getting pokemon form');
+                    console.log('FAIILED FOR', this.dex_number, this.mote)
+                    console.log('Suffix', this.suffix)
+                    console.log('Form', this.form)
+                }
             }
         } else {
             this.species = 'Invalid-Pokemon';
         }
         this.sprite_url = STATICS_URL + `/sprites/master/sprites/pokemon/${this.dex_number}.png`;
 
-        this.suffix = this.getSuffix(this.dex_number, this.form)
     }
 
     getSuffix(dexNumber, form) {
@@ -293,7 +311,7 @@ export class InBattlePokemonData {
 
             case 681:
                 if (form === 0 || form === 2) return "shield";
-                if (form === 8 || form === 10) return "blade";
+                if (form === 8 || form === 10 || form === 1) return "blade";
                 break;
 
             case 710:

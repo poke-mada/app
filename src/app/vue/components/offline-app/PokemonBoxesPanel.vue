@@ -76,7 +76,10 @@
     <v-row>
       <v-spacer @click="display_box_detail = false" />
       <v-col>
-        <PokemonDetailPanel :pokemon="selected_pokemon" />
+        <PokemonDetailPanel
+            :pokemon="selected_pokemon"
+            :allow_steal="steal_allowed_for_selected()"
+            :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"/>
       </v-col>
       <v-spacer @click="display_box_detail = false" />
     </v-row>
@@ -90,7 +93,10 @@
       </v-col>
       <v-spacer @click="pokemon_team_display = false"/>
       <v-col>
-        <PokemonDetailPanel v-if="selected_pokemon" :pokemon="selected_pokemon" />
+        <PokemonDetailPanel v-if="selected_pokemon"
+                            :pokemon="selected_pokemon"
+                            :allow_steal="steal_allowed_for_selected()"
+                            :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"/>
       </v-col>
       <v-spacer @click="pokemon_team_display = false"/>
     </v-row>
@@ -102,6 +108,7 @@ import { getAxios } from '@/stores'
 import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
 import VerticalPokemonTeamList from "@/app/vue/components/offline-app/api-comps/VerticalPokemonTeamList";
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "PokemonTeamPanel",
@@ -133,10 +140,18 @@ export default {
       pokemon_team_display: false,
       selected_box: 0,
       selected_pokemon: null,
+      has_w_robo: false,
+      has_w_robo_justo: false,
       box_data: {
         selectable_boxes: [],
         team: [null, null, null, null, null, null],
       }
+    }
+  },
+  computed: {
+    store: () => useGameStore(),
+    my_trainer_id() {
+      return this.store.my_trainer_id
     }
   },
   updated() {
@@ -145,10 +160,11 @@ export default {
     });
   },
   async mounted() {
-    const response = await getAxios().get('/api/trainers/get_trainer')
-    this.selected_trainer = response.data.id;
+    this.selected_trainer = parseInt(this.my_trainer_id);
     await this.load_trainers();
     await this.open_box();
+    await this.has_robo();
+    await this.has_robo_justo();
   },
   methods: {
     async load_trainer_team() {
@@ -180,7 +196,9 @@ export default {
     select_pokemon(pokemon) {
       if (pokemon) {
         this.display_box_detail = true;
+        const box_owner = this.box_data.box.owner_profile.toString();
         this.selected_pokemon = pokemon;
+        this.selected_pokemon.profile_owner = box_owner;
       }
     },
     get_box() {
@@ -196,8 +214,21 @@ export default {
       return null;
     },
     select_pokemon_team(pokemon) {
+      const box_owner = this.box_data.box.owner_profile.toString();
       this.selected_pokemon = this.box_data.team[pokemon];
+      this.selected_pokemon.profile_owner = box_owner;
     },
+    steal_allowed_for_selected() {
+      const box_owner = this.box_data.box.owner.toString();
+      const me_id = this.my_trainer_id.toString();
+      return box_owner !== me_id && this.box_data.box.stealable
+    },
+    async has_robo() {
+      this.has_w_robo = (await getAxios().get('/api/wildcards/68/has_card/')).data;
+    },
+    async has_robo_justo() {
+      this.has_w_robo_justo = (await getAxios().get('/api/wildcards/53/has_card/')).data;
+    }
   },
 }
 </script>

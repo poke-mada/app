@@ -86,13 +86,12 @@ class GameData {
                 }
             }
         } catch (e) {
-            console.log(e)
             logger.error(e)
         } finally {
             ipc.reply('citra_connection_closed')
             this.is_communicating = false;
             this.comms_closed = true;
-            console.log('e2')
+            console.log('citra disconnected')
             citra.socket.close()
         }
     }

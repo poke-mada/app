@@ -31,7 +31,6 @@ export default {
   },
   methods: {
     get_sprite() {
-      console.log("pokemon en caja", this.pokemon)
       const form = get_form(this.pokemon)
       return _get_sprite(this.pokemon.dex_number, form)
     },

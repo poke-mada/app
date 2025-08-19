@@ -132,7 +132,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col v-if="selected_card.inventory || selected_card.always_available">
+          <v-col v-if="(selected_card.inventory || selected_card.always_available) && ![68, 53].includes(selected_card.id)">
             <v-btn variant="tonal" text="Usar" color="warning" @click="canjear"/>
           </v-col>
           <v-col v-if="selected_card.price">
@@ -175,7 +175,7 @@
             <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_shinies" :item-props="true"/>
           </v-col>
         </v-row>
-        <v-row v-if="selected_card.inventory > 0 && (selected_card.category === 6 || [54].includes(selected_card.id))">
+        <v-row v-if="selected_card.inventory > 0 && (selected_card.category === 6 || [54].includes(selected_card.id)) && ![68, 53].includes(selected_card.id)">
           <v-col>
             <v-autocomplete label="Objetivo" v-model="target_profile" :items="possible_targets" :item-props="true"/>
           </v-col>
