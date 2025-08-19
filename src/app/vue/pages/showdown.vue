@@ -21,6 +21,11 @@ export default {
     token() {
       return localStorage.getItem('api_token')
     }
+  },
+  mounted() {
+    window.electron.sendMessage('open-showdown', {
+      token: this.token
+    });
   }
 }
 

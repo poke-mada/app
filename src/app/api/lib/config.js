@@ -59,9 +59,13 @@ export function saveConfig(data) {
 }
 
 // Accesos rápidos
-export function get(key) {
+export function get(key, default_value = null) {
     const config = loadConfig();
-    return config[key];
+    try {
+        return config[key];
+    } catch (e) {
+        return default_value;
+    }
 }
 
 export function set(key, value) {

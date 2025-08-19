@@ -214,7 +214,9 @@ export default {
         message: download_message
       };
     });
-
+    window.electron.onDataReceived('enable-showdown-module', () => {
+      this.store.allowShowdown();
+    })
     window.electron.onDataReceived('download-stop', () => {
       this.download_dialog = false;
     });

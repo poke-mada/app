@@ -4,7 +4,7 @@
     <v-card class="rounded-xl vcard-pkm" elevation="6" style="position: relative;">
       <!-- Encabezado con ícono flotante -->
       <v-tabs v-model="tab" align-tabs="center" color="deep-purple-accent-4"
-        class="divCardSup divSectionMerch d-flex justify-center align-center">
+              class="divCardSup divSectionMerch d-flex justify-center align-center">
         <v-tab @click="selected_post = null;" :value="1">Mercado</v-tab>
         <v-tab @click="selected_post = null;" :value="2">Mis Anuncios</v-tab>
         <v-tab @click="selected_post = null;" :value="3">Inventario</v-tab>
@@ -21,13 +21,13 @@
               <v-col cols="1">
                 <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
               </v-col>
-              <v-divider class="mb-2" />
+              <v-divider class="mb-2"/>
             </v-row>
             <!-- Lista -->
             <v-row v-for="post in posts" :key="post.id"
-              class="d-flex flex-row justify-center align-center border-bottom">
+                   class="d-flex flex-row justify-center align-center border-bottom">
               <v-col cols="2">
-                <v-img :src="post.sprite" max-height="60" aspect-ratio="1/1" />
+                <v-img :src="post.sprite" max-height="60" aspect-ratio="1/1"/>
               </v-col>
               <v-col cols="3">
                 {{ post.item_name }}
@@ -43,12 +43,12 @@
                   <span class="btn-text">VER</span>
                   <span class="btn-icon">
                     <svg class="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeWidth="3px" strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                      <path strokeWidth="3px" strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                   </span>
                 </v-btn>
               </v-col>
-              <v-divider class="mb-2" />
+              <v-divider class="mb-2"/>
             </v-row>
           </v-container>
           <v-container class="w-100" v-if="selected_post">
@@ -58,11 +58,11 @@
                 <v-col cols="3" class="d-flex justify-center">NOMBRE</v-col>
                 <v-col cols="3" class="d-flex justify-center">CANTIDAD/MOTE</v-col>
                 <v-col cols="3" class="d-flex justify-center">PROPIETARIO</v-col>
-                <v-divider class="mb-2" />
+                <v-divider class="mb-2"/>
               </v-row>
               <v-row class="d-flex flex-row justify-center align-center border-bottom">
                 <v-col cols="3">
-                  <v-img :src="selected_post.sprite" max-height="60" aspect-ratio="1/1" />
+                  <v-img :src="selected_post.sprite" max-height="60" aspect-ratio="1/1"/>
                 </v-col>
                 <v-col cols="3" class="d-flex justify-center">
                   {{ selected_post.item_name }}
@@ -79,7 +79,7 @@
             <div>
               <v-container class="tittleColores p-0 mb-5">
                 <h1>OFERTAS</h1>
-                <v-divider class="mb-2" />
+                <v-divider class="mb-2"/>
               </v-container>
               <v-row>
                 <v-col cols="4" v-for="offer in offers" :key="offer.id">
@@ -99,9 +99,9 @@
                     <div class="paddingCardOferta">
                       <v-row v-if="offer.type_offer === 'Object'">
                         <div v-for="item in offer.items" :key="item.id"
-                          class="d-flex flex-column justify-center align-items-center w-100">
+                             class="d-flex flex-column justify-center align-items-center w-100">
                           <div class="cardColores d-flex justify-center align-center">
-                            <v-img :src="item.sprite" max-width="112" />
+                            <v-img :src="item.sprite" max-width="112"/>
                             <div class="d-flex justify-center align-center flex-column">
                               <p class="text-center bold">{{ item.item_name }}</p>
                               <p class="text-center f-sm"> x{{ item.mote_or_quantity }}</p>
@@ -111,13 +111,13 @@
                       </v-row>
                       <v-row v-if="offer.type_offer != 'Object'">
                         <div v-for="item in offer.items" :key="item.id"
-                          class="d-flex flex-column justify-center align-items-center w-100">
+                             class="d-flex flex-column justify-center align-items-center w-100">
                           <div class="cardColores d-flex justify-center align-center">
-                            <v-img :src="item.sprite" max-width="112" />
+                            <v-img :src="item.sprite" max-width="112"/>
                             <div class="d-flex justify-center align-center flex-column">
                               <p class="text-center bold">{{ item.mote_or_quantity }}</p>
                               <p class="text-center f-sm">Nv. {{ item.level }}</p>
-                              <v-img :src="`./assets/types/Types/${item.type}.png`" width="32" aspect-ratio="1/1" />
+                              <v-img :src="`./assets/types/Types/${item.type}.png`" width="32" aspect-ratio="1/1"/>
                             </div>
                           </div>
                         </div>
@@ -143,14 +143,14 @@
                 <v-col cols="1">
                   <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
                 </v-col>
-                <v-divider class="mb-2" />
+                <v-divider class="mb-2"/>
               </v-row>
 
               <!-- Lista -->
               <v-row v-for="post in my_posts" :key="post.id"
-                class="d-flex flex-row justify-center align-center border-bottom">
+                     class="d-flex flex-row justify-center align-center border-bottom">
                 <v-col cols="2">
-                  <v-img :src="post.items[0].sprite" max-height="60" aspect-ratio="1/1" />
+                  <v-img :src="post.items[0].sprite" max-height="60" aspect-ratio="1/1"/>
                 </v-col>
                 <v-col cols="3">
                   {{ post.items[0].name }}
@@ -167,12 +167,12 @@
                     <span class="btn-icon">
                       <svg class="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeWidth="3px" strokeLinecap="round" strokeLinejoin="round"
-                          d="M5 12h14M12 5l7 7-7 7" />
+                              d="M5 12h14M12 5l7 7-7 7"/>
                       </svg>
                     </span>
                   </v-btn>
                 </v-col>
-                <v-divider class="mb-2" />
+                <v-divider class="mb-2"/>
               </v-row>
               <div class="w-100">
                 <v-card-actions class="mt-5 d-flex justify-end align-center">
@@ -189,20 +189,21 @@
                   <v-col cols="3" class="d-flex justify-center">NOMBRE</v-col>
                   <v-col cols="3" class="d-flex justify-center">CANTIDAD/MOTE</v-col>
                   <v-col cols="3" class="d-flex justify-center">PROPIETARIO</v-col>
-                  <v-divider class="mb-2" />
+                  <v-divider class="mb-2"/>
                 </v-row>
-                <v-row class="d-flex flex-row justify-center align-center border-bottom">
+                <v-row v-for="item in selected_post.items" :key="item.id"
+                       class="d-flex flex-row justify-center align-center border-bottom">
                   <v-col cols="3">
-                    <v-img :src="selected_post.sprite" max-height="60" aspect-ratio="1/1" />
+                    <v-img :src="item.sprite" max-height="60" aspect-ratio="1/1"/>
                   </v-col>
                   <v-col cols="3" class="d-flex justify-center">
-                    {{ selected_post.item_name }}
+                    {{ item.name }}
                   </v-col>
                   <v-col cols="3" class="d-flex justify-center">
-                    {{ selected_post.mote_or_quantity }}
+                    {{ item.mote_or_quantity }}
                   </v-col>
                   <v-col cols="3" class="d-flex justify-center">
-                    {{ selected_post.creator_name }}
+                    {{ selected_post.creator }}
                   </v-col>
                 </v-row>
               </div>
@@ -210,26 +211,12 @@
               <div>
                 <v-container class="tittleColores p-0 mb-5">
                   <h1>OFERTAS</h1>
-                  <v-divider class="mb-2" />
-                </v-container>
-                <v-row>
-                  <v-col v-for="item in selected_post.items" :key="item.id" cols="6"
-                         class="d-flex flex-column justify-center align-items-center">
-                    <v-img :src="item.sprite" max-height="40"/>
-                    <span class="text-center">{{ item.mote_or_quantity }}</span>
-                  </v-col>
-                </v-row>
-              </div>
-              <!-- Encabezado -->
-              <div>
-                <v-container class="tittleColores p-0 mb-5">
-                  <h1>OFERTAS</h1>
-                  <v-divider class="mb-2" />
+                  <v-divider class="mb-2"/>
                 </v-container>
                 <v-row>
                   <v-col cols="4" v-for="offer in offers" :key="offer.id">
                     <v-card class="rounded-xl" max-width="500"
-                      style="position: relative; border: 1px solid var(--pink)">
+                            style="position: relative; border: 1px solid var(--pink)">
                       <!-- Encabezado PERFIL OFERTA -->
                       <div class="divCardSupPurple d-flex justify-center align-center">
                         <v-avatar size="50">
@@ -245,9 +232,9 @@
                       <div class="paddingCardOferta">
                         <v-row v-if="offer.type_offer === 'Object'">
                           <div v-for="item in offer.items" :key="item.id"
-                            class="d-flex flex-column justify-center align-items-center w-100">
+                               class="d-flex flex-column justify-center align-items-center w-100">
                             <div class="cardColores d-flex justify-center align-center">
-                              <v-img :src="item.sprite" max-width="112" />
+                              <v-img :src="item.sprite" max-width="112"/>
                               <div class="d-flex justify-center align-center flex-column">
                                 <p class="text-center bold">{{ item.item_name }}</p>
                                 <p class="text-center f-sm"> x{{ item.mote_or_quantity }}</p>
@@ -257,13 +244,13 @@
                         </v-row>
                         <v-row v-if="offer.type_offer != 'Object'">
                           <div v-for="item in offer.items" :key="item.id"
-                            class="d-flex flex-column justify-center align-items-center w-100">
+                               class="d-flex flex-column justify-center align-items-center w-100">
                             <div class="cardColores d-flex justify-center align-center">
-                              <v-img :src="item.sprite" max-width="112" />
+                              <v-img :src="item.sprite" max-width="112"/>
                               <div class="d-flex justify-center align-center flex-column">
                                 <p class="text-center bold">{{ item.mote_or_quantity }}</p>
                                 <p class="text-center f-sm">Nv. {{ item.level }}</p>
-                                <v-img :src="`./assets/types/Types/${item.type}.png`" width="32" aspect-ratio="1/1" />
+                                <v-img :src="`./assets/types/Types/${item.type}.png`" width="32" aspect-ratio="1/1"/>
                               </div>
                             </div>
                           </div>
@@ -279,7 +266,7 @@
             </v-container>
           </template>
           <template v-else>
-            <CreateOffer @cancel="closeCreate" @created="closeCreate" />
+            <CreateOffer @cancel="closeCreate" @created="closeCreate"/>
           </template>
         </v-tabs-window-item>
         <v-tabs-window-item :key="3" :value="3" class="h-75">
@@ -298,22 +285,24 @@
                       <v-col cols="2">
                         <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
                       </v-col>
-                      <v-divider class="mb-2" />
+                      <v-divider class="mb-2"/>
                     </v-row>
                     <div class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center" v-for="item in inventory"
-                      :key="item.id">
+                         :key="item.id">
                       <v-row class="mb-2 pointer hoverCard">
                         <v-col cols="3">
-                          <v-img :src="item.sprite" height="65px" />
+                          <v-img :src="item.sprite" height="65px"/>
                         </v-col>
                         <v-col cols="4" class="d-flex justify-center align-center p-0">
                           <span class="text-center">{{ item.item_name }}</span>
                         </v-col>
-                        <v-col cols="3" class="d-flex justify-center align-center p-0">{{ item.mote_or_quantity
-                          }}</v-col>
+                        <v-col cols="3" class="d-flex justify-center align-center p-0">{{
+                            item.mote_or_quantity
+                          }}
+                        </v-col>
                         <v-col cols="2"></v-col>
                       </v-row>
-                      <v-divider class="mb-2" />
+                      <v-divider class="mb-2"/>
                     </div>
                   </v-card-text>
                 </v-card>
@@ -331,22 +320,24 @@
                       <v-col cols="2">
                         <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
                       </v-col>
-                      <v-divider class="mb-2" />
+                      <v-divider class="mb-2"/>
                     </v-row>
                     <div class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center" v-for="item in inventory"
-                      :key="item.id">
+                         :key="item.id">
                       <v-row class="mb-2 pointer hoverCard">
                         <v-col cols="3">
-                          <v-img :src="item.sprite" height="65px" />
+                          <v-img :src="item.sprite" height="65px"/>
                         </v-col>
                         <v-col cols="4" class="d-flex justify-center align-center p-0">
                           <span class="text-center">{{ item.item_name }}</span>
                         </v-col>
-                        <v-col cols="3" class="d-flex justify-center align-center p-0">{{ item.mote_or_quantity
-                          }}</v-col>
+                        <v-col cols="3" class="d-flex justify-center align-center p-0">{{
+                            item.mote_or_quantity
+                          }}
+                        </v-col>
                         <v-col cols="2"></v-col>
                       </v-row>
-                      <v-divider class="mb-2" />
+                      <v-divider class="mb-2"/>
                     </div>
                   </v-card-text>
                 </v-card>
@@ -362,11 +353,12 @@
 
 <script setup>
 import {ref} from 'vue'
+
 const tab = ref(null)
 </script>
 
 <script>
-import { defineAsyncComponent } from 'vue'
+import {defineAsyncComponent} from 'vue'
 import {getAxios} from "@/stores";
 
 export default {
@@ -379,23 +371,7 @@ export default {
     return {
       tab: 1,
       showCreate: false,
-      offers: [
-        {
-          id: 0,
-          owner_name: 'Maikiki',
-          type_offer: 'Pokemon',
-          items: [
-            {
-              sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/260.png',
-              item_name: 'Swampert',
-              mote_or_quantity: '3',
-              type: 'water',
-              level: '20'
-            }
-          ],
-          profile_picture: './assets/temp/maikiki perfil.png',
-        },
-      ],
+      offers: [],
       posts: [],
       my_posts: [],
       inventory: [
@@ -433,14 +409,16 @@ export default {
     }
   },
   methods: {
-    select_post(post) {
+    async select_post(post) {
       this.selected_post = post
+      const response = await getAxios().get(`/api/market/${post.id}/`);
+      this.offers = response.data.offers;
     },
     openCreate() {
-      this.$router.push({ name: 'market-create' })
+      this.$router.push({name: 'market-create'})
     },
     closeCreate() {
-      this.$router.push({ name: 'market' })
+      this.$router.push({name: 'market'})
     },
     async load_posts() {
       const response = await getAxios().get('/api/market/')

@@ -16,7 +16,9 @@ export const useGameStore = defineStore('game', {
 
             }
         },
+        showdown_enabled: localStorage.getItem('enable-showdown-module'),
         dataSocket: null,
+        myTrainerId: localStorage.getItem('my_trainer_id'),
     }),
     getters: {
         in_live: state => state.inlive,
@@ -28,6 +30,8 @@ export const useGameStore = defineStore('game', {
         streamer_name: state => state.streamername,
         api_token: state => state.apitoken,
         data_socket: state => state.dataSocket,
+        showdown_module: state => state.showdown_enabled,
+        my_trainer_id: state => state.myTrainerId,
     },
     actions: {
         activate(game_data) {
@@ -49,6 +53,14 @@ export const useGameStore = defineStore('game', {
         },
         leave_event() {
             this.joined_event_id = null;
+        },
+        allowShowdown() {
+            localStorage.setItem('enable-showdown-module', true);
+            this.showdown_enabled = true;
+        },
+        set_my_trainer_id(trainer_id) {
+            localStorage.setItem('my_trainer_id', trainer_id);
+            this.myTrainerId = trainer_id;
         },
         start_websocket() {
             const streamer_name = this.streamername;
@@ -139,6 +151,7 @@ export const useGameStore = defineStore('game', {
         logout() {
             localStorage.removeItem('streamer_name')
             localStorage.removeItem('api_token')
+            localStorage.removeItem('my_trainer_id')
 
             this.streamername = null;
             this.apitoken = null;

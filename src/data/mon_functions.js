@@ -108,6 +108,10 @@ export function get_battle_form(pokemon) {
         lower_species = 'mr-mime';
     }
 
+    if (lower_species.startsWith('aegislash')) {
+        return `aegislash-${pokemon.suffix}`
+    }
+
     if (suffix) {
         return `${lower_species}-${suffix}`;
     }
@@ -125,6 +129,10 @@ export function get_form(pokemon, skip_mega_calc=true) {
         lower_species = "mr-mime";
     }
 
+    if (lower_species.startsWith('aegislash')) {
+        return `aegislash-${pokemon.suffix}`
+    }
+
     if (pokemon.suffix) {
         if (pokemon.dex_number === 648) {
             return `meloetta-${pokemon.suffix}`;
@@ -138,11 +146,6 @@ export function get_form(pokemon, skip_mega_calc=true) {
 
     if (lower_species === 'darmanitan') {
         return "darmanitan-standard";
-    }
-
-    if (lower_species.startsWith('aegislash')) {
-        let private_form = lower_species.replace('aegislash (', '').replace(' form)', '');
-        form = `aegislash-${private_form}`
     }
 
     if (skip_mega_calc) {

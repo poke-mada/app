@@ -25,7 +25,7 @@
           <v-img src="/assets/icons/Boxes.svg" width="28" height="28" class="me-2" cover />
         </template>
       </v-list-item>
-      <v-list-item class="itemBox" to="/showdown" title="showdown" value="showdown">
+      <v-list-item class="itemBox" to="/showdown" title="showdown" value="showdown" v-if="showdown_enabled">
         <template #prepend>
           <v-img src="/assets/icons/Showdown.svg" width="28" height="28" class="me-2" cover />
         </template>
@@ -96,6 +96,9 @@ export default {
     logged_in() {
       const token = this.store.api_token
       return token && token.length > 0
+    },
+    showdown_enabled() {
+      return this.store.showdown_module;
     }
   },
   methods: {
