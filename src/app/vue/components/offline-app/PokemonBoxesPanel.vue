@@ -168,7 +168,7 @@ export default {
   },
   methods: {
     async load_trainer_team() {
-      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/`);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/`).catch(() => ({data:{current_team: {team: []}}}));
       this.box_data.team = response.data.current_team.team
     },
     async load_trainers() {
@@ -176,7 +176,7 @@ export default {
       this.trainers = response.data;
     },
     async load_boxes() {
-      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/list_boxes/`);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/list_boxes/`).catch(() => ({data:[]}));
       this.box_data.selectable_boxes = response.data;
     },
     async open_box() {
@@ -186,7 +186,7 @@ export default {
           box: this.selected_box
         },
       };
-      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/box/`, config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/box/`, config).catch(() => ({data:{slots: []}}));
 
       this.box_data.box = response.data;
       this.loading_box = false;

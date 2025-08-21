@@ -93,7 +93,7 @@
                   <h2 class="textNoticias">Tu Equipo</h2>
                 </div>
 
-                <div v-if="team.length > 0">
+                <div v-if="!loading_team && team.length > 0">
                   <v-row class="pa-6">
                     <v-col cols="4" v-for="(pokemon, i) in team" :key="i" class="text-center">
                       <div class="position-relative d-inline-block">
@@ -104,10 +104,12 @@
                     </v-col>
                   </v-row>
                 </div>
-
-                <div v-else class="text-center">
+                <div v-else-if="loading_team" class="text-center">
                   <v-progress-circular indeterminate color="pink" class="ma-4"/>
                   <p class="text-subtitle-1">Cargando tu equipo...</p>
+                </div>
+                <div v-else-if="!loading_team && team.length === 0" class="text-center">
+                  <p class="text-subtitle-1">Sin equipo</p>
                 </div>
               </v-card>
 
@@ -150,7 +152,8 @@ export default {
       newsletter: [],
       team: [],
       selected_pokemon: null,
-      display: false
+      display: false,
+      loading_team: false,
     };
   },
   computed: {
@@ -178,6 +181,7 @@ export default {
     const token = this.api_token;
 
     if (token) {
+      this.loading_team = true;
       const config = {
         headers: {Authorization: `Token ${token}`},
       };
@@ -185,7 +189,9 @@ export default {
       try {
         const res = await getAxios().get(`/api/trainers/get_team/`, config);
         this.team = res.data;
+        this.loading_team = false;
       } catch (err) {
+        this.loading_team = false;
         this.team = [];
         console.error("Error al cargar el equipo:", err);
       }
