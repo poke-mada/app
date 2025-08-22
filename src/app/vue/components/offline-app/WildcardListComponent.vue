@@ -132,7 +132,7 @@
           </v-col>
         </v-row>
         <v-row>
-          <v-col v-if="(selected_card.inventory || selected_card.always_available) && ![68, 53].includes(selected_card.id)">
+          <v-col v-if="(selected_card.inventory || selected_card.always_available) && ![68, 53, 56].includes(selected_card.id)">
             <v-btn variant="tonal" text="Usar" color="warning" @click="canjear"/>
           </v-col>
           <v-col v-if="selected_card.price">

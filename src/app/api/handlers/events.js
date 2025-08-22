@@ -134,39 +134,39 @@ async function exchangeRewardBundle(ipc, data) {
     });
     if (response.status === 200) {
         const rewards = response.data.rewards;
-        ipc.reply('show_save_dialog')
         const itemRewards = rewards.filter(i => i.reward_type === 0);
-        const nonItemRewards = rewards.filter(i => i.reward_type !== 0);
-        const citra = new CitraClient();
+        const pokemonRewards = rewards.filter(i => i.reward_type === 3);
+        if (itemRewards.length > 0 || pokemonRewards.length > 0) {
+            ipc.reply('show_save_dialog')
+            for (const reward of itemRewards) {
+                getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
+                    console.log(`Added x${reward.quantity} ${reward.item} to ${reward.bag}`)
+                });
+            }
 
-        for (const reward of itemRewards) {
-            getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
-                console.log(`Added x${reward.quantity} ${reward.item} to ${reward.bag}`)
-            });
-        }
-
-        emmiter.on('perform_save', async () => {
-            let newData;
-            let needsRestart = false;
-            emmiter.removeAllListeners('perform_save')
-            for (const reward of nonItemRewards) {
-                if (reward.reward_type === 3) {// pokemon
+            emmiter.on('perform_save', async () => {
+                let newData;
+                let needsRestart = false;
+                emmiter.removeAllListeners('perform_save')
+                for (const reward of pokemonRewards) {
                     const pokemonData = Buffer.from(reward.pokemon_data);
                     // eslint-disable-next-line no-unused-vars
                     newData = addPokemonSaveData(pokemonData, true);
                     needsRestart = true;
                 }
-            }
-            writeSaveBytes(newData);
-            ipc.reply('perform_save');
-            if (needsRestart) {
-                ipc.reply('notification', {
-                    title: '¡Reinicia Tu Partida!',
-                    message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
-                    persistent: true
-                })
-            }
-        })
+                writeSaveBytes(newData);
+                ipc.reply('perform_save');
+                if (needsRestart) {
+                    ipc.reply('notification', {
+                        title: '¡Reinicia Tu Partida!',
+                        message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
+                        persistent: true
+                    })
+                }
+            })
+        }
+        const citra = new CitraClient();
+
     }
 
 }
