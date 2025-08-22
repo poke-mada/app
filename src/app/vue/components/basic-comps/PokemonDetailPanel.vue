@@ -1,5 +1,3 @@
-<!--suppress JSVoidFunctionReturnValueUsed -->
-<!-- DETALLES DE POKEMON EN COMBATES  -->
 <template style="">
   <div class="templateCardDetails">
     <v-card class="cardsDetailsPokemon mt-2" type="primary" border>
@@ -42,7 +40,7 @@
             </div>
 
           </v-col>
-          <v-col cols="7" class="p-0">
+          <v-col cols="7" class="p-0 mt-4">
             <v-container class="tittleStats">
               <h1>STATS</h1>
             </v-container>
@@ -51,7 +49,7 @@
               <img src="/imgs/Pokeball.png" />
               <p>Stats base</p>
             </div>
-            <v-row class="mt-2" dense>
+            <v-row class="mt-2 mr-7" dense>
               <v-col cols="12" v-for="(value, stat) in statsWithLabels" :key="stat">
                 <v-row align="center">
                   <v-col cols="4" class="text-end p-0">
@@ -97,15 +95,19 @@
             </v-container>
           </v-col>
         </v-row>
-        <v-row v-if="side === 'you'">
+        <v-row v-if="side === 'you'" class="mt-6 mb-1">
           <v-col cols="12" class="p-0">
             <v-container class="tittleMoves">
               <h1>MOVIMIENTOS</h1>
             </v-container>
-            <v-divider class="mb-3"></v-divider>
+            <v-divider class="mb-3 mt-2"></v-divider>
           </v-col>
-          <v-col cols="6" v-for="(move, index) in pokemon.moves" :key="index">
-            <MovementCard :enemy_data="enemy_data" :pokemon="pokemon" :movement="move" v-if="move" />
+          <v-col>
+            <v-row class="mr-3 ml-3">
+              <v-col cols="6" v-for="(move, index) in pokemon.moves" :key="index" >
+                <MovementCard :enemy_data="enemy_data" :pokemon="pokemon" :movement="move" v-if="move" />
+              </v-col>
+            </v-row>
           </v-col>
         </v-row>
       </div>

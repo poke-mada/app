@@ -10,25 +10,12 @@
               </v-card-title>
             </template>
             <template v-slot:text>
-              <v-text-field label="ROM Usada" v-model="used_rom" readonly></v-text-field>
               <v-text-field label="Ruta de guardado" v-model="save_path"></v-text-field>
             </template>
           </v-card>
         </v-col>
       </v-row>
       <v-row>
-        <v-col>
-          <v-card>
-            <template v-slot:title>
-              <v-card-title>
-                <h3>Apariencia</h3>
-              </v-card-title>
-            </template>
-            <template v-slot:text>
-              <v-file-input label="Custom Sprite"></v-file-input>
-            </template>
-          </v-card>
-        </v-col>
         <v-col>
           <v-card>
             <template v-slot:title>
@@ -52,26 +39,7 @@
           <v-card>
             <template v-slot:title>
               <v-card-title>
-                <h3>Comodines</h3>
-              </v-card-title>
-            </template>
-            <template v-slot:text>
-              <v-row>
-                <v-col>
-                  <v-text-field label="Comodines usados" v-model="used_wildcards" readonly></v-text-field>
-                </v-col>
-                <v-col>
-                  <v-text-field label="Comodines en inventario" v-model="wildcard_count" readonly></v-text-field>
-                </v-col>
-              </v-row>
-            </template>
-          </v-card>
-        </v-col>
-        <v-col>
-          <v-card>
-            <template v-slot:title>
-              <v-card-title>
-                <h3>Dedsafio</h3>
+                <h3>Mecanicas Del Tramo #{{profile?.segment_number ?? 1}}</h3>
               </v-card-title>
             </template>
             <template v-slot:text>
@@ -87,6 +55,8 @@
 </template>
 
 <script>
+
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "ProfileComponentPanel",
@@ -3339,6 +3309,14 @@ export default {
           "title": "809-Melmetal"
         }
       ]
+    }
+  },
+  computed: {
+    store() {
+      return useGameStore();
+    },
+    profile() {
+      return this.store.profile_data;
     }
   },
   methods: {}

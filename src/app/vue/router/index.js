@@ -17,7 +17,7 @@ import TeamAppPage from "@/app/vue/pages/team";
 import RewardsAppPage from "@/app/vue/pages/rewards";
 import EventsAppPage from "@/app/vue/pages/events";
 import MarketPage from "@/app/vue/pages/market/index";
-// import MarketPage from "@/app/vue/pages/market/create";
+import BannersMainPage from "@/app/vue/pages/roulette/BannersMainPage";
 
 const routes = [
   { path: '/', component: MainAppPage },
@@ -29,8 +29,8 @@ const routes = [
   { path: '/team', component: TeamAppPage },
   { path: '/wildcards', component: WildcardsAppPage },
   { path: '/rewards', component: RewardsAppPage },
+  { path: '/roulettes', component: BannersMainPage },
   { path: '/events', component: EventsAppPage },
-  // { path: '/market_create', component: MarketCreateAppPage },
   { path: '/market', component: MarketPage },
   {
     path: '/market_create',

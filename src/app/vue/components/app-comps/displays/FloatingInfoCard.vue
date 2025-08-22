@@ -1,8 +1,8 @@
 <template>
-  <div class="floating-card">
+  <div class="floating-card" v-if="!profile.is_admin">
     <CoinsComponent />
     <KarmaComponent />
-    <ExpComponent />
+    <ExpComponent class="ml-2"/>
   </div>
 </template>
 
@@ -10,6 +10,7 @@
 import CoinsComponent from '@/app/vue/components/offline-app/CoinsComponent'
 import KarmaComponent from '@/app/vue/components/app-comps/displays/KarmaComponent'
 import ExpComponent from '@/app/vue/components/app-comps/displays/ExpComponent'
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "FloatingInfoCardComponent",
@@ -17,6 +18,14 @@ export default {
     CoinsComponent,
     KarmaComponent,
     ExpComponent
+  },
+  computed: {
+    store() {
+      return useGameStore()
+    },
+    profile() {
+      return this.store.profile_data
+    },
   }
 }
 </script>

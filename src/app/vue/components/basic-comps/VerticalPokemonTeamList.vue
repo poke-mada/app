@@ -2,7 +2,7 @@
   <!-- SECCION DE COMBATE CUANDO NO HAY COMBATES ACTIVOS Y SE VE TU EQUIPO  -->
   <v-card border class="mt-2">
     <v-alert :color="team === 'enemy' ? '#0600FF' : '#D5048D'"
-      class="divCardSup pa-3 d-flex justify-center align-center">
+             class="divCardSup pa-3 d-flex justify-center align-center">
       <h2 class="textTeamCombats" v-if="team === 'enemy'">
         Pokemon Enemigo
       </h2>
@@ -10,15 +10,9 @@
         Tu Equipo
       </h2>
     </v-alert>
-    <v-row class="pa-1">
+    <v-row class="mb-2 mt-1 pl-6">
       <v-col cols="6" v-for="(pokemon, i) in this.data.team" :key="i">
-        <v-row>
-          <v-spacer />
-          <v-col>
-            <PokemonCard :pokemon="pokemon" @click="selectPokemon(i)" />
-          </v-col>
-          <v-spacer />
-        </v-row>
+        <PokemonCard :pokemon="pokemon" @click="selectPokemon(i)"/>
       </v-col>
     </v-row>
   </v-card>

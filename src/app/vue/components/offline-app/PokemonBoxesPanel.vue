@@ -11,7 +11,7 @@
       </div>
 
       <div class="pa-4">
-        <v-row justify="space-between" class="custom-row">
+        <v-row justify="space-between" class="custom-row mb-5">
           <!-- Select Caja -->
           <v-col cols="3">
             <v-autocomplete id="cajasSelect" class="custom-select" variant="solo" hide-details flat :items="box_data.selectable_boxes"
@@ -42,7 +42,8 @@
             </v-autocomplete>
           </v-col>
           <!-- Botón Ver Equipo -->
-          <v-col cols="3">
+          <v-spacer/>
+          <v-col>
             <v-btn class="gradient-btn" @click="pokemon_team_display = true; selected_pokemon = null">
               VER EQUIPO
               <v-icon end>mdi-chevron-right</v-icon>

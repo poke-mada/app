@@ -16,6 +16,7 @@ export const useGameStore = defineStore('game', {
 
             }
         },
+        profileData: JSON.parse(localStorage.getItem('profile_data')),
         showdown_enabled: localStorage.getItem('enable-showdown-module'),
         dataSocket: null,
         myTrainerId: localStorage.getItem('my_trainer_id'),
@@ -32,6 +33,7 @@ export const useGameStore = defineStore('game', {
         data_socket: state => state.dataSocket,
         showdown_module: state => state.showdown_enabled,
         my_trainer_id: state => state.myTrainerId,
+        profile_data: state => state.profileData,
     },
     actions: {
         activate(game_data) {
@@ -58,12 +60,23 @@ export const useGameStore = defineStore('game', {
             localStorage.setItem('enable-showdown-module', true);
             this.showdown_enabled = true;
         },
+        set_profile_data(data) {
+            localStorage.setItem('profile_data', JSON.stringify(data));
+            this.profileData = data;
+        },
         set_my_trainer_id(trainer_id) {
             localStorage.setItem('my_trainer_id', trainer_id);
             this.myTrainerId = trainer_id;
         },
         start_websocket() {
-            const streamer_name = this.streamername;
+            let streamer_name = null;
+            if (this.profileData) {
+                if (this.profileData.is_coach) {
+                    streamer_name = this.profileData.coached_name;
+                } else {
+                    streamer_name = this.streamername
+                }
+            }
             if (streamer_name) {
                 const sound = new Howl({
                     src: ['./assets/sounds/alert.mp3']
@@ -157,6 +170,7 @@ export const useGameStore = defineStore('game', {
             localStorage.removeItem('streamer_name')
             localStorage.removeItem('api_token')
             localStorage.removeItem('my_trainer_id')
+            localStorage.removeItem('profile_data')
 
             this.streamername = null;
             this.apitoken = null;
