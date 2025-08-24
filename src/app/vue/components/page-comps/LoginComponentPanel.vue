@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import {login_session} from "@/stores";
+import {getAxios, login_session} from "@/stores";
 import SvgIcon from '@jamescoyle/vue-icon';
 import {mdiKey, mdiAccount} from '@mdi/js';
 import {useGameStore} from "@/stores/app";
@@ -112,6 +112,12 @@ export default {
           token: response.data.token
         });
 
+        const config = {
+          headers: {Authorization: `Token ${response.data.token}`},
+        };
+        const trainer_response = await getAxios().get('/api/trainers/get_profile', config);
+        this.store.set_profile_data(trainer_response.data)
+        this.store.set_my_trainer_id(trainer_response.data.trainer_id)
         this.store.login(this.username, response.data.token)
         this.$router.push('/');
       } catch (error_response) {

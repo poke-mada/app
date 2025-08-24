@@ -16,8 +16,10 @@ export const useGameStore = defineStore('game', {
 
             }
         },
+        profileData: JSON.parse(localStorage.getItem('profile_data')),
         showdown_enabled: localStorage.getItem('enable-showdown-module'),
         dataSocket: null,
+        gameDataSocket: null,
         myTrainerId: localStorage.getItem('my_trainer_id'),
     }),
     getters: {
@@ -30,8 +32,10 @@ export const useGameStore = defineStore('game', {
         streamer_name: state => state.streamername,
         api_token: state => state.apitoken,
         data_socket: state => state.dataSocket,
+        game_data_socket: state => state.gameDataSocket,
         showdown_module: state => state.showdown_enabled,
         my_trainer_id: state => state.myTrainerId,
+        profile_data: state => state.profileData,
     },
     actions: {
         activate(game_data) {
@@ -58,12 +62,23 @@ export const useGameStore = defineStore('game', {
             localStorage.setItem('enable-showdown-module', true);
             this.showdown_enabled = true;
         },
+        set_profile_data(data) {
+            localStorage.setItem('profile_data', JSON.stringify(data));
+            this.profileData = data;
+        },
         set_my_trainer_id(trainer_id) {
             localStorage.setItem('my_trainer_id', trainer_id);
             this.myTrainerId = trainer_id;
         },
         start_websocket() {
-            const streamer_name = this.streamername;
+            let streamer_name = null;
+            if (this.profileData) {
+                if (this.profileData.is_coach) {
+                    streamer_name = this.profileData.coached_name;
+                } else {
+                    streamer_name = this.streamername
+                }
+            }
             if (streamer_name) {
                 const sound = new Howl({
                     src: ['./assets/sounds/alert.mp3']
@@ -109,6 +124,9 @@ export const useGameStore = defineStore('game', {
                         case 'karma':
                             emitter.emit('karma_updated', data.data)
                             break;
+                        case 'exp':
+                            emitter.emit('exp_updated', data.data)
+                            break;
                         case 'notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Notificacion!',
@@ -137,8 +155,31 @@ export const useGameStore = defineStore('game', {
                     emitter.emit('coins_updated', response.data)
                     let kresponse = await getAxios().get(`api/trainers/get_karma/`);
                     emitter.emit('karma_updated', kresponse.data)
+                    let eresponse = await getAxios().get(`api/trainers/get_exp/`);
+                    emitter.emit('exp_updated', eresponse.data)
                 }
             }
+        },
+        start_game_data_websocket() {
+            let streamer_name = null;
+            streamer_name = this.profileData.coached_socket_name;
+            if (streamer_name) {
+                this.gameDataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/game_data/${this.profileData.coached_socket_name}`);
+
+                this.gameDataSocket.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    const data = message.message;
+                    emitter.emit('update_game_data', data)
+                }
+            }
+        },
+        start_player_game_data_websocket() {
+            this.gameDataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/game_data/${this.streamername}`);
+            setInterval(() => {
+                if (this.emulatoron) {
+                    this.gameDataSocket.send(JSON.stringify(this.gamedata))
+                }
+            }, 10_000)
         },
         login(streamer_name, token) {
             localStorage.setItem('streamer_name', streamer_name)
@@ -152,6 +193,7 @@ export const useGameStore = defineStore('game', {
             localStorage.removeItem('streamer_name')
             localStorage.removeItem('api_token')
             localStorage.removeItem('my_trainer_id')
+            localStorage.removeItem('profile_data')
 
             this.streamername = null;
             this.apitoken = null;

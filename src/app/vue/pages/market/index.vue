@@ -139,7 +139,6 @@
                 <v-col cols="3">NOMBRE</v-col>
                 <v-col cols="3">CANTIDAD/MOTE</v-col>
                 <v-col cols="3">Estatus</v-col>
-                <v-col cols="3">PROPIETARIO</v-col>
                 <v-col cols="1">
                   <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
                 </v-col>

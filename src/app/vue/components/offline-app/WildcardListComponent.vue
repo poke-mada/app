@@ -14,7 +14,7 @@
         <v-row>
           <v-col cols="6">
             <v-text-field label="Buscar" v-model="wildcard_search" clearable @click:clear="wildcard_search = ''"
-              persistent-clear />
+                          persistent-clear/>
           </v-col>
           <v-col cols="2"></v-col>
           <v-col cols="4" class="d-flex justify-end">
@@ -29,7 +29,7 @@
               <v-card class="filterCard" elevation="10" rounded="lg" width="300">
                 <v-list nav class="py-0">
                   <v-list-item v-for="opt in common_filters" :key="String(opt.value)" @click="selectCategory(opt.value)"
-                    :class="['filterItem', { active: category_filter === opt.value }]">
+                               :class="['filterItem', { active: category_filter === opt.value }]">
                     <v-list-item-title>{{ opt.title.toUpperCase() }}</v-list-item-title>
                     <template #append>
                       <v-icon v-if="category_filter === opt.value" size="18">mdi-check</v-icon>
@@ -52,8 +52,8 @@
           <v-col class="divComodinesCards" v-for="item in pagedWildcards" :key="item.id" cols="12" sm="6" md="4" lg="3">
             <div class="divCardsComodinesBadge">
               <v-img :src="`${item.sprite}`" class="cursor-pointer cardComodinesTam"
-                :class="!item.always_available && !item.inventory ? 'disabled' : ''"
-                lazy-src="./wildcards/000-sin_hacer.png" @click="display_card(item)" />
+                     :class="!item.always_available && !item.inventory ? 'disabled' : ''"
+                     lazy-src="./wildcards/000-sin_hacer.png" @click="display_card(item)"/>
             </div>
             <div class="btnHome2 badgeCuantityCards">
               <!-- infinito para IDs 72 o 73 -->
@@ -76,17 +76,17 @@
 
         <!-- Paginación -->
         <v-row class="mt-4" justify="center">
-          <v-pagination v-model="page" :length="totalPages" :total-visible="5" />
+          <v-pagination v-model="page" :length="totalPages" :total-visible="5"/>
         </v-row>
       </div>
 
     </v-card>
     <v-dialog v-model="card_displayed">
       <v-row>
-        <v-spacer @click="card_displayed = false;" />
+        <v-spacer @click="card_displayed = false;"/>
         <v-col lg="2">
           <div class="pkm-wrapper" @mousemove="tilt" @mouseenter="tiltEnter" @mouseleave="tiltLeave" :style="pkmStyle">
-            <img :src="selected_card.sprite" class="pkm-card" alt="" />
+            <img :src="selected_card.sprite" class="pkm-card" alt=""/>
             <!-- Lupa -->
             <v-btn class="zoom-btn" icon size="small" @click.stop="zoomOpen = true">
               <v-icon>mdi-magnify-plus-outline</v-icon>
@@ -98,8 +98,8 @@
         <v-dialog v-model="zoomOpen" max-width="450">
           <v-card class="p-4" rounded="lg">
             <div class="pkm-zoom-wrapper" @mousemove="tiltZ" @mouseenter="tiltEnterZ" @mouseleave="tiltLeaveZ"
-              :style="pkmStyleZoom">
-              <img :src="selected_card.sprite" class="pkm-zoom-card" alt="" />
+                 :style="pkmStyleZoom">
+              <img :src="selected_card.sprite" class="pkm-zoom-card" alt=""/>
             </div>
           </v-card>
         </v-dialog>
@@ -119,83 +119,85 @@
           <v-row v-if="selected_card.inventory">
             <v-col>
               <span>Tienes {{ selected_card.inventory }} carta{{
-                selected_card.inventory > 1 ? 's' : ''
-              }} de este tipo</span>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col v-if="selected_card.price">
-            <CoinsComponent :coins="selected_card.price * quantity"/>
-          </v-col>
-          <v-col v-if="!selected_card.price">
-            <span>{{ selected_card.special_price }}</span>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col v-if="(selected_card.inventory || selected_card.always_available) && ![68, 53].includes(selected_card.id)">
-            <v-btn variant="tonal" text="Usar" color="warning" @click="canjear"/>
-          </v-col>
-          <v-col v-if="selected_card.price">
-            <v-btn text="Comprar" color="success" @click="comprar()" />
-          </v-col>
-        </v-row>
-        <v-row
-            v-if="![25, 41, 42, 5, 72].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2">
-          <v-col>
-            <v-text-field type="number" label="Cantidad" v-model="quantity"/>
-          </v-col>
-        </v-row>
-        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 25">
-          <v-col>
-            <v-autocomplete label="Mega Piedra" v-model="item_id" :items="mega_stones" :item-props="true"/>
-          </v-col>
-        </v-row>
-        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 41">
-          <v-col>
-            <v-autocomplete label="Objeto Debil" v-model="item_id" :items="weak_items" :item-props="true"/>
-          </v-col>
-        </v-row>
-        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 42">
-          <v-col>
-            <v-autocomplete label="Objeto Fuerte" v-model="item_id" :items="strong_items" :item-props="true"/>
-          </v-col>
-        </v-row>
-        <v-row v-if="selected_card.inventory > 0 && selected_card.id === 5">
-          <v-col>
-            <v-autocomplete label="Objetivo" v-model="target_mon" :items="death_mons" :item-props="true"/>
-          </v-col>
-        </v-row>
-        <v-row v-if="selected_card.id === 72">
-          <v-col>
-            <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_mons" :item-props="true"/>
-          </v-col>
-        </v-row>
-        <v-row v-if="selected_card.id === 73">
-          <v-col>
-            <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_shinies" :item-props="true"/>
-          </v-col>
-        </v-row>
-        <v-row v-if="selected_card.inventory > 0 && (selected_card.category === 6 || [54].includes(selected_card.id)) && ![68, 53].includes(selected_card.id)">
-          <v-col>
-            <v-autocomplete label="Objetivo" v-model="target_profile" :items="possible_targets" :item-props="true"/>
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-spacer @click="card_displayed = false;"/>
-    </v-row>
-  </v-dialog>
+                  selected_card.inventory > 1 ? 's' : ''
+                }} de este tipo</span>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col v-if="selected_card.price">
+              <CoinsManualComponent :coins="selected_card.price"/>
+            </v-col>
+            <v-col v-if="!selected_card.price">
+              <span>{{ selected_card.special_price }}</span>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col
+                v-if="(selected_card.inventory || selected_card.always_available) && ![68, 53, 56].includes(selected_card.id)">
+              <v-btn variant="tonal" text="Usar" color="warning" @click="canjear"/>
+            </v-col>
+            <v-col v-if="selected_card.price">
+              <v-btn text="Comprar" color="success" @click="comprar()"/>
+            </v-col>
+          </v-row>
+          <v-row
+              v-if="![25, 41, 42, 5, 72].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2">
+            <v-col>
+              <v-text-field type="number" label="Cantidad" v-model="quantity"/>
+            </v-col>
+          </v-row>
+          <v-row v-if="selected_card.inventory > 0 && selected_card.id === 25">
+            <v-col>
+              <v-autocomplete label="Mega Piedra" v-model="item_id" :items="mega_stones" :item-props="true"/>
+            </v-col>
+          </v-row>
+          <v-row v-if="selected_card.inventory > 0 && selected_card.id === 41">
+            <v-col>
+              <v-autocomplete label="Objeto Debil" v-model="item_id" :items="weak_items" :item-props="true"/>
+            </v-col>
+          </v-row>
+          <v-row v-if="selected_card.inventory > 0 && selected_card.id === 42">
+            <v-col>
+              <v-autocomplete label="Objeto Fuerte" v-model="item_id" :items="strong_items" :item-props="true"/>
+            </v-col>
+          </v-row>
+          <v-row v-if="selected_card.inventory > 0 && selected_card.id === 5">
+            <v-col>
+              <v-autocomplete label="Objetivo" v-model="target_mon" :items="death_mons" :item-props="true"/>
+            </v-col>
+          </v-row>
+          <v-row v-if="selected_card.id === 72">
+            <v-col>
+              <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_mons" :item-props="true"/>
+            </v-col>
+          </v-row>
+          <v-row v-if="selected_card.id === 73">
+            <v-col>
+              <v-autocomplete label="Objetivo" v-model="target_mon" :items="releasable_shinies" :item-props="true"/>
+            </v-col>
+          </v-row>
+          <v-row
+              v-if="selected_card.inventory > 0 && (selected_card.category === 6 || [54].includes(selected_card.id)) && ![68, 53].includes(selected_card.id)">
+            <v-col>
+              <v-autocomplete label="Objetivo" v-model="target_profile" :items="possible_targets" :item-props="true"/>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-spacer @click="card_displayed = false;"/>
+      </v-row>
+    </v-dialog>
   </div>
 </template>
 
 <script>
-import { getAxios, emitter } from "@/stores";
-import { SERVER_URL } from '@/stores/constants';
-import CoinsComponent from "@/app/vue/components/offline-app/CoinsComponent";
+import {getAxios, emitter} from "@/stores";
+import {SERVER_URL} from '@/stores/constants';
+import CoinsManualComponent from "@/app/vue/components/app-comps/displays/CoinsManualComponent";
 
 export default {
   name: "WildcardListComponent",
   components: {
-    CoinsComponent
+    CoinsManualComponent
   },
   props: {
     api_token: {
@@ -298,8 +300,14 @@ export default {
     }
   },
   methods: {
-    tiltEnterZ() { },
-    tiltLeaveZ() { this.rxZ = 0; this.ryZ = 0; this.mxZ = 50; this.myZ = 50; },
+    tiltEnterZ() {
+    },
+    tiltLeaveZ() {
+      this.rxZ = 0;
+      this.ryZ = 0;
+      this.mxZ = 50;
+      this.myZ = 50;
+    },
     tiltZ(e) {
       const el = e.currentTarget;
       const r = el.getBoundingClientRect();
@@ -311,7 +319,10 @@ export default {
       this.myZ = py * 100;
     },
     tiltLeave() {
-      this.rx = 0; this.ry = 0; this.mx = 50; this.my = 50;
+      this.rx = 0;
+      this.ry = 0;
+      this.mx = 50;
+      this.my = 50;
     },
     tilt(e) {
       const el = e.currentTarget;
@@ -432,7 +443,7 @@ export default {
     },
     async load_targets() {
       const response = await getAxios().get('/api/trainers/list_streamers/')
-      this.possible_targets = response.data.map(trainer => ({ value: trainer.id, title: trainer.streamer_name }))
+      this.possible_targets = response.data.map(trainer => ({value: trainer.id, title: trainer.streamer_name}))
     },
     async load_wildcards() {
       const response = await getAxios().get('/api/trainers/wildcards_with_inventory/')
@@ -483,7 +494,7 @@ export default {
       // console.log(filtered_cards);
       if (this.wildcard_search) {
         filtered_cards = filtered_cards.filter(item =>
-          item.name.toLowerCase().includes(this.wildcard_search.toLowerCase())
+            item.name.toLowerCase().includes(this.wildcard_search.toLowerCase())
         );
       }
       if (this.category_filter !== null) {
@@ -512,9 +523,15 @@ export default {
     this.full_reload();
   },
   watch: {
-    card_displayed() { this.quantity = 1; },
-    wildcard_search() { this.page = 1; },
-    category_filter() { this.page = 1; },
+    card_displayed() {
+      this.quantity = 1;
+    },
+    wildcard_search() {
+      this.page = 1;
+    },
+    category_filter() {
+      this.page = 1;
+    },
   }
 }
 </script>
@@ -546,8 +563,8 @@ export default {
 }
 
 /* Contenedor con perspectiva */
-.pkm-wrapper{
-  width: 214px!important;
+.pkm-wrapper {
+  width: 214px !important;
 }
 
 .pkm-wrapper,
@@ -572,9 +589,8 @@ export default {
   height: 100%;
   object-fit: contain;
   border-radius: 14px;
-  box-shadow:
-    0 8px 20px rgba(0, 0, 0, .25),
-    inset 0 0 0 1px rgba(255, 255, 255, .08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .25),
+  inset 0 0 0 1px rgba(255, 255, 255, .08);
   transform: rotateX(var(--ry, 0deg)) rotateY(var(--rx, 0deg));
   transition: transform 80ms ease;
   transform-style: preserve-3d;
@@ -589,10 +605,9 @@ export default {
   pointer-events: none;
   border-radius: 14px;
   mix-blend-mode: screen;
-  background:
-    radial-gradient(180px 140px at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%),
-    conic-gradient(from 180deg at 50% 50%,
+  background: radial-gradient(180px 140px at var(--mx, 50%) var(--my, 50%),
+  rgba(255, 255, 255, .35), rgba(255, 255, 255, 0) 60%),
+  conic-gradient(from 180deg at 50% 50%,
       rgba(255, 0, 153, .18), rgba(0, 255, 204, .18), rgba(0, 128, 255, .18),
       rgba(255, 255, 0, .18), rgba(255, 0, 153, .18));
   opacity: .55;
@@ -619,7 +634,7 @@ export default {
   height: 100%;
 }
 
-body>div.v-overlay-container>div:nth-child(2)>div.v-overlay__content {
+body > div.v-overlay-container > div:nth-child(2) > div.v-overlay__content {
   margin: 0;
   height: 632px;
   background: transparent;
@@ -631,12 +646,12 @@ body>div.v-overlay-container>div:nth-child(2)>div.v-overlay__content {
   background: black;
 }
 
-body>div.v-overlay-container>div:nth-child(2)>div.v-overlay__content>div {
+body > div.v-overlay-container > div:nth-child(2) > div.v-overlay__content > div {
   border-radius: 0 !important;
   background: black;
 }
 
-body > div.v-overlay-container > div > div.v-overlay__content > div > div.v-col.text-left.text-white{
+body > div.v-overlay-container > div > div.v-overlay__content > div > div.v-col.text-left.text-white {
   margin-left: 30px;
 }
 </style>

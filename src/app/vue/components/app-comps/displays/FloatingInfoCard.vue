@@ -1,35 +1,31 @@
 <template>
   <div class="floating-card">
-    <CoinsComponent :coins="this.coins" />
+    <CoinsComponent />
     <KarmaComponent />
+    <ExpComponent class="ml-2"/>
   </div>
 </template>
 
 <script>
 import CoinsComponent from '@/app/vue/components/offline-app/CoinsComponent'
 import KarmaComponent from '@/app/vue/components/app-comps/displays/KarmaComponent'
-import {emitter} from "@/stores";
+import ExpComponent from '@/app/vue/components/app-comps/displays/ExpComponent'
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "FloatingInfoCardComponent",
   components: {
     CoinsComponent,
-    KarmaComponent
-  },
-  methods: {
+    KarmaComponent,
+    ExpComponent
   },
   computed: {
-  },
-  async mounted() {
-    emitter.on('coins_updated', (data) => {
-      this.coins = data
-    })
-  },
-  data() {
-    return {
-      coins: 0,
-      wildcard_count: 0
-    }
+    store() {
+      return useGameStore()
+    },
+    profile() {
+      return this.store.profile_data
+    },
   }
 }
 </script>
@@ -46,5 +42,7 @@ export default {
   z-index: 9999;
   box-shadow: 0 0 10px rgba(0,0,0,0.4);
   pointer-events: none;
+}
+* {
 }
 </style>

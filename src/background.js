@@ -19,15 +19,14 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
     // Create the browser window.
     const win = new BrowserWindow({
-        width: 1200,
+        width: 1600,
         height: 873,
+        minWidth: 1600,
         icon: './public/icons/icon.ico',
         title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
         autoHideMenuBar: true,
         webPreferences: {
-            // devTools: false,
-            // Use pluginOptions.nodeIntegration, leave this alone
-            // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
+            devTools: process.env.DEV_MODE,
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
             contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
             preload: path.join(__dirname, 'preload.js')

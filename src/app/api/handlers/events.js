@@ -1,6 +1,6 @@
 // noinspection JSUnresolvedVariable
 
-import {BrowserWindow, ipcMain, Notification, session as el_session} from "electron";
+import {BrowserWindow, ipcMain, Notification, session as el_session, dialog, shell} from "electron";
 import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
@@ -10,8 +10,8 @@ import {
     declareGlobalConfig,
     emmiter,
     GLOBAL_CONFIG,
-    MODS_FILE_LIME3,
-    SERVER_URL, TEST_CLIENT_PATH
+    MODS_FILE_LIME3, SAVE_FILE_LIME3,
+    SERVER_URL, TEST_CLIENT_PATH, update_save_file
 } from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
@@ -27,6 +27,7 @@ import AdmZip from "adm-zip";
 import axios from "axios";
 import https from "https";
 import config from "@/app/api/lib/config";
+
 
 function downloadSaveEvent(ipc, trainer_name) {
     session.get(`/last_save/${trainer_name}`, {
@@ -134,39 +135,39 @@ async function exchangeRewardBundle(ipc, data) {
     });
     if (response.status === 200) {
         const rewards = response.data.rewards;
-        ipc.reply('show_save_dialog')
         const itemRewards = rewards.filter(i => i.reward_type === 0);
-        const nonItemRewards = rewards.filter(i => i.reward_type !== 0);
-        const citra = new CitraClient();
+        const pokemonRewards = rewards.filter(i => i.reward_type === 3);
+        if (itemRewards.length > 0 || pokemonRewards.length > 0) {
+            ipc.reply('show_save_dialog')
+            for (const reward of itemRewards) {
+                getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
+                    console.log(`Added x${reward.quantity} ${reward.item} to ${reward.bag}`)
+                });
+            }
 
-        for (const reward of itemRewards) {
-            getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
-                console.log(`Added x${reward.quantity} ${reward.item} to ${reward.bag}`)
-            });
-        }
-
-        emmiter.on('perform_save', async () => {
-            let newData;
-            let needsRestart = false;
-            emmiter.removeAllListeners('perform_save')
-            for (const reward of nonItemRewards) {
-                if (reward.reward_type === 3) {// pokemon
+            emmiter.on('perform_save', async () => {
+                let newData;
+                let needsRestart = false;
+                emmiter.removeAllListeners('perform_save')
+                for (const reward of pokemonRewards) {
                     const pokemonData = Buffer.from(reward.pokemon_data);
                     // eslint-disable-next-line no-unused-vars
                     newData = addPokemonSaveData(pokemonData, true);
                     needsRestart = true;
                 }
-            }
-            writeSaveBytes(newData);
-            ipc.reply('perform_save');
-            if (needsRestart) {
-                ipc.reply('notification', {
-                    title: '¡Reinicia Tu Partida!',
-                    message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
-                    persistent: true
-                })
-            }
-        })
+                writeSaveBytes(newData);
+                ipc.reply('perform_save');
+                if (needsRestart) {
+                    ipc.reply('notification', {
+                        title: '¡Reinicia Tu Partida!',
+                        message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
+                        persistent: true
+                    })
+                }
+            })
+        }
+        const citra = new CitraClient();
+
     }
 
 }
@@ -308,6 +309,20 @@ async function openShowdownClient(ipc, data, opts = {}) {
     await win.loadURL(url)
 }
 
+function requestSavePath(ipc) {
+    ipc.reply('save-path-data', SAVE_FILE_LIME3)
+}
+
+function updateSavePath(ipc, data) {
+    config.set('savePath', data);
+    update_save_file();
+    ipc.reply('save-path-data', data);
+}
+
+function openLink(ipc, data) {
+    shell.openExternal(data);
+}
+
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);
     ipcMain.on('download_save', downloadSaveEvent);
@@ -318,4 +333,13 @@ export function registerEvents() {
     ipcMain.on('wildcard', manageWildcardEvents);
     ipcMain.on('notify', showNotification);
     ipcMain.on('open-showdown', openShowdownClient);
+
+    ipcMain.on('request-save-path', requestSavePath);
+    ipcMain.on('update-save-path', updateSavePath);
+    ipcMain.on('open-link', openLink);
+
+    ipcMain.handle('open-file-dialog', async () => {
+        const result = await dialog.showOpenDialog({ properties: ["openFile"] });
+        return result.filePaths;
+    });
 }

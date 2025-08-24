@@ -7,11 +7,11 @@
         <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
           <v-img src="/assets/img/Home/Pokeball.png"></v-img>
         </v-avatar>
-        <h2 class="textNoticias">Cajas</h2>
+        <h2 class="textNoticias">Cajas</h2><ExpManualComponent :stealable="this.box_data?.box?.stealable ?? false" />
       </div>
 
       <div class="pa-4">
-        <v-row justify="space-between" class="custom-row">
+        <v-row justify="space-between" class="custom-row mb-5">
           <!-- Select Caja -->
           <v-col cols="3">
             <v-autocomplete id="cajasSelect" class="custom-select" variant="solo" hide-details flat :items="box_data.selectable_boxes"
@@ -42,7 +42,8 @@
             </v-autocomplete>
           </v-col>
           <!-- Botón Ver Equipo -->
-          <v-col cols="3">
+          <v-spacer/>
+          <v-col>
             <v-btn class="gradient-btn" @click="pokemon_team_display = true; selected_pokemon = null">
               VER EQUIPO
               <v-icon end>mdi-chevron-right</v-icon>
@@ -95,7 +96,7 @@
       <v-col>
         <PokemonDetailPanel v-if="selected_pokemon"
                             :pokemon="selected_pokemon"
-                            :allow_steal="steal_allowed_for_selected()"
+                            :allow_steal="steal_allowed_for_selected_in_team()"
                             :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"/>
       </v-col>
       <v-spacer @click="pokemon_team_display = false"/>
@@ -108,6 +109,7 @@ import { getAxios } from '@/stores'
 import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
 import VerticalPokemonTeamList from "@/app/vue/components/offline-app/api-comps/VerticalPokemonTeamList";
+import ExpManualComponent from '@/app/vue/components/app-comps/displays/ExpManualComponent.vue'
 import {useGameStore} from "@/stores/app";
 
 export default {
@@ -116,6 +118,7 @@ export default {
     VerticalPokemonTeamList,
     PokemonCard,
     PokemonDetailPanel,
+    ExpManualComponent
   },
   props: {
     api_token: {
@@ -151,7 +154,7 @@ export default {
   computed: {
     store: () => useGameStore(),
     my_trainer_id() {
-      return this.store.my_trainer_id
+      return this.store.profile_data.trainer_id
     }
   },
   updated() {
@@ -168,7 +171,7 @@ export default {
   },
   methods: {
     async load_trainer_team() {
-      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/`);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/`).catch(() => ({data:{current_team: {team: []}}}));
       this.box_data.team = response.data.current_team.team
     },
     async load_trainers() {
@@ -176,7 +179,7 @@ export default {
       this.trainers = response.data;
     },
     async load_boxes() {
-      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/list_boxes/`);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/list_boxes/`).catch(() => ({data:[]}));
       this.box_data.selectable_boxes = response.data;
     },
     async open_box() {
@@ -186,7 +189,7 @@ export default {
           box: this.selected_box
         },
       };
-      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/box/`, config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/box/`, config).catch(() => ({data:{slots: []}}));
 
       this.box_data.box = response.data;
       this.loading_box = false;
@@ -220,7 +223,14 @@ export default {
     },
     steal_allowed_for_selected() {
       const box_owner = this.box_data.box.owner.toString();
-      const me_id = this.my_trainer_id.toString();
+      const me_id = this.my_trainer_id?.toString();
+      console.log(this.box_data.box)
+      return box_owner !== me_id && this.box_data.box.stealable
+    },
+    steal_allowed_for_selected_in_team() {
+      const box_owner = this.box_data.box.owner.toString();
+      const me_id = this.my_trainer_id?.toString();
+      console.log(this.box_data.box)
       return box_owner !== me_id && this.box_data.box.stealable
     },
     async has_robo() {

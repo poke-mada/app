@@ -71,7 +71,6 @@ img[src*="bgNew.png"] {
 .v-list-item--active {
     background: linear-gradient(90deg, var(--pink) -3.57%, var(--blue) 103.57%);
     color: white !important;
-    /* cambia el color del texto/icono */
     border-top-left-radius: 30px;
     border-bottom-left-radius: 30px;
 }

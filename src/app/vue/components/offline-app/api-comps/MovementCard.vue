@@ -15,7 +15,7 @@
           </v-col>
 
           <!-- Categoría (si no es status) -->
-          <v-col cols="auto" v-if="category !== 'Status'">
+          <v-col cols="auto">
             <v-img :src="getCategoryIcon(category)" width="32" height="32" :title="category" class="ml-2 imgTypeMov" />
           </v-col>
         </v-row>
@@ -59,8 +59,9 @@ export default {
   methods: {
     getCategoryIcon(category) {
       const lower = category.toLowerCase();
-      if (lower === 'fisico') return './imgs/Clase_físico_XY.png';
-      if (lower === 'especial') return './imgs/Clase_especial_XY.png';
+      if (lower === 'fisico') return './imgs/physical_move.png';
+      if (lower === 'especial') return './imgs/special_move.png';
+      if (lower === 'status') return './imgs/status_move.png';
       return null;
     },
   },

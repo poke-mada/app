@@ -7,22 +7,30 @@
 </template>
 
 <script>
+import {emitter} from "@/stores";
+
 export default {
   name: "CoinsComponent",
   props: {
     disabled: {
       type: Boolean,
       required: false
-    },
-    coins: {
-      type: Number,
-      required: true
+    }
+  },
+  data() {
+    return {
+      coins: 0,
     }
   },
   methods: {
     get_coin_asset() {
       return './assets/coin.png'
     },
+  },
+  async mounted() {
+    emitter.on('coins_updated', (data) => {
+      this.coins = data
+    })
   },
 }
 </script>
