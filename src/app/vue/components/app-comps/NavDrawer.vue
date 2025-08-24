@@ -52,7 +52,8 @@
       </v-list-item>
       <v-list-item class="itemBox" to="/roulettes" title="Ruletas" value="roulettes">
         <template #prepend>
-          <svg-icon type="mdi" :path="casino_path"></svg-icon>
+          <v-img src="/assets/icons/active/Circulo.svg" width="28" height="28" class="me-2" cover v-if="$route.path === '/roulettes'"/>
+          <v-img src="/assets/icons/Circulo.svg" width="28" height="28" class="me-2" cover v-else/>
         </template>
       </v-list-item>
       <v-list-item class="itemBox" to="/market" title="Mercado" value="market" v-if="streamer_name === 'para_mada'">
@@ -94,7 +95,7 @@
 <script>
 import { useGameStore } from "@/stores/app";
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiPokeball, mdiSlotMachine } from '@mdi/js';
+import { mdiPokeball } from '@mdi/js';
 
 export default {
   name: "NavDrawer",
@@ -110,7 +111,6 @@ export default {
   data() {
     return {
       path: mdiPokeball,
-      casino_path: mdiSlotMachine,
     }
   },
   computed: {

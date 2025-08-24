@@ -1,5 +1,5 @@
 <template>
-  <div class="floating-card" v-if="!profile.is_admin">
+  <div class="floating-card">
     <CoinsComponent />
     <KarmaComponent />
     <ExpComponent class="ml-2"/>

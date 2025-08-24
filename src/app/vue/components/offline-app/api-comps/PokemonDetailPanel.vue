@@ -214,7 +214,7 @@ export default {
           });
         }
       }).then(async (response) => {
-        if (response.status === 200) {
+        if (response && response.status === 200) {
           emitter.emit('action-notification', {
             title: 'Canjeado con Éxito',
             message: `Has canjeado Robo Pokemon`,
@@ -240,7 +240,7 @@ export default {
           });
         }
       }).then(async (response) => {
-        if (response.status === 200) {
+        if (response && response.status === 200) {
           emitter.emit('action-notification', {
             title: 'Canjeado con Éxito',
             message: `Has canjeado Robo Justo`,

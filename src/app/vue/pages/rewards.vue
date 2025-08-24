@@ -75,7 +75,7 @@ export default {
         bundle_id: bundle_id,
         token: localStorage.getItem('api_token')
       };
-      console.log(bundle_data);
+      this.available_rewards = this.available_rewards.filter(item => item.id !== bundle_id) ;
       window.electron.sendMessage('reward', bundle_data);
     }
   }
