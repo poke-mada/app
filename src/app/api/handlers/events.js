@@ -1,6 +1,6 @@
 // noinspection JSUnresolvedVariable
 
-import {BrowserWindow, ipcMain, Notification, session as el_session} from "electron";
+import {BrowserWindow, ipcMain, Notification, session as el_session, dialog, shell} from "electron";
 import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
@@ -10,8 +10,8 @@ import {
     declareGlobalConfig,
     emmiter,
     GLOBAL_CONFIG,
-    MODS_FILE_LIME3,
-    SERVER_URL, TEST_CLIENT_PATH
+    MODS_FILE_LIME3, SAVE_FILE_LIME3,
+    SERVER_URL, TEST_CLIENT_PATH, update_save_file
 } from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
@@ -27,6 +27,7 @@ import AdmZip from "adm-zip";
 import axios from "axios";
 import https from "https";
 import config from "@/app/api/lib/config";
+
 
 function downloadSaveEvent(ipc, trainer_name) {
     session.get(`/last_save/${trainer_name}`, {
@@ -308,6 +309,20 @@ async function openShowdownClient(ipc, data, opts = {}) {
     await win.loadURL(url)
 }
 
+function requestSavePath(ipc) {
+    ipc.reply('save-path-data', SAVE_FILE_LIME3)
+}
+
+function updateSavePath(ipc, data) {
+    config.set('savePath', data);
+    update_save_file();
+    ipc.reply('save-path-data', data);
+}
+
+function openLink(ipc, data) {
+    shell.openExternal(data);
+}
+
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);
     ipcMain.on('download_save', downloadSaveEvent);
@@ -318,4 +333,13 @@ export function registerEvents() {
     ipcMain.on('wildcard', manageWildcardEvents);
     ipcMain.on('notify', showNotification);
     ipcMain.on('open-showdown', openShowdownClient);
+
+    ipcMain.on('request-save-path', requestSavePath);
+    ipcMain.on('update-save-path', updateSavePath);
+    ipcMain.on('open-link', openLink);
+
+    ipcMain.handle('open-file-dialog', async () => {
+        const result = await dialog.showOpenDialog({ properties: ["openFile"] });
+        return result.filePaths;
+    });
 }

@@ -72,13 +72,14 @@
           title="Emulador Conectado"></v-list-item>
         <v-list-item v-if="!emulator_on" prepend-avatar="./assets/lime_logo_off.png" class="mr-1 mt-2 mb-2"
           title="Emulador Desconectado"></v-list-item>
-        <div class="bgProfile" v-if="logged_in">
-          <v-img :src="profile.web_picture" width="56" height="56"></v-img>
-        </div>
-        <v-list-item class="nameProfile mr-4" v-if="logged_in" lines="two" subtitle="Pokemon X" to="/profile"
+        <v-list-item class="nameProfile mr-2" v-if="logged_in" lines="two" subtitle="Pokemon X" to="/profile"
           :title="streamer_name">
+          <template #prepend>
+            <img :src="profile.web_picture" width="48" height="48" style="left: 10px; position: relative; border-radius: 50%"/>
+          </template>
           <template #append>
-            <v-img src="./assets/img/profile/pointsProfile.png" width="28" height="28" class="me-2" cover />
+            <v-img src="./assets/img/profile/pointsProfile-inverted.png" width="28" height="28" class="me-2" cover v-if="$route.path === '/profile'" />
+            <v-img src="./assets/img/profile/pointsProfile.png" width="28" height="28" class="me-2" cover v-else/>
           </template>
         </v-list-item>
         <v-list-item v-if="logged_in" title="Cerrar sesión" @click="log_off" class="mb-3 ml-1">

@@ -73,7 +73,7 @@
         <template #item="{item}">
           <tr class="mt-16">
             <td class="pa-0">
-              <v-img :src="`https://para-mada-deploy.s3.us-east-1.amazonaws.com/prod/dedsafio-pokemon/media/${item.wildcard__sprite}`" height="48"/>
+              <v-img :src="`https://para-mada-deploy.s3.us-east-1.amazonaws.com/prod/dedsafio-pokemon/media/${item.image}`" height="48"/>
             </td>
             <td>{{ item.name }}</td>
             <td>{{ item.probability }}%</td>
@@ -172,12 +172,47 @@ export default {
 }
 
 .ruleta-inicio-dedsafio {
-  background-color: #D5048D;
+  background-color: #FF46C5;
   color: white;
 }
 
 .ruleta-2do-gimnasio {
-  background-color: #5500FF;
+  background-color: #0060DE;
+  color: white;
+}
+
+.ruleta-3er-gimnasio {
+  background-color: #0060DE;
+  color: white;
+}
+
+.ruleta-4to-gimnasio {
+  background-color: #87FF72;
+  color: white;
+}
+
+.ruleta-5to-gimnasio {
+  background-color: #FFC81F;
+  color: white;
+}
+
+.ruleta-6to-gimnasio {
+  background-color: #0060DE;
+  color: white;
+}
+
+.ruleta-7mo-gimnasio {
+  background-color: #0060DE;
+  color: white;
+}
+
+.ruleta-8vo-gimnasio {
+  background-color: #0060DE;
+  color: white;
+}
+
+.ruleta-lysson {
+  background-color: #0060DE;
   color: white;
 }
 
@@ -187,17 +222,17 @@ export default {
 }
 
 .ruleta-comodin-tramo-2 {
-  background-color: #3935FF;
+  background-color: #00CB96;
   color: white;
 }
 
-.ruleta-comodin-tramo-2 {
-  background-color: #3935FF;
+.ruleta-comodin-tramo-3 {
+  background-color: #00BE57;
   color: white;
 }
 
-.ruleta-comodin-tramo-2 {
-  background-color: #3935FF;
+.ruleta-comodin-tramo-4 {
+  background-color: #D5464C;
   color: white;
 }
 

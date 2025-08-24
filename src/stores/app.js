@@ -19,6 +19,7 @@ export const useGameStore = defineStore('game', {
         profileData: JSON.parse(localStorage.getItem('profile_data')),
         showdown_enabled: localStorage.getItem('enable-showdown-module'),
         dataSocket: null,
+        gameDataSocket: null,
         myTrainerId: localStorage.getItem('my_trainer_id'),
     }),
     getters: {
@@ -31,6 +32,7 @@ export const useGameStore = defineStore('game', {
         streamer_name: state => state.streamername,
         api_token: state => state.apitoken,
         data_socket: state => state.dataSocket,
+        game_data_socket: state => state.gameDataSocket,
         showdown_module: state => state.showdown_enabled,
         my_trainer_id: state => state.myTrainerId,
         profile_data: state => state.profileData,
@@ -157,6 +159,27 @@ export const useGameStore = defineStore('game', {
                     emitter.emit('exp_updated', eresponse.data)
                 }
             }
+        },
+        start_game_data_websocket() {
+            let streamer_name = null;
+            streamer_name = this.profileData.coached_socket_name;
+            if (streamer_name) {
+                this.gameDataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/game_data/${this.profileData.coached_socket_name}`);
+
+                this.gameDataSocket.onmessage = (event) => {
+                    const message = JSON.parse(event.data);
+                    const data = message.message;
+                    emitter.emit('update_game_data', data)
+                }
+            }
+        },
+        start_player_game_data_websocket() {
+            this.gameDataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/game_data/${this.streamername}`);
+            setInterval(() => {
+                if (this.emulatoron) {
+                    this.gameDataSocket.send(JSON.stringify(this.gamedata))
+                }
+            }, 10_000)
         },
         login(streamer_name, token) {
             localStorage.setItem('streamer_name', streamer_name)

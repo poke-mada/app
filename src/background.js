@@ -26,7 +26,7 @@ async function createWindow() {
         title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
         autoHideMenuBar: true,
         webPreferences: {
-            // devTools: false,
+            devTools: process.env.DEV_MODE,
             nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
             contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
             preload: path.join(__dirname, 'preload.js')

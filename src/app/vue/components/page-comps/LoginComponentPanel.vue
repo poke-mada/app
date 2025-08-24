@@ -118,7 +118,6 @@ export default {
         const trainer_response = await getAxios().get('/api/trainers/get_profile', config);
         this.store.set_profile_data(trainer_response.data)
         this.store.set_my_trainer_id(trainer_response.data.trainer_id)
-
         this.store.login(this.username, response.data.token)
         this.$router.push('/');
       } catch (error_response) {

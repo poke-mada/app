@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('electron', {
     getStatic: (...directory) => [__static, directory.join('/')].join('/'),
 
     startComms: () => ipcRenderer.send('open_channel'),
-    downloadSave: (trainer_name) => ipcRenderer.send('download_save', trainer_name),
     onDataReceived: (channel, callback) => ipcRenderer.on(channel, callback),
-    sendMessage: (channel, callback) => ipcRenderer.send(channel, callback)
+    sendMessage: (channel, callback) => ipcRenderer.send(channel, callback),
+    invoke: async (channel) => ipcRenderer.invoke(channel)
 });

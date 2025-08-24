@@ -173,19 +173,34 @@ export default {
   },
   computed: {
     store: () => useGameStore(),
+    profile_data() {
+      return this.store.profile_data
+    },
     logged_in() {
       const token = this.store.api_token
       return token && token.length > 0
     },
     streamer_name() {
       return this.store.streamer_name;
+    },
+    game_data_socket() {
+      return this.store.gameDataSocket;
     }
   },
   async mounted() {
     this.store.start_websocket();
-    window.electron.onDataReceived('updated_game_data', async (event, data) => {
+    if (this.profile_data?.is_coach) {
+        this.store.start_game_data_websocket()
+    } else {
+      this.store.start_player_game_data_websocket()
+      window.electron.onDataReceived('updated_game_data', async (event, data) => {
+        emitter.emit('update_game_data', data)
+      });
+    }
+
+    emitter.on('update_game_data', (data) =>{
       this.store.activate(data);
-    });
+    })
 
     window.electron.onDataReceived('citra_connection_closed', async () => {
       this.store.deactivate();
@@ -271,7 +286,7 @@ export default {
 
 <style>
 #app {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
