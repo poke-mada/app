@@ -1,24 +1,53 @@
 <template>
+  <div v-show="showWheel" ref="wheelWrap" class="wheel-wrap d-flex justify-center align-center">
+              <RouletteWheel
+                :items="items"
+                :ref="setWheel"
+                @start="onWheelStart(); $refs.spinBtn && $refs.spinBtn.handleStart()"
+                @peak="$refs.spinBtn && $refs.spinBtn.handlePeak()"
+                @done="$refs.spinBtn && $refs.spinBtn.handleDone($event)"
+              />
+            </div>
+  <CardReveal :ref="setCardReveal" @close="onCardClose" />
   <v-row class="h-100">
     <v-col cols="2" class="h-100 mr-6">
       <div class="panel">
         <div class="stack mt-6">
           <v-img :src="'./icon.png'" aspect-ratio="1/1" height="150px" style="margin-top: -75px"/>
-          <v-img class="cursor-pointer banner-logo mt-4 mb-8" :src="banner.id === selected_banner?.id ? banner.active_banner_logo : banner.banner_logo" aspect-ratio="3/111"
-                 width="292px" :class="banner.id === selected_banner?.id ? 'force-active ' : ''"
-                 v-for="banner in banners" :key="banner.id" @click="select_banner(banner)"/>
+          <v-img
+            class="cursor-pointer banner-logo mt-4 mb-8"
+            :src="banner.id === selected_banner?.id ? banner.active_banner_logo : banner.banner_logo"
+            aspect-ratio="3/111"
+            width="292px"
+            :class="banner.id === selected_banner?.id ? 'force-active ' : ''"
+            v-for="banner in banners"
+            :key="banner.id"
+            @click="select_banner(banner)"
+          />
         </div>
       </div>
     </v-col>
+
     <v-col class="d-flex flex-column justify-center align-items-center ml-16 mt-16" v-if="selected_banner">
       <FloatingRouletteInfoCard :wishes="selected_banner.wishes ?? 0"/>
+
       <v-row class="mt-16 mb-0">
         <v-card class="vcard-pkm" :style="`background: url(${selected_banner.banner_image}); max-width: 90%`">
           <v-container class="d-flex flex-column align-items-start h-100">
             <v-spacer class="mb-16 pb-16"></v-spacer>
+
             <v-row class="ml-16 actions mt-16 pt-2">
               <v-col>
-                <v-btn :class="toClass(selected_banner.name)" variant="elevated" max-width="280px" width="280px" max-height="74px" height="74px" class="pb-1 pt-1 pl-4 roll-btn" @click="roll_banner">
+                <v-btn
+                  :class="toClass(selected_banner.name)"
+                  variant="elevated"
+                  max-width="280px"
+                  width="280px"
+                  max-height="74px"
+                  height="74px"
+                  class="pb-1 pt-1 pl-4 roll-btn"
+                  @click="onSpinClick"
+                >
                   <template #default>
                     TIRAR
                   </template>
@@ -28,10 +57,12 @@
                 </v-btn>
               </v-col>
             </v-row>
+
             <v-spacer></v-spacer>
           </v-container>
         </v-card>
       </v-row>
+
       <v-row class="mt-0">
         <v-spacer/>
         <v-col cols="3">
@@ -51,25 +82,29 @@
       </v-row>
     </v-col>
   </v-row>
+
+  <!-- Dialog original de ganador (no usado por la nueva ruleta, lo dejamos intacto) -->
   <v-dialog v-model="winner" max-width="450">
     <v-row>
-      <v-img :src="winner.image"/>
+      <v-img :src="winner?.image"/>
     </v-row>
     <v-row>
       <v-col class="w-100 d-flex flex-row justify-center align-items-center">
-        <h2 style="color: black; text-shadow: white 0 0 2px">{{ winner.name }}</h2>
+        <h2 style="color: black; text-shadow: white 0 0 2px">{{ winner?.name }}</h2>
       </v-col>
     </v-row>
   </v-dialog>
+
   <v-dialog v-model="prizes_list_display" max-width="450">
     <v-card>
       <v-data-table
-          height="55vh"
-          density="comfortable"
-          hide-default-footer
-          items-per-page="20"
-          :items="selected_banner.prize_probability"
-          :headers="headers">
+        height="55vh"
+        density="comfortable"
+        hide-default-footer
+        items-per-page="20"
+        :items="selected_banner.prize_probability"
+        :headers="headers"
+      >
         <template #item="{item}">
           <tr class="mt-16">
             <td class="pa-0">
@@ -82,34 +117,61 @@
       </v-data-table>
     </v-card>
   </v-dialog>
+
   <v-dialog v-model="history_display" max-width="450">
     <v-card>
       <v-data-table
-          height="55vh"
-          density="comfortable"
-          hide-default-footer
-          items-per-page="20"
-          :items="selected_banner.history"
-          :headers="history_headers">
-      </v-data-table>
+        height="55vh"
+        density="comfortable"
+        hide-default-footer
+        items-per-page="20"
+        :items="selected_banner.history"
+        :headers="history_headers"
+      />
     </v-card>
   </v-dialog>
+
+  <!-- Botón Spin (nuevo sistema) -->
+<SpinButton
+  ref="spinBtn"
+  base-url="https://pokemon.para-mada.com"
+  token="a3ae25f35aa71bad446167a8220a2328ff5d01eb"
+  roulette-id="479e1bf7-8013-4435-b29b-1d58c816a535"
+  :wheel="wheelRef"
+  :card-reveal="cardRevealRef"
+  @set-items="items = $event"
+>
+  Spin
+</SpinButton>
+
 </template>
 
 <script>
-import {emitter, getAxios} from "@/stores";
+import { emitter, getAxios } from "@/stores";
 import SvgIcon from '@jamescoyle/vue-icon';
 import { mdiArrowRight, mdiChevronRight } from '@mdi/js';
-import FloatingRouletteInfoCard from '@/app/vue/components/app-comps/displays/FloatingRouletteInfoCard'
+import FloatingRouletteInfoCard from '@/app/vue/components/app-comps/displays/FloatingRouletteInfoCard';
+import { gsap } from 'gsap';
+
+// Ajusta estas rutas si tus componentes viven en otra carpeta:
+import RouletteWheel from '@/app/vue/pages/roulette/RouletteWheel.vue';
+import SpinButton    from '@/app/vue/pages/roulette/SpinButton.vue';
+import CardReveal    from '@/app/vue/pages/roulette/CardReveal.vue';
+
 
 export default {
   name: "BannersMainPage",
   components: {
     SvgIcon,
-    FloatingRouletteInfoCard
+    FloatingRouletteInfoCard,
+    RouletteWheel,
+    SpinButton,
+    CardReveal
   },
   data() {
     return {
+      wheelRef: null,
+      cardRevealRef: null,
       banners: [],
       selected_banner: null,
       winner: null,
@@ -124,7 +186,36 @@ export default {
       ],
       history_headers: [
         {title: 'Registro', value: 'message'},
-      ]
+      ],
+
+      // Estado para la nueva ruleta
+      items: [],
+      showWheel: false,
+      firstSpinDone: false
+    }
+  },
+  computed: {
+    // Toma baseURL del axios configurado; si no existe, usa vacío para rutas relativas.
+    BASE_URL() {
+      try {
+        return getAxios()?.defaults?.baseURL || '';
+      } catch {
+        return '';
+      }
+    },
+    // Intenta extraer el token del header Authorization de axios o de localStorage.
+    TOKEN() {
+      let auth = '';
+      try {
+        auth = getAxios()?.defaults?.headers?.common?.Authorization || '';
+      } catch { /* ignore */ }
+      if (!auth && typeof localStorage !== 'undefined') auth = localStorage.getItem('auth_token') || '';
+      // Normaliza: quita prefijos comunes, el SpinButton añadirá "Token " internamente.
+      return String(auth).replace(/^Bearer\s+/i, '').replace(/^Token\s+/i, '').trim();
+    },
+    // Usa el id o uuid del banner seleccionado
+    ROULETTE_UUID() {
+      return this.selected_banner?.id ?? this.selected_banner?.uuid ?? null;
     }
   },
   methods: {
@@ -134,14 +225,91 @@ export default {
     },
     select_banner(banner) {
       this.selected_banner = banner;
+      // reset de la UI de la ruleta al cambiar de banner
+      this.showWheel = false;
+      this.firstSpinDone = false;
+      this.items = [];
     },
     toClass(name) {
-      return name.toLowerCase().replaceAll(' ', '-')
+      return name?.toLowerCase?.().replaceAll(' ', '-') || '';
     },
+    setWheel(el) {
+  this.wheelRef = el
+},
+setCardReveal(el) {
+  this.cardRevealRef = el
+},
+
+    // Nuevo flujo de spin usando tu sistema
+    async onSpinClick(e) {
+  e?.preventDefault?.();
+  e?.stopPropagation?.();
+
+  if (!this.selected_banner) return;
+
+  // mostrar rueda (pero ya montada gracias a v-show)
+  if (!this.showWheel) {
+    this.showWheel = true;
+  }
+
+  // asegúrate de que Vue procese el cambio y ejecute los refs
+  await this.$nextTick();
+  await this.$nextTick();
+
+  // si por alguna razón aún no llegó la instancia, no dispares
+  if (!this.wheelRef || typeof this.wheelRef.spin !== 'function') {
+    console.warn('Wheel aún no lista, reintento en un tick…');
+    await this.$nextTick();
+  }
+
+  if (!this.wheelRef || typeof this.wheelRef.spin !== 'function') {
+    console.warn('Wheel sigue sin estar lista, cancelo para evitar error.');
+    return;
+  }
+
+  // ahora sí
+  this.$refs.spinBtn?.requestAndSpin?.();
+},
+
+    onWheelStart() {
+      if (this.firstSpinDone) return;
+      this.firstSpinDone = true;
+
+      const wrap = this.$refs.wheelWrap;
+      if (wrap) {
+        gsap.to(wrap, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 1,
+          ease: 'power2.out'
+        });
+      }
+    },
+
+    onCardClose() {
+      const wrap = this.$refs.wheelWrap;
+      if (wrap) {
+        gsap.to(wrap, {
+          autoAlpha: 0,
+          scale: 0,
+          duration: 0.6,
+          ease: 'power2.in',
+          onComplete: () => {
+            this.showWheel = false;
+            this.firstSpinDone = false;
+          }
+        });
+      } else {
+        this.showWheel = false;
+        this.firstSpinDone = false;
+      }
+    },
+
+    // Método antiguo preservado (no se usa ya por el botón)
     roll_banner() {
       getAxios().post(`/api/roulette/${this.selected_banner.id}/roll/`).then((response) => {
         if (response.status === 200) {
-          this.winner = response.data
+          this.winner = response.data;
           this.selected_banner.wishes--;
         }
       }).catch(error => {
@@ -158,6 +326,12 @@ export default {
           });
         }
       });
+    }
+  },
+  watch: {
+    // Cuando cambia el banner, el SpinButton (que observa rouletteId) re-inicializa items solo.
+    ROULETTE_UUID() {
+      // No-op: SpinButton maneja su propio init con watch interno
     }
   },
   mounted() {
@@ -341,5 +515,20 @@ export default {
   /* sobresale a la izquierda/derecha para que la tira se vea más angosta */
   width: calc(100% + clamp(12px, 6vw, 64px));
   transform: translateX(calc(clamp(12px, 6vw, 64px) / -2));
+}
+</style>
+<style>
+.wheel-wrap {
+    will-change: transform, opacity;
+    transform-origin: center center;
+    position: absolute;
+    z-index: 1;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    margin-left: 125px;
+    transform: scale(0);
 }
 </style>
