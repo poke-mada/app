@@ -99,43 +99,80 @@
     </v-row>
   </v-dialog>
 
-  <v-dialog v-model="prizes_list_display" max-width="450">
-    <v-card>
+<v-dialog v-model="prizes_list_display" max-width="600">
+  <v-card v-if="selected_banner" class="cardBorderInfo" elevation="6">
+    <!-- Encabezado amarillo -->
+    <v-alert
+      color="#FFC81F"
+      class="divCardSup pa-3 d-flex justify-center align-center"
+    >
+      <h2 class="textInfoEvent">
+        {{ selected_banner.name || 'Premios' }}
+      </h2>
+    </v-alert>
+
+    <!-- Contenido: la tabla -->
+    <v-card-text class="paddingTable">
       <v-data-table
-          height="55vh"
-          density="comfortable"
-          hide-default-footer
-          items-per-page="20"
-          :items="selected_banner.prize_probability"
-          :headers="headers"
+        class="yellow-card-table"
+        height="55vh"
+        density="comfortable"
+        hide-default-footer
+        items-per-page="20"
+        :items="selected_banner.prize_probability"
+        :headers="headers"
       >
-        <template #item="{item}">
+        <template #item="{ item }">
           <tr class="mt-16">
             <td class="pa-0">
               <v-img
-                  :src="`https://para-mada-deploy.s3.us-east-1.amazonaws.com/prod/dedsafio-pokemon/media/${item.image}`"
-                  height="48"/>
+                :src="`https://para-mada-deploy.s3.us-east-1.amazonaws.com/prod/dedsafio-pokemon/media/${item.image}`"
+                height="48"
+              />
             </td>
             <td>{{ item.name }}</td>
             <td>{{ item.probability }}%</td>
           </tr>
         </template>
       </v-data-table>
-    </v-card>
-  </v-dialog>
+    </v-card-text>
 
-  <v-dialog v-model="history_display" max-width="450">
-    <v-card>
+    <v-card-actions class="justify-end">
+      <v-btn color="primary" @click="prizes_list_display = false">Cerrar</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+
+<v-dialog v-model="history_display" max-width="600">
+  <v-card v-if="selected_banner" class="cardBorderInfo" elevation="6">
+    <!-- Encabezado amarillo -->
+    <v-alert
+      color="#FFC81F"
+      class="divCardSup pa-3 d-flex justify-center align-center"
+    >
+      <h2 class="textInfoEvent">
+       Historial
+      </h2>
+    </v-alert>
+
+    <!-- Contenido: la tabla -->
+    <v-card-text class="pa-0">
       <v-data-table
-          height="55vh"
-          density="comfortable"
-          hide-default-footer
-          items-per-page="20"
-          :items="selected_banner.history"
-          :headers="history_headers"
+        class="yellow-card-table"
+        height="55vh"
+        density="comfortable"
+        hide-default-footer
+        items-per-page="20"
+        :items="selected_banner.history"
+        :headers="history_headers"
       />
-    </v-card>
-  </v-dialog>
+    </v-card-text>
+
+    <v-card-actions class="justify-end">
+      <v-btn color="primary" @click="history_display = false">Cerrar</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
 
 </template>
 
@@ -486,5 +523,13 @@ export default {
   pointer-events: none;
   margin-left: 125px;
   transform: scale(0);
+}
+
+.cardBorderInfo{
+  border-radius: 40px!important;
+}
+
+.paddingTable{
+  padding: 15px;
 }
 </style>

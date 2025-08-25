@@ -15,7 +15,8 @@
           <!-- Lista de eventos -->
           <v-divider class="mb-3"></v-divider>
           <div class="pa-6" style="min-width: 500px">
-            <div class="mb-6">
+            <!-- SI HAY EVENTOS -->
+            <div v-if="available_events.length > 0" class="mb-6">
               <div class="d-flex align-start">
                 <div class="delimitEvent">
                   <v-row v-for="(event, index) in paginatedEvents" :key="index" class="mb-2">
@@ -55,6 +56,11 @@
               <!-- Paginación -->
               <v-pagination v-model="currentPage" :length="totalPages" class="mt-4 justify-center"
                             color="#D5048D"></v-pagination>
+            </div>
+
+            <!-- SI NO HAY EVENTOS -->
+            <div v-else class="text-center">
+              <p class="text-subtitle-1">Aún no hay eventos disponibles.</p>
             </div>
           </div>
         </v-card>

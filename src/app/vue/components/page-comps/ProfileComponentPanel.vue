@@ -5,9 +5,12 @@
         <v-col>
           <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6">
             <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
-              <h3 class="textNoticias">Información General del Perfil</h3>
+              <h3 class="textNoticias" style="text-transform: capitalize;">Información General del Perfil</h3>
             </div>
-            <v-text-field class="mb-2 ml-2 mr-2" label="Ruta de guardado" v-model="save_path"
+             <label class="tittleTweet gradient-border ma-3">
+             Ruta de guardado
+            </label>
+            <v-text-field class="mb-2 ml-2 mr-2" v-model="save_path"
                           @click="open_file_chooser"></v-text-field>
           </v-card>
         </v-col>
@@ -16,10 +19,13 @@
         <v-col cols="6">
           <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6" max-width="800">
             <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
-              <h3 class="textNoticias">Progreso</h3>
+              <h3 class="textNoticias" style="text-transform: capitalize;">Progreso</h3>
             </div>
             <v-col>
-              <v-text-field label="Muertes en Overlay" v-model="profile_data.death_count"></v-text-field>
+             <label class="tittleTweet gradient-border">
+             Muertes en Overlay
+            </label>
+              <v-text-field v-model="profile_data.death_count"></v-text-field>
               <v-btn text="Mandar al Overlay" class="gradient-btn mt-4" @click="update_overlay_deaths"/>
             </v-col>
           </v-card>
@@ -27,7 +33,7 @@
         <v-col cols="6">
           <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6" max-width="800">
             <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
-              <h3 class="textNoticias">Mecanicas Del Tramo #{{ profile?.segment_number ?? 1 }}</h3>
+              <h3 class="textNoticias" style="text-transform: capitalize;">Mecanicas Del Tramo #{{ profile?.segment_number ?? 1 }}</h3>
             </div>
             <v-row class="ml-3">
               <v-col>
@@ -93,7 +99,7 @@
     </v-row>
   </v-dialog>
   <v-footer class="at-bottom d-flex align-center justify-start ga-2 flex-wrap flex-grow-1 py-3 w-100" theme="dark">
-    <v-btn variant="text" rounded text="Front: Karin" @click="open_link('https://www.instagram.com/karin.sak01')"/>
+    <v-btn variant="text" rounded text="Front: KarinSak" @click="open_link('https://www.instagram.com/karin.sak01')"/>
     <v-btn variant="text" rounded text="Aplicación: para_mada" @click="open_link('https://x.com/para2mada')"/>
     <v-btn variant="text" rounded text="Diseño: Eris Mochizuki" @click="open_link('#')"/>
     <v-btn variant="text" rounded text="Ruletas: Jocando" @click="open_link('https://x.com/Jocando_')"/>

@@ -12,9 +12,11 @@
             <h2 class="textNoticias">Noticias</h2>
           </div>
 
-          <!-- Lista de noticias -->
-          <v-divider class="mb-3"></v-divider>
-          <div class="pa-6" style="min-width: 500px">
+         <!-- Lista de noticias -->
+        <v-divider class="mb-3"></v-divider>
+        <div class="pa-6" style="min-width: 500px">
+          <!-- Si HAY noticias -->
+          <div v-if="newsletter.length > 0">
             <div v-for="news in newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
               <div class="d-flex align-start">
                 <v-icon color="#D5048D" class="me-3">
@@ -26,14 +28,18 @@
                   </h3>
                   <div class="delimitTweet">
                     <p class="p-tweet" v-html="news.message"></p>
-
                   </div>
-
                 </div>
               </div>
               <v-divider class="mt-3"></v-divider>
             </div>
           </div>
+
+          <!-- Si NO HAY noticias -->
+          <div v-else class="text-center">
+            <p class="text-subtitle-1">Aún no hay noticias disponibles.</p>
+          </div>
+        </div>
         </v-card>
       </v-col>
       <v-col cols="6" class="flexCenter">
@@ -87,10 +93,12 @@
               <h2 class="textNoticias">Notificaciones</h2>
             </div>
 
-            <!-- Lista de noticias -->
+            <!-- Lista de notificaciones -->
             <v-divider class="mb-3"></v-divider>
             <div class="pa-6" style="min-width: 500px">
+              <!-- Si HAY notificaciones -->
               <v-data-table
+                  v-if="notifications.length > 0"
                   height="40vh"
                   density="comfortable"
                   hide-default-footer
@@ -104,6 +112,11 @@
                   </tr>
                 </template>
               </v-data-table>
+
+              <!-- Si NO HAY notificaciones -->
+              <div v-else class="text-center">
+                <p class="text-subtitle-1">Aún no hay notificaciones.</p>
+              </div>
             </div>
           </v-card>
           <!-- TU EQUIPO -->

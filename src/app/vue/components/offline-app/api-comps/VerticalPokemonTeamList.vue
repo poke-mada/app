@@ -1,5 +1,5 @@
 <template>
-  <v-card border class="mt-2">
+  <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
     <v-alert :color="team === 'enemy' ? '#0600FF' : '#D5048D'"
       class="divCardSup pa-3 d-flex justify-center align-center">
       <h2 class="textTeamCombats" v-if="team === 'enemy'">
