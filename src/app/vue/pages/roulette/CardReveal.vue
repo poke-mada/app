@@ -19,7 +19,7 @@
                 </div>
             </div>
         </div>
-        <audio ref="winSfx" src="/public/sfx/win.mp3" preload="auto"></audio>
+        <audio ref="winSfx" :src="'./assets/sfx/win.mp3'" preload="auto"></audio>
     </div>
 </template>
 

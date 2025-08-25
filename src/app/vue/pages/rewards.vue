@@ -29,17 +29,29 @@
             {{ bundle.name }}
           </v-col>
           <v-col cols="3" class="d-flex align-center">
-            <p>Staff</p>
+            <p>{{bundle.sender}}</p>
           </v-col>
           <v-col cols="4" class="btnReclamarDiv">
-            <v-btn @click="claim_reward(bundle.id)" className="btn-grad-contact mt-4">
-              <span className="btn-text">RECLAMAR</span>
-              <span className="btn-icon">
-                <svg className="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <v-btn @click="claim_reward(bundle.id)" class="btn-grad-contact mt-4" v-if="emulator_on">
+              <span class="btn-text">RECLAMAR</span>
+              <span class="btn-icon">
+                <svg class="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeWidth="3px" strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
                 </svg>
               </span>
             </v-btn>
+            <v-tooltip v-else location="top">
+              <template #default>
+                Necesitas tener el emulador conectado a la aplicación
+              </template>
+              <template v-slot:activator="{props}">
+                <div v-bind="props">
+                  <v-btn class="btn-grad-contact mt-4" text="RECLAMAR" disabled>
+                    <span class="btn-text">RECLAMAR</span>
+                  </v-btn>
+                </div>
+              </template>
+            </v-tooltip>
           </v-col>
           <v-divider class="mb-2" />
         </v-row>
@@ -51,6 +63,7 @@
 
 <script>
 import {getAxios} from "@/stores";
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: 'RewardsAppPage',
@@ -77,6 +90,14 @@ export default {
       };
       this.available_rewards = this.available_rewards.filter(item => item.id !== bundle_id) ;
       window.electron.sendMessage('reward', bundle_data);
+    }
+  },
+  computed: {
+    store() {
+      return useGameStore()
+    },
+    emulator_on() {
+      return this.store.emulator_on
     }
   }
 }

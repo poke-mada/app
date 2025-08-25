@@ -29,7 +29,7 @@ async function createWindow () {
     title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
     autoHideMenuBar: true,
     webPreferences: {
-      devTools: true, // forzado a true; el gating lo hacemos con DEV_MODE al abrir
+      devTools: false, // forzado a true; el gating lo hacemos con DEV_MODE al abrir
       nodeIntegration: NODE_INTEGRATION,
       contextIsolation: !NODE_INTEGRATION,
       preload: path.join(__dirname, 'preload.js')

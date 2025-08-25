@@ -38,12 +38,12 @@
                       </v-alert-body>
                       <template #append>
                         <div class="divBtnEvent" v-if="event.type === 'Juego'">
-                          <v-btn class="btnColorEvent" v-if="joined_event === null && registered_to === null && is_registerable(event)" @click="register_event(event.id)">Registrarse</v-btn>
-                          <v-btn class="btnColorEvent" v-if="joined_event === null && can_join(event)" @click="join_event(event.id)">Entrar</v-btn>
+                          <v-btn class="btnColorEvent" v-if="joined_event === 0 && registered_to === 0 && is_registerable(event)" @click="register_event(event.id)">Registrarse</v-btn>
+                          <v-btn class="btnColorEvent" v-if="joined_event === 0 && can_join(event)" @click="join_event(event.id)">Entrar</v-btn>
                           <v-btn class="btnColorEvent" v-if="joined_event === event.id" @click="leave_event()">Salir</v-btn>
                         </div>
                         <div class="divBtnEvent" v-if="event.type === 'Tramo'">
-                          <v-btn class="btnColorEvent">Enviar Evidencia</v-btn>
+                          <v-btn disabled class="btnColorEvent">Envia Evidencia en tu Chat</v-btn>
                         </div>
                       </template>
                     </v-alert>
@@ -225,12 +225,14 @@ export default {
       this.available_events = response.data;
     },
     join_event(event_id) {
-      const event_data = {
+      window.electron.onDataReceived('event-joined', () => {
+        this.store.join_event(event_id);
+      });
+
+      window.electron.sendMessage('event', {
         event_id: event_id,
         token: this.store.api_token
-      };
-      this.store.join_event(event_id);
-      window.electron.sendMessage('event', event_data);
+      });
     },
     is_registerable(event) {
       if (event.type === 'Tramo') {
@@ -251,7 +253,10 @@ export default {
       this.showModal = true;
     },
     leave_event() {
-      this.store.leave_event();
+      window.electron.onDataReceived('event-left', () => {
+        this.store.leave_event();
+      });
+
       window.electron.sendMessage('leave_event');
     },
     register_event(event_id) {
