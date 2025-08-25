@@ -4,11 +4,11 @@ import {emitter, getAxios} from "@/stores/index";
 
 export const useGameStore = defineStore('game', {
     state: () => ({
-        joined_event_id: null,
+        joined_event_id: parseInt(localStorage.getItem('joined_event_id') || '0'),
         trainername: '',
         inlive: false,
         emulatoron: false,
-        registeredto: null,
+        registeredto: parseInt(localStorage.getItem('registered_to_event') || '0'),
         streamername: localStorage.getItem('streamer_name'),
         apitoken: localStorage.getItem('api_token'),
         gamedata: {
@@ -50,12 +50,16 @@ export const useGameStore = defineStore('game', {
             this.trainername = name;
         },
         join_event(event_id) {
+            localStorage.setItem('joined_event_id', event_id);
             this.joined_event_id = event_id;
         },
         register_to_event(event_id) {
+            localStorage.setItem('registered_to_event', event_id);
             this.registeredto = event_id;
         },
         leave_event() {
+            localStorage.removeItem('joined_event_id');
+            localStorage.removeItem('registered_to_event');
             this.joined_event_id = null;
         },
         allowShowdown() {
@@ -131,6 +135,12 @@ export const useGameStore = defineStore('game', {
                             window.electron.sendMessage('notify', {
                                 title: '¡Notificacion!',
                                 message: data.data
+                            });
+                            break;
+                        case 'help_notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Notificacion!',
+                                message: `¡${data.data.user_name} te ha ayudado!`
                             });
                             break;
                         case 'start_timer_notification':

@@ -210,6 +210,7 @@ export default {
       this.custom_dialog.display = true;
       this.custom_dialog.title = data.title;
       this.custom_dialog.message = data.message;
+      console.log(data)
     });
 
     window.electron.onDataReceived('trainer_name', (event, trainer_name) => {
@@ -262,7 +263,7 @@ export default {
       this.notification = {
         title: data.title,
         message: data.message,
-        persistent: data.persistent
+        persistent: data.persistent,
       }
     });
     emitter.on('custom-dialog', (data) => {

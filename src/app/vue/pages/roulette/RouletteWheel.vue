@@ -95,7 +95,7 @@ let rgbSpinTweens = []
 
 const emit = defineEmits(['start', 'done', 'peak'])
 
-const TICK_SRC = '/public/sfx/pin.mp3'
+const TICK_SRC = './assets/sfx/pin.mp3'
 const pool = Array.from({ length: 8 }, () => { const a = new Audio(TICK_SRC); a.preload = 'auto'; a.volume = 0.6; return a })
 let poolIndex = 0
 function playTick() {
@@ -106,7 +106,7 @@ function playTick() {
   poolIndex = (poolIndex + 1) % pool.length
 }
 
-const jackpotSfx = new Audio('/public/sfx/jackpot.mp3')
+const jackpotSfx = new Audio('/assets/sfx/jackpot.mp3')
 jackpotSfx.preload = 'auto'
 jackpotSfx.volume = 0.9
 function playJackpot() {

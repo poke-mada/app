@@ -1,18 +1,23 @@
 /* eslint-env vue/setup-compiler-macros */
 <template>
-  <button
-    class="spin-btn"
+  <v-btn
     :disabled="disabled || spinning"
     :aria-disabled="(disabled || spinning) ? 'true' : 'false'"
     @click="requestAndSpin"
   >
-    <slot>Spin</slot>
-  </button>
+    <template #default>
+      <slot name="default"></slot>
+    </template>
+    <template #append>
+      <slot name="append"></slot>
+    </template>
+  </v-btn>
 </template>
 
 <script setup>
 import { ref, onMounted, watch, defineExpose } from 'vue'
 import { gsap } from 'gsap'
+import {emitter, getAxios} from "@/stores";
 
 const props = defineProps({
   disabled: { type: Boolean, default: false },
@@ -22,7 +27,7 @@ const props = defineProps({
   rouletteId: { type: [String, Number], required: true },
   wheel: { type: Object, default: null },
   cardReveal: { type: Object, default: null },
-  debug: { type: Boolean, default: true }
+  debug: { type: Boolean, default: false }
 })
 const emit = defineEmits(['set-items'])
 
@@ -66,30 +71,49 @@ async function api(path, { method = 'GET', body, headers = {} } = {}) {
     ...(body ? { 'Content-Type': 'application/json' } : {}),
     ...headers
   }
+  let res;
+  if (method === 'GET') {
+    res = await getAxios().get(path, {
+      method,
+      headers: reqHeaders,
+      body: body ? JSON.stringify(body) : undefined
+    });
+  } else {
+    res = await getAxios().post(path, {
+      method,
+      headers: reqHeaders,
+      body: body ? JSON.stringify(body) : undefined
+    }).catch(error => {
+      if (error.status === 400) {
+        emitter.emit('action-notification', {
+          type: 'error',
+          title: '¡Error!',
+          message: error.response.data,
+        });
+      } else if (error.status === 500 && error.response.data.detail === 'contact_paramada') {
+        emitter.emit('custom-dialog', {
+          title: '¡Error!',
+          message: `Ha ocurrido un error, contacta a soporte y mandales este numero: ${error.response.data.error_id}`,
+        });
+      }
+    });
 
-  const res = await fetch(url, {
-    method,
-    headers: reqHeaders,
-    body: body ? JSON.stringify(body) : undefined
-  })
+    if (res.status === 200) {
+      emitter.emit('successful-roll')
+    }
+  }
+
 
   const ct = res.headers.get('content-type') || ''
-  const text = await res.clone().text().catch(() => '')
-
-  if (props.debug) console.log('API Response', { status: res.status, text })
-
-  if (res.status !== 200) {
-    throw new Error(`${method} ${path} ${res.status}: ${text || res.statusText}`)
-  }
 
   if (ct.includes('application/json')) {
-  try {
-    return JSON.parse(text)
-  } catch (e) {
-    if (props.debug) console.error('JSON parse error', e)
-    return null
+    try {
+      return res.data
+    } catch (e) {
+      if (props.debug) console.error('JSON parse error', e)
+      return null
+    }
   }
-}
 
   return null
 }

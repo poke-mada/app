@@ -81,7 +81,31 @@
               </v-btn>
             </div>
           </v-card>
+          <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
+            <!-- Encabezado con ícono flotante -->
+            <div class="divCardSup pa-5 d-flex justify-center align-center">
+              <h2 class="textNoticias">Notificaciones</h2>
+            </div>
 
+            <!-- Lista de noticias -->
+            <v-divider class="mb-3"></v-divider>
+            <div class="pa-6" style="min-width: 500px">
+              <v-data-table
+                  height="40vh"
+                  density="comfortable"
+                  hide-default-footer
+                  items-per-page="20"
+                  :items="notifications"
+                  :headers="notification_headers"
+              >
+                <template #item="{item}">
+                  <tr class="mt-16">
+                    <td v-html="item.message"></td>
+                  </tr>
+                </template>
+              </v-data-table>
+            </div>
+          </v-card>
           <!-- TU EQUIPO -->
           <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
             <div class="divCardSup pa-5 d-flex justify-center align-center">
@@ -111,7 +135,6 @@
               <p class="text-subtitle-1">Sin equipo</p>
             </div>
           </v-card>
-
         </v-container>
       </v-col>
     </v-row>
@@ -136,6 +159,7 @@ import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard"
 import {getAxios} from "@/stores";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
 import {useGameStore} from "@/stores/app";
+
 export default {
   name: "MainPage",
   components: {
@@ -149,6 +173,9 @@ export default {
       team: [],
       selected_pokemon: null,
       display: false,
+      notifications: [],
+      notification_headers: [
+      ],
       loading_team: false,
     };
   },
@@ -191,9 +218,11 @@ export default {
         console.error("Error al cargar el equipo:", err);
       }
     }
-
-    getAxios().get('/api/newsletter/').then(json_data => {
-      this.newsletter = json_data.data;
+    getAxios().get('/api/notifications/').then(response => {
+      this.notifications = response.data;
+    })
+    getAxios().get('/api/newsletter/').then(response => {
+      this.newsletter = response.data;
     });
   },
   methods: {
@@ -207,5 +236,7 @@ export default {
 </script>
 
 <style scoped>
-
+.textNoticias {
+  text-transform: uppercase;
+}
 </style>

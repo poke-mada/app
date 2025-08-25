@@ -15,31 +15,29 @@ protocol.registerSchemesAsPrivileged([
     {scheme: 'app', privileges: {secure: true, standard: true}}
 ])
 
-
-async function createWindow() {
-    // Create the browser window.
-    const win = new BrowserWindow({
-        width: 1600,
-        height: 873,
-        minWidth: 1600,
-        icon: './public/icons/icon.ico',
-        title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
-        autoHideMenuBar: true,
-        webPreferences: {
-            devTools: process.env.DEV_MODE,
-            nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
-            contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
-            preload: path.join(__dirname, 'preload.js')
-        }
-    })
-
-    if (process.env.WEBPACK_DEV_SERVER_URL) {
-        await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    } else {
-        createProtocol('app')
-        await win.loadURL('app://./index.html')
+async function createWindow () {
+  const win = new BrowserWindow({
+    width: 1600,
+    height: 873,
+    minWidth: 1600,
+    icon: './public/icons/icon.ico',
+    title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
+    autoHideMenuBar: true,
+    webPreferences: {
+      devTools: false, // forzado a true; el gating lo hacemos con DEV_MODE al abrir
+      nodeIntegration: NODE_INTEGRATION,
+      contextIsolation: !NODE_INTEGRATION,
+      preload: path.join(__dirname, 'preload.js')
     }
-    return win
+  })
+
+  if (process.env.WEBPACK_DEV_SERVER_URL) {
+    await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
+  } else {
+    createProtocol('app')
+    await win.loadURL('app://./index.html')
+  }
+  return win
 }
 
 // Quit when all windows are closed.

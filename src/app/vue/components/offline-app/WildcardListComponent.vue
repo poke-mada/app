@@ -53,7 +53,7 @@
             <div class="divCardsComodinesBadge">
               <v-img :src="`${item.sprite}`" class="cursor-pointer cardComodinesTam"
                      :class="!item.always_available && !item.inventory ? 'disabled' : ''"
-                     lazy-src="./wildcards/000-sin_hacer.png" @click="display_card(item)"/>
+                     lazy-src="./assets/tiro_ruleta.webp" @click="display_card(item)"/>
             </div>
             <div class="btnHome2 badgeCuantityCards">
               <!-- infinito para IDs 72 o 73 -->
@@ -138,12 +138,6 @@
             </v-col>
             <v-col v-if="selected_card.price">
               <v-btn text="Comprar" color="success" @click="comprar()"/>
-            </v-col>
-          </v-row>
-          <v-row
-              v-if="![25, 41, 42, 5, 72].includes(selected_card.id) && selected_card.category !== 6 && selected_card.category !== 2">
-            <v-col>
-              <v-text-field type="number" label="Cantidad" v-model="quantity"/>
             </v-col>
           </v-row>
           <v-row v-if="selected_card.inventory > 0 && selected_card.id === 25">
@@ -427,6 +421,19 @@ export default {
           this.notification.message = '';
         }
         this.load_wildcards();
+      }).catch(error => {
+        if (error.status === 400) {
+          emitter.emit('action-notification', {
+            type: 'error',
+            title: '¡Error!',
+            message: error.response.data.detail,
+          });
+        } else if (error.status === 500 && error.response.data.detail === 'contact_paramada') {
+          emitter.emit('custom-dialog', {
+            title: '¡Error!',
+            message: `Ha ocurrido un error, contacta a soporte y mandales este numero: ${error.response.data.error_id}`,
+          });
+        }
       })
     },
     async load_mega_stones() {

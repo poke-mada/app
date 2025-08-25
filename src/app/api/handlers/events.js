@@ -131,6 +131,7 @@ async function exchangeRewardBundle(ipc, data) {
             message: 'ha ocurrido un error, contacta a soporte (para_mada)',
             details: JSON.stringify(reason)
         })
+        console.log(reason)
         ipc.reply('perform_save')
     });
     if (response.status === 200) {
@@ -197,14 +198,20 @@ async function joinEvent(ipc, data) {
             zipfile.close();
             try {
                 extractZip('mod_zip.zip', MODS_FILE_LIME3)
-                ipc.reply("download-stop");
+                ipc.reply("event-joined");
                 ipc.reply('notification', {
                     title: '¡Reinicia Tu Partida!',
                     message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
                     persistent: true
                 })
             } catch (e) {
-                console.log(e)
+                ipc.reply('notification', {
+                    title: '¡Un Error Ha Ocurrido!',
+                    message: 'ha ocurrido un error, contacta a soporte (para_mada)',
+                    details: JSON.stringify(e)
+                })
+            } finally {
+                ipc.reply("download-stop");
             }
         });
     });
@@ -226,7 +233,7 @@ async function leaveEvent(ipc) {
     } catch (err) {
         console.error('Error al borrar carpetas:', err);
     }
-
+    ipc.reply('event-left');
     ipc.reply('notification', {
         title: '¡Reinicia Tu Partida!',
         message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
