@@ -7,11 +7,10 @@
             <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
               <h3 class="textNoticias" style="text-transform: capitalize;">Información General del Perfil</h3>
             </div>
-             <label class="tittleTweet gradient-border ma-3">
-             Ruta de guardado
+            <label class="tittleTweet gradient-border ma-3">
+              Ruta de guardado
             </label>
-            <v-text-field class="mb-2 ml-2 mr-2" v-model="save_path"
-                          @click="open_file_chooser"></v-text-field>
+            <v-text-field class="mb-2 ml-2 mr-2" v-model="save_path" @click="open_file_chooser"></v-text-field>
           </v-card>
         </v-col>
       </v-row>
@@ -22,32 +21,33 @@
               <h3 class="textNoticias" style="text-transform: capitalize;">Progreso</h3>
             </div>
             <v-col>
-             <label class="tittleTweet gradient-border">
-             Muertes en Overlay
-            </label>
+              <label class="tittleTweet gradient-border">
+                Muertes en Overlay
+              </label>
               <v-text-field v-model="profile_data.death_count"></v-text-field>
-              <v-btn text="Mandar al Overlay" class="gradient-btn mt-4" @click="update_overlay_deaths"/>
+              <v-btn text="Mandar al Overlay" class="gradient-btn mt-4" @click="update_overlay_deaths" />
             </v-col>
           </v-card>
         </v-col>
         <v-col cols="6">
           <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6" max-width="800">
             <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
-              <h3 class="textNoticias" style="text-transform: capitalize;">Mecanicas Del Tramo #{{ profile?.segment_number ?? 1 }}</h3>
+              <h3 class="textNoticias" style="text-transform: capitalize;">Mecanicas Del Tramo #{{
+                profile?.segment_number ?? 1 }}</h3>
             </div>
             <v-row class="ml-3">
               <v-col>
                 <v-btn class="gradient-btn" text="Skip de la comunidad" v-if="profile_data?.community_skip"
-                       @click="use_skip"/>
-                <v-btn class="btn-grad-contact" text="Skip de la comunidad no disponible" disabled v-else/>
+                  @click="confirm_skip_open = true" />
+                <v-btn class="btn-grad-contact" text="Skip de la comunidad no disponible" disabled v-else />
               </v-col>
             </v-row>
             <v-row class="mt-4 mb-4 ml-3">
               <v-col>
                 <v-btn class="gradient-btn" text="Seleccionar Pokemon de la Comunidad"
-                       v-if="!profile_data.community_pokemon" @click="selecting_community_pokemon = true"/>
+                  v-if="!profile_data.community_pokemon" @click="selecting_community_pokemon = true" />
                 <v-btn class="btn-grad-contact" disabled
-                       :text="`Pokemon: ${get_pokemon(profile_data.community_pokemon)}`" v-else/>
+                  :text="`Pokemon: ${get_pokemon(profile_data.community_pokemon)}`" v-else />
               </v-col>
             </v-row>
           </v-card>
@@ -57,29 +57,24 @@
   </v-row>
   <v-dialog v-model="selecting_community_pokemon">
     <v-row>
-      <v-spacer @click="selecting_community_pokemon = false"/>
+      <v-spacer @click="selecting_community_pokemon = false" />
       <v-col>
         <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6" max-width="800">
           <div class="divCardSup pa-5 d-flex justify-center align-center mb-8" style="border-radius: 20px 20px 0 0">
             <h2 class="textNoticias">Pokemon de la Comunidad</h2>
           </div>
           <v-text-field v-model="search_pokemon" class="ml-4 mr-8" density="compact" placeholder="Buscar Pokemon"
-                        hide-details></v-text-field>
+            hide-details></v-text-field>
           <v-row class="mb-7 ml-4 mr-8">
-            <v-data-table
-                height="400"
-                items-per-page="400"
-                :items="list_pokemon"
-                :headers="pokemon_headers"
-                hide-default-footer
-            >
-              <template #item="{item}">
+            <v-data-table height="400" items-per-page="400" :items="list_pokemon" :headers="pokemon_headers"
+              hide-default-footer>
+              <template #item="{ item }">
                 <tr class="mt-16 cursor-pointer" @click="select_community_pokemon(item.value)"
-                    :class="selected_pokemon === item.value ? 'selected' : ''">
+                  :class="selected_pokemon === item.value ? 'selected' : ''">
                   <td class="pa-0">
                     <v-img
-                        :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${item.value}.png`"
-                        height="48"/>
+                      :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${item.value}.png`"
+                      height="48" />
                   </td>
                   <td>{{ item.value }}</td>
                   <td>{{ item.title }}</td>
@@ -89,41 +84,65 @@
           </v-row>
           <template #actions>
             <v-btn class="ml-4 mb-3 btn-grad-contact" v-if="!selected_pokemon" disabled text="Registrar pokemon"
-                   @click="define_community_pokemon(); selecting_community_pokemon = false;"/>
+              @click="define_community_pokemon(); selecting_community_pokemon = false;" />
             <v-btn class="ml-4 mb-3 gradient-btn pr-8 pl-8" v-else text="Registrar pokemon"
-                   @click="define_community_pokemon(); selecting_community_pokemon = false;"/>
+              @click="define_community_pokemon(); selecting_community_pokemon = false;" />
           </template>
         </v-card>
       </v-col>
-      <v-spacer @click="selecting_community_pokemon = false"/>
+      <v-spacer @click="selecting_community_pokemon = false" />
     </v-row>
   </v-dialog>
+  <v-dialog v-model="confirm_skip_open" max-width="480" persistent>
+    <v-card class="rounded-xl">
+      <template #title>
+        <h3>Confirmar “Skip de la comunidad”</h3>
+      </template>
+
+      <template #text>
+        <p class="mb-2">
+          Esta acción consumirá tu <strong>skip de la comunidad</strong> del tramo actual.
+        </p>
+        <p>¿Deseas continuar?</p>
+      </template>
+
+      <template #actions>
+        <v-spacer />
+        <v-btn variant="tonal" @click="confirm_skip_open = false">Cancelar</v-btn>
+        <v-btn class="gradient-btn" :loading="skip_loading" @click="confirmUseSkip">
+          Confirmar
+        </v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
   <v-footer class="at-bottom d-flex align-center justify-start ga-2 flex-wrap flex-grow-1 py-3 w-100" theme="dark">
-    <v-btn variant="text" rounded text="Front: KarinSak" @click="open_link('https://www.instagram.com/karin.sak01')"/>
-    <v-btn variant="text" rounded text="Aplicación: para_mada" @click="open_link('https://x.com/para2mada')"/>
-    <v-btn variant="text" rounded text="Diseño: Eris Mochizuki" @click="open_link('#')"/>
-    <v-btn variant="text" rounded text="Ruletas: Jocando" @click="open_link('https://x.com/Jocando_')"/>
+    <v-btn variant="text" rounded text="Front: KarinSak" @click="open_link('https://www.instagram.com/karin.sak01')" />
+    <v-btn variant="text" rounded text="Aplicación: para_mada" @click="open_link('https://x.com/para2mada')" />
+    <v-btn variant="text" rounded text="Diseño: Eris Mochizuki" @click="open_link('#')" />
+    <v-btn variant="text" rounded text="Ruletas: Jocando" @click="open_link('https://x.com/Jocando_')" />
   </v-footer>
 </template>
 
 <script>
 
-import {useGameStore} from "@/stores/app";
-import {getAxios} from "@/stores";
-import {MON_DATA} from "@/data/mon_data";
+import { useGameStore } from "@/stores/app";
+import { getAxios } from "@/stores";
+import { MON_DATA } from "@/data/mon_data";
 
 export default {
   name: "ProfileComponentPanel",
   components: {},
   data() {
     return {
+      confirm_skip_open: false,
+      skip_loading: false,
       selecting_community_pokemon: false,
       save_path: '',
       profile_data: {},
       pokemon_headers: [
-        {title: ''},
-        {title: '# Pokedex'},
-        {title: 'Nombre'},
+        { title: '' },
+        { title: '# Pokedex' },
+        { title: 'Nombre' },
       ],
       search_pokemon: '',
       selected_pokemon: null,
@@ -1564,6 +1583,21 @@ export default {
     }
   },
   methods: {
+    async confirmUseSkip() {
+      if (this.skip_loading) return;
+      this.skip_loading = true;
+      try {
+        const response = await getAxios().post('/api/trainers/use_segment_skip/');
+        if (response.status === 200) {
+          this.profile_data.community_skip = false; 
+          this.confirm_skip_open = false;
+        }
+      } catch (e) {
+        console.error(e);
+      } finally {
+        this.skip_loading = false;
+      }
+    },
     open_link(link) {
       window.electron.sendMessage('open-link', link)
     },
