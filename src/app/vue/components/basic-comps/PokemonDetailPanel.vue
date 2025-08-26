@@ -6,7 +6,7 @@
           Informacion
         </h2>
       </v-alert>
-      <div class="pa-4">
+      <div class="pa-4 scroll-area">
         <v-row>
           <v-col cols="5">
             <div class="cardPokemon p-0">
@@ -24,10 +24,11 @@
                 <div class="pokemon-type" v-if="pokemon_types && pokemon_types.length">
                   <div v-for="(type, i) in pokemon_types" :key="i" class="d-inline">
                     <v-tooltip location="top">
-                      <template v-slot:activator="{props}">
-                        <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline v-bind="props" />
+                      <template v-slot:activator="{ props }">
+                        <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" width="50" inline
+                          v-bind="props" />
                       </template>
-                      {{type_name_loc(type.name)}}
+                      {{ type_name_loc(type.name) }}
                     </v-tooltip>
                   </div>
                 </div>
@@ -104,7 +105,7 @@
           </v-col>
           <v-col>
             <v-row class="mr-3 ml-3">
-              <v-col cols="6" v-for="(move, index) in pokemon.moves" :key="index" >
+              <v-col cols="6" v-for="(move, index) in pokemon.moves" :key="index">
                 <MovementCard :enemy_data="enemy_data" :pokemon="pokemon" :movement="move" v-if="move" />
               </v-col>
             </v-row>
@@ -118,8 +119,8 @@
 <script>
 import MovementCard from "@/app/vue/components/basic-comps/MovementCard";
 import { VARIETIES_DATA } from "@/data/pokemon_varieties_data";
-import {get_battle_form} from "@/data/mon_functions";
-import {TRANSLATIONS} from "@/data/type_data";
+import { get_battle_form } from "@/data/mon_functions";
+import { TRANSLATIONS } from "@/data/type_data";
 
 export default {
   name: "PokemonCard",
@@ -263,8 +264,14 @@ export default {
   background-color: rgba(33, 150, 243, 0.8);
   color: white;
 }
+
 .templateCardDetails {
-  min-width: 800px;
+  min-width: 900px;
   max-width: 800px;
+}
+/* scroll vertical */
+.scroll-area {
+  overflow-y: auto;
+  max-height: calc(90vh - 64px);
 }
 </style>

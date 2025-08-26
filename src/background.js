@@ -19,7 +19,6 @@ async function createWindow () {
   const win = new BrowserWindow({
     width: 1600,
     height: 873,
-    minWidth: 1600,
     icon: './public/icons/icon.ico',
     title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
     autoHideMenuBar: true,

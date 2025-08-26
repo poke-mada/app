@@ -45,6 +45,25 @@ const router = createRouter({
   routes,
 })
 
+//  Auth guard 
+router.beforeEach((to) => {
+  const token = localStorage.getItem('api_token');
+  const isLogin = to.path === '/login';
+
+  // sin token fuerza login 
+  if (!token && !isLogin) {
+    return { path: '/login', query: { redirect: to.fullPath } };
+  }
+
+  // con token evita mostrar /login
+  if (token && isLogin) {
+    return { path: '/' };
+  }
+
+  // continuar normal
+  return true;
+});
+
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {
   if (err?.message?.includes?.('Failed to fetch dynamically imported module')) {
