@@ -115,8 +115,10 @@
             <v-btn @click="perform_steal" class="gradient-btn" v-if="allow_steal && can_robo && pokemon.stealable">ROBAR</v-btn>
           </v-col>
           <v-col>
-            <v-btn @click="perform_karma_steal" class="gradient-btn" v-if="allow_steal && can_robo_justo && pokemon.stealable">ROBO JUSTO
-            </v-btn>
+            <v-btn @click="perform_karma_steal" class="gradient-btn" v-if="allow_steal && can_robo_justo && pokemon.stealable" text="ROBO JUSTO"/>
+          </v-col>
+          <v-col>
+            <v-btn @click.prevent="perform_transfer" class="gradient-btn" v-if="can_transfer" text="TRANSFERIR AL MERCADO"/>
           </v-col>
         </v-row>
       </div>
@@ -159,6 +161,10 @@ export default {
       required: false
     },
     can_robo_justo: {
+      type: Boolean,
+      required: false
+    },
+    allow_transfer: {
       type: Boolean,
       required: false
     }
@@ -248,8 +254,14 @@ export default {
         }
       })
     },
+    perform_transfer() {
+
+    }
   },
   computed: {
+    can_transfer() {
+      return this.allow_transfer;
+    },
     pokemon_types() {
       return get_types(this.pokemon)
     },

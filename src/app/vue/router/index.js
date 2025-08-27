@@ -33,10 +33,14 @@ const routes = [
   { path: '/events', component: EventsAppPage },
   { path: '/market', component: MarketPage },
   {
-    path: '/market_create',
-    name: 'market-create',
+    path: '/market/offer/create',
+    name: 'create-offer',
     component: MarketPage,
-    meta: { openCreate: true }
+  },
+  {
+    path: '/market/post/create',
+    name: 'create-post',
+    component: MarketPage,
   }
 ]
 
