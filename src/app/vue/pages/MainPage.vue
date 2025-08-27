@@ -12,34 +12,34 @@
             <h2 class="textNoticias">Noticias</h2>
           </div>
 
-         <!-- Lista de noticias -->
-        <v-divider class="mb-3"></v-divider>
-        <div class="pa-6" style="min-width: 500px">
-          <!-- Si HAY noticias -->
-          <div v-if="newsletter.length > 0">
-            <div v-for="news in newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
-              <div class="d-flex align-start">
-                <v-icon color="#D5048D" class="me-3">
-                  <img :src="Showdown" style="width: 100%; height: 100%"/>
-                </v-icon>
-                <div>
-                  <h3 class="tittleTweet gradient-border mb-1 text-uppercase">
-                    Noticias!
-                  </h3>
-                  <div class="delimitTweet">
-                    <p class="p-tweet" v-html="news.message"></p>
+          <!-- Lista de noticias -->
+          <v-divider class="mb-3"></v-divider>
+          <div class="pa-6" style="min-width: 500px">
+            <!-- Si HAY noticias -->
+            <div v-if="newsletter.length > 0">
+              <div v-for="news in newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
+                <div class="d-flex align-start">
+                  <v-icon color="#D5048D" class="me-3">
+                    <img :src="Showdown" style="width: 100%; height: 100%" />
+                  </v-icon>
+                  <div>
+                    <h3 class="tittleTweet gradient-border mb-1 text-uppercase">
+                      Noticias!
+                    </h3>
+                    <div class="delimitTweet">
+                      <p class="p-tweet" v-html="news.message"></p>
+                    </div>
                   </div>
                 </div>
+                <v-divider class="mt-3"></v-divider>
               </div>
-              <v-divider class="mt-3"></v-divider>
+            </div>
+
+            <!-- Si NO HAY noticias -->
+            <div v-else class="text-center">
+              <p class="text-subtitle-1">Aún no hay noticias disponibles.</p>
             </div>
           </div>
-
-          <!-- Si NO HAY noticias -->
-          <div v-else class="text-center">
-            <p class="text-subtitle-1">Aún no hay noticias disponibles.</p>
-          </div>
-        </div>
         </v-card>
       </v-col>
       <v-col cols="6" class="flexCenter">
@@ -58,7 +58,7 @@
               </v-avatar>
               <v-col cols="6" class="d-flex align-center justify-center team1">
                 <div class="text-center">
-                  <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer1.png" width="250px"/>
+                  <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer1.png" width="250px" />
                   <div class="nameTeam1">
                     <p>
                       Maryblog
@@ -69,7 +69,7 @@
 
               <v-col cols="6" class="d-flex align-center justify-center team2">
                 <div class="text-center">
-                  <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer2.png" width="250"/>
+                  <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer2.png" width="250" />
                   <div class="nameTeam2">
                     <p>JuanSGuarnizo</p>
                   </div>
@@ -79,11 +79,11 @@
 
             <div class="flexCenter ma-6">
               <v-btn class="btnHome" elevation="0" to="/combat"
-                     v-if="emulator_on && game_data && game_data.combat_info.combat_type !== 'OFF'">
+                v-if="emulator_on && game_data && game_data.combat_info.combat_type !== 'OFF'">
                 <span class="btn-text">VER COMBATE</span>
                 <span class="btn-icon">
-                      <v-icon class="iconArrow" color="white" size="20">mdi-arrow-right</v-icon>
-                    </span>
+                  <v-icon class="iconArrow" color="white" size="20">mdi-arrow-right</v-icon>
+                </span>
               </v-btn>
             </div>
           </v-card>
@@ -97,16 +97,9 @@
             <v-divider class="mb-3"></v-divider>
             <div class="pa-6" style="min-width: 500px">
               <!-- Si HAY notificaciones -->
-              <v-data-table
-                  v-if="notifications.length > 0"
-                  height="40vh"
-                  density="comfortable"
-                  hide-default-footer
-                  items-per-page="20"
-                  :items="notifications"
-                  :headers="notification_headers"
-              >
-                <template #item="{item}">
+              <v-data-table v-if="notifications.length > 0" height="40vh" density="comfortable" hide-default-footer
+                items-per-page="20" :items="notifications" :headers="notification_headers">
+                <template #item="{ item }">
                   <tr class="mt-16">
                     <td v-html="item.message"></td>
                   </tr>
@@ -134,18 +127,66 @@
                 <v-col cols="4" v-for="(pokemon, i) in team" :key="i" class="text-center">
                   <div class="position-relative d-inline-block">
                     <!-- Imagen principal del Pokémon -->
-                    <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)"/>
-                    <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
+                    <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)" />
+                    <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png" />
                   </div>
                 </v-col>
               </v-row>
             </div>
             <div v-else-if="loading_team" class="text-center">
-              <v-progress-circular indeterminate color="pink" class="ma-4"/>
+              <v-progress-circular indeterminate color="pink" class="ma-4" />
               <p class="text-subtitle-1">Cargando tu equipo...</p>
             </div>
             <div v-else-if="!loading_team && team.length === 0" class="text-center">
               <p class="text-subtitle-1">Sin equipo</p>
+            </div>
+          </v-card>
+          <!-- CONTADOR DE TRAMO -->
+          <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
+            <div class="divCardSup pa-5 flex justify-center align-center">
+              <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
+                <v-img src="/assets/img/Home/Pokeball.png"></v-img>
+              </v-avatar>
+              <!-- CONTADOR DE TRAMO -->
+              <h2 class="textNoticias text-center">Tiempo restante Tramo 1</h2>
+            </div>
+            <div class="pa-6">
+              <div v-if="!countdownExpired" class="countdown-wrap">
+                <v-row class="justify-center align-stretch" dense>
+                  <v-col cols="12" sm="6" md="3" class="d-flex">
+                    <div class="time-box w-100">
+                      <div class="time-num">{{ remaining.days }}</div>
+                      <div class="time-label">DÍAS</div>
+                    </div>
+                  </v-col>
+
+                  <v-col cols="12" sm="6" md="3" class="d-flex">
+                    <div class="time-box w-100">
+                      <div class="time-num">{{ remaining.hours }}</div>
+                      <div class="time-label">HRS</div>
+                    </div>
+                  </v-col>
+
+                  <v-col cols="12" sm="6" md="3" class="d-flex">
+                    <div class="time-box w-100">
+                      <div class="time-num">{{ remaining.minutes }}</div>
+                      <div class="time-label">MIN</div>
+                    </div>
+                  </v-col>
+
+                  <v-col cols="12" sm="6" md="3" class="d-flex">
+                    <div class="time-box w-100">
+                      <div class="time-num">{{ remaining.seconds }}</div>
+                      <div class="time-label">SEG</div>
+                    </div>
+                  </v-col>
+                </v-row>
+              </div>
+
+              <div v-else class="text-center">
+                <v-icon size="40" color="pink">mdi-clock-alert</v-icon>
+                <p class="mt-2 text-subtitle-1">¡El tiempo se agotó!</p>
+              </div>
             </div>
           </v-card>
         </v-container>
@@ -154,11 +195,11 @@
   </v-container>
   <v-dialog v-model="display">
     <v-row>
-      <v-spacer v-on:click="display = false"/>
+      <v-spacer v-on:click="display = false" />
       <v-col>
-        <PokemonDetailPanel :pokemon="selected_pokemon"/>
+        <PokemonDetailPanel :pokemon="selected_pokemon" />
       </v-col>
-      <v-spacer v-on:click="display = false"/>
+      <v-spacer v-on:click="display = false" />
     </v-row>
   </v-dialog>
 </template>
@@ -169,9 +210,9 @@ import Showdown from '@/icons/Showdown.svg';
 
 <script>
 import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
-import {getAxios} from "@/stores";
+import { getAxios } from "@/stores";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
-import {useGameStore} from "@/stores/app";
+import { useGameStore } from "@/stores/app";
 
 export default {
   name: "MainPage",
@@ -190,6 +231,8 @@ export default {
       notification_headers: [
       ],
       loading_team: false,
+      countdownTargetUtc: '2025-08-28T16:00:00Z', 
+      countdownTimerId: null,
     };
   },
   computed: {
@@ -210,15 +253,33 @@ export default {
     },
     profile() {
       return this.store ? this.store.profile_data : null;
-    }
+    },
+    remaining() {
+      const ms = Math.max(0, this.remainingMs || 0);
+      const totalSeconds = Math.floor(ms / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      return {
+        days,
+        hours: String(hours).padStart(2, '0'),
+        minutes: String(minutes).padStart(2, '0'),
+        seconds: String(seconds).padStart(2, '0'),
+      };
+    },
+    countdownExpired() {
+      return this.remainingMs <= 0;
+    },
   },
   async mounted() {
     const token = this.api_token;
+    this.startCountdown(this.countdownTargetUtc);
 
     if (token) {
       this.loading_team = true;
       const config = {
-        headers: {Authorization: `Token ${token}`},
+        headers: { Authorization: `Token ${token}` },
       };
 
       try {
@@ -238,11 +299,36 @@ export default {
       this.newsletter = response.data;
     });
   },
+  beforeUnmount() {
+    if (this.countdownTimerId) {
+      clearInterval(this.countdownTimerId);
+      this.countdownTimerId = null;
+    }
+  },
   methods: {
     selectPokemon(pokemon) {
       this.selected_pokemon = pokemon;
       console.log(pokemon)
       this.display = true;
+    },
+    startCountdown(targetIsoUtc) {
+      this.countdownTargetUtc = targetIsoUtc;
+
+      const target = new Date(targetIsoUtc);
+      const tick = () => {
+        const now = new Date();
+        const diff = target.getTime() - now.getTime();
+        this.remainingMs = Math.max(0, diff);
+        if (diff <= 0 && this.countdownTimerId) {
+          clearInterval(this.countdownTimerId);
+          this.countdownTimerId = null;
+        }
+      };
+
+      if (this.countdownTimerId) clearInterval(this.countdownTimerId);
+
+      tick();
+      this.countdownTimerId = setInterval(tick, 1000);
     },
   },
 }
@@ -251,5 +337,52 @@ export default {
 <style scoped>
 .textNoticias {
   text-transform: uppercase;
+}
+
+.countdown-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.time-box {
+  flex: 1;
+  text-align: center;
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: 1px solid var(--pink, #D5048D);
+}
+
+.time-num {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.time-label {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 4px;
+  letter-spacing: 1px;
+}
+
+.sep {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 4px;
+  opacity: 0.7;
+}
+
+.flex {
+  display: flex;
+  gap: 10px;
+}
+
+.colorWhite {
+  color: white;
 }
 </style>
