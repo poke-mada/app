@@ -130,30 +130,32 @@
               </v-btn>
             </div>
           </v-card>
-          <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
+          <v-card class="rounded-xl mb-6 notif-card" max-width="500" elevation="6" style="position: relative;">
             <div class="divCardSup pa-5 d-flex justify-center align-center">
               <h2 class="textNoticias">Notificaciones</h2>
             </div>
 
-            <!-- Lista de notificaciones -->
             <v-divider class="mb-3"></v-divider>
-            <div class="pa-6" style="min-width: 500px">
-              <!-- Si HAY notificaciones -->
-              <v-data-table v-if="notifications.length > 0" height="40vh" density="comfortable" hide-default-footer
-                items-per-page="20" :items="notifications" :headers="notification_headers">
-                <template #item="{ item }">
-                  <tr class="mt-16">
-                    <td v-html="item.message"></td>
-                  </tr>
-                </template>
-              </v-data-table>
 
-              <!-- Si NO HAY notificaciones -->
+            <!-- scrolleable -->
+            <v-card-text class="pa-6 notif-body">
+              <template v-if="notifications.length > 0">
+                <v-data-table density="comfortable" hide-default-footer :items="notifications"
+                  :headers="notification_headers">
+                  <template #item="{ item }">
+                    <tr>
+                      <td v-html="item.message"></td>
+                    </tr>
+                  </template>
+                </v-data-table>
+              </template>
+
               <div v-else class="text-center">
                 <p class="text-subtitle-1">Aún no hay notificaciones.</p>
               </div>
-            </div>
+            </v-card-text>
           </v-card>
+
           <!-- TU EQUIPO -->
           <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
             <div class="divCardSup pa-5 d-flex justify-center align-center">
@@ -362,6 +364,26 @@ export default {
   .news-body {
     max-height: 30vh;
   }
+}
+
+.notif-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-body {
+  min-height: 230px;
+  max-height: 230vh;
+  overflow-y: auto;
+}
+
+.notif-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notif-body::-webkit-scrollbar-thumb {
+  background: rgba(213, 4, 141, .35);
+  border-radius: 8px;
 }
 
 .countdown-wrap {
