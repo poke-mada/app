@@ -231,8 +231,7 @@ export default {
       notification_headers: [
       ],
       loading_team: false,
-      countdownTargetUtc: '2025-08-28T16:00:00Z', // <--- PON AQUÍ TU FECHA OBJETIVO EN UTC
-      remainingMs: 0,
+      countdownTargetUtc: '2025-08-28T16:00:00Z', 
       countdownTimerId: null,
     };
   },
