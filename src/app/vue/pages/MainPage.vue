@@ -3,29 +3,26 @@
     <v-row class="mt-2 pl-2 pr-2">
       <v-col cols="6" class="flexCenter">
         <!-- CARD DE NOTICIAS -->
-        <v-card class="rounded-xl" max-width="500" elevation="6" style="position: relative;">
-          <!-- Encabezado con ícono flotante -->
+        <v-card class="rounded-xl news-card" max-width="500" elevation="6" style="position: relative;">
           <div class="divCardSup pa-5 d-flex justify-center align-center">
-            <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
+            <v-avatar size="134" style="position: absolute; top: 80%; right: -10%;">
               <v-img src="/assets/img/Home/Pokeball.png"></v-img>
             </v-avatar>
             <h2 class="textNoticias">Noticias</h2>
           </div>
 
-          <!-- Lista de noticias -->
           <v-divider class="mb-3"></v-divider>
-          <div class="pa-6" style="min-width: 500px">
-            <!-- Si HAY noticias -->
+
+          <!-- scrolleable -->
+          <div class="pa-6 overflow-y-auto news-body">
             <div v-if="newsletter.length > 0">
-              <div v-for="news in newsletter.slice(0, 5)" :key="news.created_on" class="mb-6">
+              <div v-for="news in newsletter.slice(0, 50)" :key="news.created_on" class="mb-6">
                 <div class="d-flex align-start">
                   <v-icon color="#D5048D" class="me-3">
                     <img :src="Showdown" style="width: 100%; height: 100%" />
                   </v-icon>
                   <div>
-                    <h3 class="tittleTweet gradient-border mb-1 text-uppercase">
-                      Noticias!
-                    </h3>
+                    <h3 class="tittleTweet gradient-border mb-1 text-uppercase">Noticias!</h3>
                     <div class="delimitTweet">
                       <p class="p-tweet" v-html="news.message"></p>
                     </div>
@@ -35,9 +32,55 @@
               </div>
             </div>
 
-            <!-- Si NO HAY noticias -->
             <div v-else class="text-center">
               <p class="text-subtitle-1">Aún no hay noticias disponibles.</p>
+            </div>
+          </div>
+        </v-card>
+        <!-- CONTADOR DE TRAMO -->
+        <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
+          <div class="divCardSup pa-5 flex justify-center align-center">
+            <v-avatar size="134" style="position: absolute; top: 70%; left: -10%;">
+              <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
+            </v-avatar>
+            <h2 class="textNoticias text-center">Tiempo restante Tramo 1</h2>
+          </div>
+          <div class="pa-6">
+            <div v-if="!countdownExpired" class="countdown-wrap">
+              <v-row class="justify-center align-stretch" dense>
+                <v-col cols="12" sm="6" md="3" class="d-flex">
+                  <div class="time-box w-100">
+                    <div class="time-num">{{ remaining.days }}</div>
+                    <div class="time-label">DÍAS</div>
+                  </div>
+                </v-col>
+
+                <v-col cols="12" sm="6" md="3" class="d-flex">
+                  <div class="time-box w-100">
+                    <div class="time-num">{{ remaining.hours }}</div>
+                    <div class="time-label">HRS</div>
+                  </div>
+                </v-col>
+
+                <v-col cols="12" sm="6" md="3" class="d-flex">
+                  <div class="time-box w-100">
+                    <div class="time-num">{{ remaining.minutes }}</div>
+                    <div class="time-label">MIN</div>
+                  </div>
+                </v-col>
+
+                <v-col cols="12" sm="6" md="3" class="d-flex">
+                  <div class="time-box w-100">
+                    <div class="time-num">{{ remaining.seconds }}</div>
+                    <div class="time-label">SEG</div>
+                  </div>
+                </v-col>
+              </v-row>
+            </div>
+
+            <div v-else class="text-center">
+              <v-icon size="40" color="pink">mdi-clock-alert</v-icon>
+              <p class="mt-2 text-subtitle-1">¡El tiempo se agotó!</p>
             </div>
           </div>
         </v-card>
@@ -87,35 +130,36 @@
               </v-btn>
             </div>
           </v-card>
-          <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
-            <!-- Encabezado con ícono flotante -->
+          <v-card class="rounded-xl mb-6 notif-card" max-width="500" elevation="6" style="position: relative;">
             <div class="divCardSup pa-5 d-flex justify-center align-center">
               <h2 class="textNoticias">Notificaciones</h2>
             </div>
 
-            <!-- Lista de notificaciones -->
             <v-divider class="mb-3"></v-divider>
-            <div class="pa-6" style="min-width: 500px">
-              <!-- Si HAY notificaciones -->
-              <v-data-table v-if="notifications.length > 0" height="40vh" density="comfortable" hide-default-footer
-                items-per-page="20" :items="notifications" :headers="notification_headers">
-                <template #item="{ item }">
-                  <tr class="mt-16">
-                    <td v-html="item.message"></td>
-                  </tr>
-                </template>
-              </v-data-table>
 
-              <!-- Si NO HAY notificaciones -->
+            <!-- scrolleable -->
+            <v-card-text class="pa-6 notif-body">
+              <template v-if="notifications.length > 0">
+                <v-data-table density="comfortable" hide-default-footer :items="notifications"
+                  :headers="notification_headers">
+                  <template #item="{ item }">
+                    <tr>
+                      <td v-html="item.message"></td>
+                    </tr>
+                  </template>
+                </v-data-table>
+              </template>
+
               <div v-else class="text-center">
                 <p class="text-subtitle-1">Aún no hay notificaciones.</p>
               </div>
-            </div>
+            </v-card-text>
           </v-card>
+
           <!-- TU EQUIPO -->
           <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
             <div class="divCardSup pa-5 d-flex justify-center align-center">
-              <v-avatar size="78" style="position: absolute; top: 80%; right: -5%;">
+              <v-avatar size="78" style="position: absolute; top: 70%; right: -5%;">
                 <v-img src="/assets/img/Home/Pokeball.png"></v-img>
               </v-avatar>
               <h2 class="textNoticias">Tu Equipo <span v-if="profile?.is_coach">({{ profile?.coached_name }})</span>
@@ -139,54 +183,6 @@
             </div>
             <div v-else-if="!loading_team && team.length === 0" class="text-center">
               <p class="text-subtitle-1">Sin equipo</p>
-            </div>
-          </v-card>
-          <!-- CONTADOR DE TRAMO -->
-          <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
-            <div class="divCardSup pa-5 flex justify-center align-center">
-              <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
-                <v-img src="/assets/img/Home/Pokeball.png"></v-img>
-              </v-avatar>
-              <!-- CONTADOR DE TRAMO -->
-              <h2 class="textNoticias text-center">Tiempo restante Tramo 1</h2>
-            </div>
-            <div class="pa-6">
-              <div v-if="!countdownExpired" class="countdown-wrap">
-                <v-row class="justify-center align-stretch" dense>
-                  <v-col cols="12" sm="6" md="3" class="d-flex">
-                    <div class="time-box w-100">
-                      <div class="time-num">{{ remaining.days }}</div>
-                      <div class="time-label">DÍAS</div>
-                    </div>
-                  </v-col>
-
-                  <v-col cols="12" sm="6" md="3" class="d-flex">
-                    <div class="time-box w-100">
-                      <div class="time-num">{{ remaining.hours }}</div>
-                      <div class="time-label">HRS</div>
-                    </div>
-                  </v-col>
-
-                  <v-col cols="12" sm="6" md="3" class="d-flex">
-                    <div class="time-box w-100">
-                      <div class="time-num">{{ remaining.minutes }}</div>
-                      <div class="time-label">MIN</div>
-                    </div>
-                  </v-col>
-
-                  <v-col cols="12" sm="6" md="3" class="d-flex">
-                    <div class="time-box w-100">
-                      <div class="time-num">{{ remaining.seconds }}</div>
-                      <div class="time-label">SEG</div>
-                    </div>
-                  </v-col>
-                </v-row>
-              </div>
-
-              <div v-else class="text-center">
-                <v-icon size="40" color="pink">mdi-clock-alert</v-icon>
-                <p class="mt-2 text-subtitle-1">¡El tiempo se agotó!</p>
-              </div>
             </div>
           </v-card>
         </v-container>
@@ -231,9 +227,9 @@ export default {
       notification_headers: [
       ],
       loading_team: false,
-      countdownTargetUtc: '2025-08-28T16:00:00Z', 
+      countdownTargetUtc: '2025-08-28T16:00:00Z',
       countdownTimerId: null,
-      remainingMs: 0, 
+      remainingMs: 0,
     };
   },
   computed: {
@@ -336,8 +332,58 @@ export default {
 </script>
 
 <style scoped>
+.news-card {
+  min-width: 500px;
+  max-height: 420px;
+  display: flex;
+  flex-direction: column;
+}
+
+.news-body {
+  max-height: 320px;
+}
+
+.news-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.news-body::-webkit-scrollbar-thumb {
+  background: rgba(213, 4, 141, .35);
+  border-radius: 8px;
+}
+
 .textNoticias {
   text-transform: uppercase;
+}
+
+.news-body {
+  max-height: 40vh;
+}
+
+@media (min-width: 960px) {
+  .news-body {
+    max-height: 30vh;
+  }
+}
+
+.notif-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.notif-body {
+  min-height: 230px;
+  max-height: 230vh;
+  overflow-y: auto;
+}
+
+.notif-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.notif-body::-webkit-scrollbar-thumb {
+  background: rgba(213, 4, 141, .35);
+  border-radius: 8px;
 }
 
 .countdown-wrap {

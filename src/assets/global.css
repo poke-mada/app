@@ -215,7 +215,7 @@ img[src*="bgNew.png"] {
 }
 
 .delimitTweet {
-    max-width: 300px;
+    max-width: 100%;
 }
 
 .p-tweet {
@@ -263,6 +263,9 @@ img[src*="bgNew.png"] {
 .flexCenter {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .nameTeam1,
