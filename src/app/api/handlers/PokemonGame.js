@@ -242,7 +242,7 @@ class TeamData {
                 }
 
                 let pokemon = new PokemonTeamData(move_data, data);
-                if (validatePokemonData(pokemon)) {
+                if (validatePokemon(pokemon.dex_number) && pokemon.is_valid) {
                     if (JSON.stringify(this.team[slot]) === JSON.stringify(pokemon)) return;
                     if (this.owner === TeamOwner.YOU) {
                         this.team[slot] = pokemon;

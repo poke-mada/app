@@ -8,30 +8,29 @@
       <p class="text-medium-emphasis">Ancho actual: {{ windowWidth }} px</p>
     </v-card>
   </v-container>
-  <template v-else>
-    <v-dialog v-show="showWheel">
-      <div v-show="showWheel" ref="wheelWrap" class="wheel-wrap d-flex justify-center align-center">
-        <RouletteWheel :items="items" :ref="setWheel"
-                       @start="onWheelStart(); $refs.spinBtn && $refs.spinBtn.handleStart()"
-                       @peak="$refs.spinBtn && $refs.spinBtn.handlePeak()" @done="$refs.spinBtn && $refs.spinBtn.handleDone($event)" />
-      </div>
-      <CardReveal :ref="setCardReveal" @close="onCardClose" />
-    </v-dialog>
+  <div v-show="showWheel" ref="wheelWrap" class="wheel-wrap d-flex justify-center align-center">
+      <RouletteWheel :items="items" :ref="setWheel"
+                     @start="onWheelStart(); $refs.spinBtn && $refs.spinBtn.handleStart()"
+                     @peak="$refs.spinBtn && $refs.spinBtn.handlePeak()"
+                     @done="$refs.spinBtn && $refs.spinBtn.handleDone($event)"/>
+  </div>
+  <div :class="isWideEnough? '' : 'd-none'">
+    <CardReveal :ref="setCardReveal" @close="onCardClose"/>
     <v-row class="h-100">
       <v-col cols="2" class="h-100 mr-6">
         <div class="panel">
           <div class="stack mt-6">
-            <v-img :src="'./icon.png'" aspect-ratio="1/1" height="150px" style="margin-top: -75px" />
+            <v-img :src="'./icon.png'" aspect-ratio="1/1" height="150px" style="margin-top: -75px"/>
             <v-img class="cursor-pointer banner-logo mt-4 mb-8"
-              :src="banner.id === selected_banner?.id ? banner.active_banner_logo : banner.banner_logo"
-              aspect-ratio="3/111" width="292px" :class="banner.id === selected_banner?.id ? 'force-active ' : ''"
-              v-for="banner in banners" :key="banner.id" @click="select_banner(banner)" />
+                   :src="banner.id === selected_banner?.id ? banner.active_banner_logo : banner.banner_logo"
+                   aspect-ratio="3/111" width="292px" :class="banner.id === selected_banner?.id ? 'force-active ' : ''"
+                   v-for="banner in banners" :key="banner.id" @click="select_banner(banner)"/>
           </div>
         </div>
       </v-col>
 
       <v-col class="d-flex flex-column justify-center align-items-center ml-16 mt-16" v-if="selected_banner">
-        <FloatingRouletteInfoCard :wishes="selected_banner.wishes ?? 0" />
+        <FloatingRouletteInfoCard :wishes="selected_banner.wishes ?? 0"/>
 
         <v-row class="mt-16 mb-0">
           <v-card class="vcard-pkm" :style="`background: url(${selected_banner.banner_image}); max-width: 90%`">
@@ -41,15 +40,15 @@
               <v-row class="ml-16 actions mt-16 pt-2">
                 <v-col>
                   <SpinButton :class="toClass(selected_banner.name)" class="pb-1 pt-1 pl-4 roll-btn" ref="spinBtn" debug
-                    max-width="280px" width="280px" max-height="74px" height="74px" :token="api_token"
-                    :roulette-id="selected_banner.id" :wheel="wheelRef" :card-reveal="cardRevealRef"
-                    @set-items="items = $event" @click="onSpinClick">
+                              max-width="280px" width="280px" max-height="74px" height="74px" :token="api_token"
+                              :roulette-id="selected_banner.id" :wheel="wheelRef" :card-reveal="cardRevealRef"
+                              @set-items="items = $event" @click="onSpinClick">
                     <template #default>
                       TIRAR
                     </template>
                     <template #append>
                       <v-img :src="'./assets/icons/Vector.png'" class="ml-10" aspect-ratio="1/1" height="24"
-                        width="24" />
+                             width="24"/>
                     </template>
                   </SpinButton>
                 </v-col>
@@ -60,7 +59,7 @@
         </v-row>
 
         <v-row class="mt-0">
-          <v-spacer />
+          <v-spacer/>
           <v-col cols="3">
             <v-btn class="gradient-btn" text="LISTA DE RECOMPENSAS" @click="prizes_list_display = true">
               <template #append>
@@ -82,7 +81,7 @@
     <!-- Dialog original de ganador (no usado por la nueva ruleta, lo dejamos intacto) -->
     <v-dialog v-model="winner" max-width="450">
       <v-row>
-        <v-img :src="winner?.image" />
+        <v-img :src="winner?.image"/>
       </v-row>
       <v-row>
         <v-col class="w-100 d-flex flex-row justify-center align-items-center">
@@ -103,13 +102,13 @@
         <!-- Contenido: la tabla -->
         <v-card-text class="paddingTable">
           <v-data-table class="yellow-card-table" height="55vh" density="comfortable" hide-default-footer
-            items-per-page="20" :items="selected_banner.prize_probability" :headers="headers">
+                        items-per-page="20" :items="selected_banner.prize_probability" :headers="headers">
             <template #item="{ item }">
               <tr class="mt-16">
                 <td class="pa-0">
                   <v-img
-                    :src="`https://para-mada-deploy.s3.us-east-1.amazonaws.com/prod/dedsafio-pokemon/media/${item.image}`"
-                    height="48" />
+                      :src="`https://para-mada-deploy.s3.us-east-1.amazonaws.com/prod/dedsafio-pokemon/media/${item.image}`"
+                      height="48"/>
                 </td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.probability }}%</td>
@@ -136,7 +135,7 @@
         <!-- Contenido: la tabla -->
         <v-card-text class="pa-0">
           <v-data-table class="yellow-card-table" height="55vh" density="comfortable" hide-default-footer
-            items-per-page="20" :items="selected_banner.history" :headers="history_headers" />
+                        items-per-page="20" :items="selected_banner.history" :headers="history_headers"/>
         </v-card-text>
 
         <v-card-actions class="justify-end">
@@ -144,25 +143,24 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </template>
+  </div>
 </template>
 
 
-
 <script>
-import { emitter, getAxios } from "@/stores";
+import {emitter, getAxios} from "@/stores";
 import SvgIcon from '@jamescoyle/vue-icon';
-import { mdiArrowRight, mdiChevronRight } from '@mdi/js';
+import {mdiArrowRight, mdiChevronRight} from '@mdi/js';
 import FloatingRouletteInfoCard from '@/app/vue/components/app-comps/displays/FloatingRouletteInfoCard';
-import { gsap } from 'gsap';
+import {gsap} from 'gsap';
 import RouletteWheel from '@/app/vue/pages/roulette/RouletteWheel.vue';
 import SpinButton from '@/app/vue/pages/roulette/SpinButton.vue';
 import CardReveal from '@/app/vue/pages/roulette/CardReveal.vue';
-import { useGameStore } from "@/stores/app";
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "BannersMainPage",
-  components: { SvgIcon, FloatingRouletteInfoCard, RouletteWheel, SpinButton, CardReveal },
+  components: {SvgIcon, FloatingRouletteInfoCard, RouletteWheel, SpinButton, CardReveal},
   data() {
     return {
       // --- NUEVO ---
@@ -178,31 +176,32 @@ export default {
       prizes_list_display: false,
       history_display: false,
       headers: [
-        { title: '', value: 'sprite_url' },
-        { title: 'Nombre', value: 'name' },
-        { title: 'Probabilidad', value: 'probability' },
+        {title: '', value: 'sprite_url'},
+        {title: 'Nombre', value: 'name'},
+        {title: 'Probabilidad', value: 'probability'},
       ],
-      history_headers: [{ title: 'Registro', value: 'message' }],
+      history_headers: [{title: 'Registro', value: 'message'}],
       items: [],
       showWheel: false,
       firstSpinDone: false,
     }
   },
   computed: {
-    store() { return useGameStore(); },
-    api_token() { return this.store.api_token; },
+    store() {
+      return useGameStore();
+    },
+    api_token() {
+      return this.store.api_token;
+    },
     // --- NUEVO ---
-    isWideEnough() { return this.windowWidth >= 1600; },
+    isWideEnough() {
+      return this.windowWidth >= 1600;
+    },
   },
   methods: {
     // --- NUEVO ---
     onResize() {
       this.windowWidth = window.innerWidth;
-      if (!this.isWideEnough) {
-        // por si se hace pequeña mientras está abierta la ruleta
-        this.showWheel = false;
-        this.firstSpinDone = false;
-      }
     },
 
     async getBanners() {
@@ -215,9 +214,15 @@ export default {
       this.firstSpinDone = false;
       this.items = [];
     },
-    toClass(name) { return name?.toLowerCase?.().replaceAll(' ', '-') || ''; },
-    setWheel(el) { this.wheelRef = el },
-    setCardReveal(el) { this.cardRevealRef = el },
+    toClass(name) {
+      return name?.toLowerCase?.().replaceAll(' ', '-') || '';
+    },
+    setWheel(el) {
+      this.wheelRef = el
+    },
+    setCardReveal(el) {
+      this.cardRevealRef = el
+    },
 
     async onSpinClick(e) {
       e?.preventDefault?.();
@@ -245,7 +250,7 @@ export default {
       this.firstSpinDone = true;
       const wrap = this.$refs.wheelWrap;
       if (wrap) {
-        gsap.to(wrap, { autoAlpha: 1, scale: 1, duration: 1, ease: 'power2.out' });
+        gsap.to(wrap, {autoAlpha: 1, scale: 1, duration: 1, ease: 'power2.out'});
       }
     },
     onCardClose() {
@@ -253,10 +258,14 @@ export default {
       if (wrap) {
         gsap.to(wrap, {
           autoAlpha: 0, scale: 0, duration: 0.6, ease: 'power2.in',
-          onComplete: () => { this.showWheel = false; this.firstSpinDone = false; }
+          onComplete: () => {
+            this.showWheel = false;
+            this.firstSpinDone = false;
+          }
         });
       } else {
-        this.showWheel = false; this.firstSpinDone = false;
+        this.showWheel = false;
+        this.firstSpinDone = false;
       }
     },
   },
@@ -426,9 +435,7 @@ export default {
 .stack::before {
   content: "";
   position: absolute;
-  inset: var(--pad)
-    /* top/bottom */
-    clamp(18px, 8vw, 48px);
+  inset: var(--pad) /* top/bottom */ clamp(18px, 8vw, 48px);
   /* left/right => controla qué tan angosta es */
   background: #fff;
   border-radius: 18px;
@@ -482,5 +489,9 @@ export default {
 
 .paddingTable {
   padding: 15px;
+}
+
+.d-none {
+  display: none;
 }
 </style>
