@@ -131,7 +131,6 @@
             </div>
           </v-card>
           <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
-            <!-- Encabezado con ícono flotante -->
             <div class="divCardSup pa-5 d-flex justify-center align-center">
               <h2 class="textNoticias">Notificaciones</h2>
             </div>
