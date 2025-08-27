@@ -233,6 +233,7 @@ export default {
       loading_team: false,
       countdownTargetUtc: '2025-08-28T16:00:00Z', 
       countdownTimerId: null,
+      remainingMs: 0, 
     };
   },
   computed: {
