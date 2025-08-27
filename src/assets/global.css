@@ -215,7 +215,7 @@ img[src*="bgNew.png"] {
 }
 
 .delimitTweet {
-    max-width: 300px;
+    max-width: 100%;
 }
 
 .p-tweet {
