@@ -53,6 +53,28 @@
           </v-card>
         </v-col>
       </v-row>
+      <v-row>
+        <v-col>
+          <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6">
+            <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
+              <h3 class="textNoticias" style="text-transform: capitalize;">Soporte</h3>
+            </div>
+            <div class="mb-2 ml-2 mr-2 d-flex d-row justify-center align-items-center">
+              <v-btn class="gradient-btn" @click="report_error" text="Reportar error" v-if="emulator_on"/>
+              <v-tooltip v-else-if="!emulator_on" location="top">
+                <template #default>Necesitas tener el emulador conectado a la aplicación</template>
+                <template #activator="{ props }">
+                  <div v-bind="props">
+                    <v-btn class="btn-grad-contact mt-4" disabled>
+                      <span class="btn-text">Reportar error</span>
+                    </v-btn>
+                  </div>
+                </template>
+              </v-tooltip>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-col>
   </v-row>
   <v-dialog v-model="selecting_community_pokemon">
@@ -126,7 +148,7 @@
 <script>
 
 import { useGameStore } from "@/stores/app";
-import { getAxios } from "@/stores";
+import {emitter, getAxios} from "@/stores";
 import { MON_DATA } from "@/data/mon_data";
 
 export default {
@@ -1580,9 +1602,21 @@ export default {
     },
     list_pokemon() {
       return this.pokemons.filter(poke => !this.search_pokemon || poke.title.toLowerCase().includes(this.search_pokemon.toLowerCase()))
+    },
+    emulator_on() {
+      return this.store.emulator_on;
     }
   },
   methods: {
+    async report_error() {
+      const response = await getAxios().post('/api/errors/register/', {
+        details: this.store.game_data
+      });
+      emitter.emit('action-notification', {
+        title: '¡El error ha sido notificado!',
+        message: `Manda SS: error #${response.data}`
+      })
+    },
     async confirmUseSkip() {
       if (this.skip_loading) return;
       this.skip_loading = true;

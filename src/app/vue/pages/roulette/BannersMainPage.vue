@@ -9,12 +9,14 @@
     </v-card>
   </v-container>
   <template v-else>
-    <div v-show="showWheel" ref="wheelWrap" class="wheel-wrap d-flex justify-center align-center">
-      <RouletteWheel :items="items" :ref="setWheel"
-        @start="onWheelStart(); $refs.spinBtn && $refs.spinBtn.handleStart()"
-        @peak="$refs.spinBtn && $refs.spinBtn.handlePeak()" @done="$refs.spinBtn && $refs.spinBtn.handleDone($event)" />
-    </div>
-    <CardReveal :ref="setCardReveal" @close="onCardClose" />
+    <v-dialog v-show="showWheel">
+      <div v-show="showWheel" ref="wheelWrap" class="wheel-wrap d-flex justify-center align-center">
+        <RouletteWheel :items="items" :ref="setWheel"
+                       @start="onWheelStart(); $refs.spinBtn && $refs.spinBtn.handleStart()"
+                       @peak="$refs.spinBtn && $refs.spinBtn.handlePeak()" @done="$refs.spinBtn && $refs.spinBtn.handleDone($event)" />
+      </div>
+      <CardReveal :ref="setCardReveal" @close="onCardClose" />
+    </v-dialog>
     <v-row class="h-100">
       <v-col cols="2" class="h-100 mr-6">
         <div class="panel">
