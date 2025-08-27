@@ -95,9 +95,7 @@
       <v-spacer @click="pokemon_team_display = false"/>
       <v-col>
         <PokemonDetailPanel v-if="selected_pokemon"
-                            :pokemon="selected_pokemon"
-                            :allow_steal="steal_allowed_for_selected_in_team()"
-                            :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"/>
+                            :pokemon="selected_pokemon" />
       </v-col>
       <v-spacer @click="pokemon_team_display = false"/>
     </v-row>
@@ -234,10 +232,22 @@ export default {
       return box_owner !== me_id && this.box_data.box.stealable
     },
     async has_robo() {
-      this.has_w_robo = (await getAxios().get('/api/wildcards/68/has_card/')).data;
+      try {
+        const response = (await getAxios().get('/api/wildcards/68/has_card/'));
+        this.has_w_robo = response.data;
+      } catch (e) {
+        console.log(e)
+        this.has_w_robo = false;
+      }
     },
     async has_robo_justo() {
-      this.has_w_robo_justo = (await getAxios().get('/api/wildcards/53/has_card/')).data;
+      try {
+        const response = (await getAxios().get('/api/wildcards/53/has_card/'));
+        this.has_w_robo_justo = response.data;
+      } catch (e) {
+        console.log(e)
+        this.has_w_robo_justo = false;
+      }
     }
   },
 }

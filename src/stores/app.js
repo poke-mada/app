@@ -78,7 +78,7 @@ export const useGameStore = defineStore('game', {
             let streamer_name = null;
             if (this.profileData) {
                 if (this.profileData.is_coach) {
-                    streamer_name = this.profileData.coached_name;
+                    streamer_name = this.profileData.coached_socket_name;
                 } else {
                     streamer_name = this.streamername
                 }
@@ -186,9 +186,7 @@ export const useGameStore = defineStore('game', {
         start_player_game_data_websocket() {
             this.gameDataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/game_data/${this.streamername}`);
             setInterval(() => {
-                if (this.emulatoron) {
-                    this.gameDataSocket.send(JSON.stringify(this.gamedata))
-                }
+                this.gameDataSocket.send(JSON.stringify(this.gamedata))
             }, 10_000)
         },
         login(streamer_name, token) {

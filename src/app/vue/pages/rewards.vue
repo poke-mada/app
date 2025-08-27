@@ -57,7 +57,7 @@
             </v-col>
 
             <v-col cols="4" class="btnReclamarDiv">
-              <v-btn v-if="emulator_on" @click="claim_reward(bundle.id)" class="btn-grad-contact mt-4">
+              <v-btn v-if="emulator_on && !profile_data.is_coach" @click="claim_reward(bundle.id)" class="btn-grad-contact mt-4">
                 <span class="btn-text">RECLAMAR</span>
                 <span class="btn-icon">
                   <svg class="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,8 +65,17 @@
                   </svg>
                 </span>
               </v-btn>
-
-              <v-tooltip v-else location="top">
+              <v-tooltip v-else-if="profile_data.is_coach" location="top">
+                <template #default>Solo el participante puede canjear las recompensas</template>
+                <template #activator="{ props }">
+                  <div v-bind="props">
+                    <v-btn class="btn-grad-contact mt-4" disabled>
+                      <span class="btn-text">RECLAMAR</span>
+                    </v-btn>
+                  </div>
+                </template>
+              </v-tooltip>
+              <v-tooltip v-else-if="!emulator_on" location="top">
                 <template #default>Necesitas tener el emulador conectado a la aplicación</template>
                 <template #activator="{ props }">
                   <div v-bind="props">
@@ -137,7 +146,10 @@ export default {
     emulator_on() {
       return this.store.emulator_on;
     },
-      totalPages() {
+    profile_data() {
+      return this.store.profile_data;
+    },
+    totalPages() {
       const pages = Math.ceil(this.available_rewards.length / this.perPage);
       return Math.max(1, pages);
     },
