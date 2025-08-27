@@ -263,6 +263,9 @@ img[src*="bgNew.png"] {
 .flexCenter {
     display: flex;
     justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .nameTeam1,
