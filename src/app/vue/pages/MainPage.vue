@@ -43,7 +43,7 @@
             <v-avatar size="134" style="position: absolute; top: 70%; left: -10%;">
               <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
             </v-avatar>
-            <h2 class="textNoticias text-center">Tiempo restante Tramo 1</h2>
+            <h2 class="textNoticias text-center">Tiempo restante 1° Torneo</h2>
           </div>
           <div class="pa-6">
             <div v-if="!countdownExpired" class="countdown-wrap">
@@ -227,7 +227,7 @@ export default {
       notification_headers: [
       ],
       loading_team: false,
-      countdownTargetUtc: '2025-08-28T16:00:00Z',
+      countdownTargetUtc: '2025-08-28T19:00:00Z',
       countdownTimerId: null,
       remainingMs: 0,
     };
