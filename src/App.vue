@@ -85,7 +85,7 @@
             </template>
             <template v-slot:text>
               <p>
-                ¡Necesitas guardar la partida para poder continuar usando la aplicación!
+                ¡Necesitas guardar la partida para poder efectuar los cambios!
               </p>
             </template>
           </v-card>

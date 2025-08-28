@@ -12,7 +12,7 @@
       <div class="paddinP1">
         <!-- Header tabla -->
         <v-row class="mail-header align-center">
-          <v-col cols="2" class="th">Imagen</v-col>
+          <v-col cols="2" class="th"></v-col>
           <v-col cols="3" class="th">Título</v-col>
           <v-col cols="3" class="th">Remitente</v-col>
           <v-col cols="4" class="th d-flex justify-end">
@@ -116,7 +116,7 @@
                 hide-default-footer>
               <template #item="{item}">
                 <tr>
-                  <td class="pa-0">
+                  <td class="pa-0 ml-4">
                     <v-img :src="item.image" height="48"/>
                   </td>
                   <td>{{ item.name }}</td>
@@ -148,6 +148,11 @@ export default {
       currentPage: 1,
       perPage: 5,
       showModal: false,
+      rewards_headers: [
+        {title: ''},
+        {title: 'Descripcion'},
+        {title: 'Cantidad'}
+      ],
       selected_reward: null
     };
   },
@@ -238,6 +243,8 @@ export default {
           return reward.item.name
         case 1: // WILDCARD
           return reward.wildcard.name
+        case 2: // WILDCARD
+          return 'Monedas'
         case 3: // POKEMON
           return reward.pokemon.mote
       }

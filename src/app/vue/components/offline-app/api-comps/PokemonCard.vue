@@ -46,6 +46,7 @@ export default {
     },
     classes() {
       const classes = [];
+
       if (this.selected) {
         classes.push('bordered')
       }
@@ -72,7 +73,7 @@ export default {
   filter: drop-shadow(0 0 0.75rem dodgerblue);
 }
 
-.disabled {
+.disabled * {
   filter: grayscale(100%);
 }
 

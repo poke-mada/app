@@ -255,12 +255,22 @@ export default {
       })
     },
     perform_transfer() {
-
+      getAxios().post('/api/market/transfer_pokemon/', {
+        pokemon_id: this.pokemon.id
+      }).catch(error => {
+        if (error.status === 400) {
+          emitter.emit('action-notification', {
+            title: '¡Ha ocurrido un Error!',
+            message: error.response.data,
+            type: 'error'
+          })
+        }
+      })
     }
   },
   computed: {
     can_transfer() {
-      return this.allow_transfer;
+      return this.allow_transfer && !this.pokemon.disabled;
     },
     pokemon_types() {
       return get_types(this.pokemon)

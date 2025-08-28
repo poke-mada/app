@@ -64,7 +64,7 @@
           <v-img src="/assets/icons/Circulo.svg" width="28" height="28" class="me-2" cover v-else />
         </template>
       </v-list-item>
-      <v-list-item class="itemBox" to="/market" title="Mercado" value="market" v-if="profile.is_admin">
+      <v-list-item class="itemBox" to="/market" title="Mercado" value="market">
         <template #prepend>
           <v-img src="/assets/icons/active/store.svg" width="28" height="28" class="me-2" cover
             v-if="$route.path === '/market'" />

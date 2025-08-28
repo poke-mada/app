@@ -68,14 +68,18 @@ export default {
   emits: ['post_selected'],
   data() {
     return {
-      posts: [],
+      posts: [{items:[{sprite:null}]}],
       selected_post: null
     }
   },
   methods: {
-    async load_posts() {
-      const {data} = await getAxios().get('/api/market/list_mine/');
-      this.posts = data;
+    load_posts() {
+      getAxios().get('/api/market/list_mine/').catch(() => {
+      }).then(({status, data}) => {
+        if (status === 200) {
+          this.posts = data;
+        }
+      });
     },
     async select_post(post) {
       this.$emit('post_selected', post)

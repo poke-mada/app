@@ -7,7 +7,8 @@
               class="divCardSup divSectionMerch d-flex justify-center align-center">
         <v-tab @click="selected_post = null;" :value="1">Mercado</v-tab>
         <v-tab @click="selected_post = null;" :value="2">Mis Anuncios</v-tab>
-        <v-tab @click="selected_post = null;" :value="3">Inventario</v-tab>
+        <v-tab @click="selected_post = null;" :value="3">Transferir Items</v-tab>
+        <v-tab @click="selected_post = null;" :value="4">Inventario</v-tab>
       </v-tabs>
       <v-tabs-window v-model="tab" class="paddinP1 h-100">
         <v-tabs-window-item :key="1" :value="1">
@@ -19,101 +20,10 @@
           <MyPostDetailComponent :post="selected_post" v-if="selected_post"/>
         </v-tabs-window-item>
         <v-tabs-window-item :key="3" :value="3" class="h-75">
-          <v-container class="h-100 w-100">
-            <v-row>
-              <!-- INVENTARIO DE PARTIDA -->
-              <v-col cols="6">
-                <v-card class="inventory-card rounded-xl borderPink">
-                  <v-card-title class="divCardSupPurple d-flex align-center">
-                    <h3 class="tittleCardPurple">INVENTARIO DE PARTIDA</h3>
-                  </v-card-title>
-                  <v-card-text class="inventory-body cardPadingInventory">
-                    <v-row class="inventory-header font-weight-bold border-bottom ptb text-center">
-                      <v-col cols="3">IMAGEN</v-col>
-                      <v-col cols="4">NOMBRE</v-col>
-                      <v-col cols="3">CANTIDAD</v-col>
-                      <v-col cols="2">
-                        <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
-                      </v-col>
-                      <v-divider class="mb-2"/>
-                    </v-row>
-
-                    <!-- Lista o mensaje vacío -->
-                    <template v-if="inventory.length > 0">
-                      <div
-                          class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center"
-                          v-for="item in inventory"
-                          :key="item.id"
-                      >
-                        <v-row class="mb-2 pointer hoverCard">
-                          <v-col cols="3">
-                            <v-img :src="item.sprite" height="65px"/>
-                          </v-col>
-                          <v-col cols="4" class="d-flex justify-center align-center p-0">
-                            <span class="text-center">{{ item.item_name }}</span>
-                          </v-col>
-                          <v-col cols="3" class="d-flex justify-center align-center p-0">
-                            {{ item.mote_or_quantity }}
-                          </v-col>
-                          <v-col cols="2"></v-col>
-                        </v-row>
-                        <v-divider class="mb-2"/>
-                      </div>
-                    </template>
-                    <div v-else class="text-center py-8">
-                      <p class="text-subtitle-1">El inventario está vacío.</p>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-
-              <!-- INVENTARIO DE LA APP -->
-              <v-col cols="6">
-                <v-card class="inventory-card rounded-xl borderPink">
-                  <v-card-title class="divCardSupPurple d-flex align-center">
-                    <h3 class="tittleCardPurple">INVENTARIO DE LA APP</h3>
-                  </v-card-title>
-                  <v-card-text class="inventory-body cardPadingInventory">
-                    <v-row class="inventory-header font-weight-bold border-bottom ptb text-center">
-                      <v-col cols="3">IMAGEN</v-col>
-                      <v-col cols="4">NOMBRE</v-col>
-                      <v-col cols="3">CANTIDAD</v-col>
-                      <v-col cols="2">
-                        <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
-                      </v-col>
-                      <v-divider class="mb-2"/>
-                    </v-row>
-
-                    <!-- Lista o mensaje vacío -->
-                    <template v-if="inventory.length > 0">
-                      <div
-                          class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center"
-                          v-for="item in inventory"
-                          :key="item.id"
-                      >
-                        <v-row class="mb-2 pointer hoverCard">
-                          <v-col cols="3">
-                            <v-img :src="item.sprite" height="65px"/>
-                          </v-col>
-                          <v-col cols="4" class="d-flex justify-center align-center p-0">
-                            <span class="text-center">{{ item.item_name }}</span>
-                          </v-col>
-                          <v-col cols="3" class="d-flex justify-center align-center p-0">
-                            {{ item.mote_or_quantity }}
-                          </v-col>
-                          <v-col cols="2"></v-col>
-                        </v-row>
-                        <v-divider class="mb-2"/>
-                      </div>
-                    </template>
-                    <div v-else class="text-center py-8">
-                      <p class="text-subtitle-1">El inventario está vacío.</p>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-container>
+          <InventoryComponent/>
+        </v-tabs-window-item>
+        <v-tabs-window-item :key="4" :value="3" class="h-75">
+          <InventoryComponent/>
         </v-tabs-window-item>
 
       </v-tabs-window>
@@ -134,6 +44,7 @@ import MarketPlaceComponent from '@/app/vue/pages/market/menus/MarketPlaceCompon
 import MyPostsComponent from '@/app/vue/pages/market/menus/MyPostsComponent';
 import PostDetailComponent from '@/app/vue/pages/market/menus/market_place/PostDetailComponent';
 import MyPostDetailComponent from '@/app/vue/pages/market/menus/my_posts/MyPostDetailComponent';
+import InventoryComponent from '@/app/vue/pages/market/inventory';
 
 export default {
   name: 'MarketPage',
@@ -141,24 +52,14 @@ export default {
     MarketPlaceComponent,
     PostDetailComponent,
     MyPostsComponent,
-    MyPostDetailComponent
+    MyPostDetailComponent,
+    InventoryComponent
   },
   props: {},
   data() {
     return {
       tab: 1,
       showCreate: false,
-      offers: [],
-      posts: [],
-      my_posts: [],
-      inventory: [
-        {
-          id: 4,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-          item_name: 'Baya Rimoya',
-          mote_or_quantity: '2',
-        }
-      ],
       selected_post: null,
     }
   },
