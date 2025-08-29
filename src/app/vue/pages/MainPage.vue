@@ -37,16 +37,30 @@
             </div>
           </div>
         </v-card>
-        <!-- CONTADOR DE TRAMO -->
+
+        <!-- CONTADOR DINÁMICO POR HITOS -->
         <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
-          <div class="divCardSup pa-5 flex justify-center align-center">
+          <div class="divCardSup pa-5 d-flex justify-center align-center">
             <v-avatar size="134" style="position: absolute; top: 70%; left: -10%;">
               <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
             </v-avatar>
-            <h2 class="textNoticias text-center">Tiempo restante 1° Torneo</h2>
+            <h2 class="textNoticias text-center">
+              <!-- Encabezado dinámico segun fase -->
+              <template v-if="phase === 'done'">
+                🎉 ¡EL DEDSAFIO POKÉMON 2 HA TERMINADO!
+              </template>
+              <template v-else-if="phase === 'transition'">
+                {{ currentTransitionLabel }}
+              </template>
+              <template v-else>
+                {{ currentCountdownLabel }}
+              </template>
+            </h2>
           </div>
+
           <div class="pa-6">
-            <div v-if="!countdownExpired" class="countdown-wrap">
+            <!-- Números solo en fase countdown -->
+            <div v-if="phase === 'countdown' && hasCurrentTarget" class="countdown-wrap">
               <v-row class="justify-center align-stretch" dense>
                 <v-col cols="12" sm="6" md="3" class="d-flex">
                   <div class="time-box w-100">
@@ -78,16 +92,22 @@
               </v-row>
             </div>
 
+            <!-- Mensaje en transición / fin -->
             <div v-else class="text-center">
-              <v-icon size="40" color="pink">mdi-clock-alert</v-icon>
-              <p class="mt-2 text-subtitle-1">¡El tiempo se agotó!</p>
+              <v-icon v-if="phase === 'transition'" size="40" color="pink">mdi-rocket-launch</v-icon>
+              <v-icon v-else-if="phase === 'done'" size="40" color="pink">mdi-trophy</v-icon>
+              <p class="mt-2 text-subtitle-1">
+                <template v-if="phase === 'transition'">{{ currentTransitionLabel }}</template>
+                <template v-else-if="phase === 'done'">¡Gracias por acompañarnos!</template>
+              </p>
             </div>
           </div>
         </v-card>
       </v-col>
+
       <v-col cols="6" class="flexCenter">
         <v-container class="rounded-xl p-0 m-0" fluid>
-          <!-- COMBATE EN VIVO -->
+          <!-- COMBATE EN VIVO (oculto por ahora) -->
           <v-card v-if="false" class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
             <div class="divCardSup pa-5 d-flex justify-center align-center">
               <h2 class="textNoticias">Combate en Vivo</h2>
@@ -103,13 +123,10 @@
                 <div class="text-center">
                   <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer1.png" width="250px" />
                   <div class="nameTeam1">
-                    <p>
-                      Maryblog
-                    </p>
+                    <p>Maryblog</p>
                   </div>
                 </div>
               </v-col>
-
               <v-col cols="6" class="d-flex align-center justify-center team2">
                 <div class="text-center">
                   <v-img class="avatarTeam" src="../../../../assets/img/Home/trainer2.png" width="250" />
@@ -119,7 +136,6 @@
                 </div>
               </v-col>
             </v-row>
-
             <div class="flexCenter ma-6">
               <v-btn class="btnHome" elevation="0" to="/combat"
                 v-if="emulator_on && game_data && game_data.combat_info.combat_type !== 'OFF'">
@@ -130,14 +146,13 @@
               </v-btn>
             </div>
           </v-card>
+
+          <!-- NOTIFICACIONES -->
           <v-card class="rounded-xl mb-6 notif-card" max-width="500" elevation="6" style="position: relative;">
             <div class="divCardSup pa-5 d-flex justify-center align-center">
               <h2 class="textNoticias">Notificaciones</h2>
             </div>
-
             <v-divider class="mb-3"></v-divider>
-
-            <!-- scrolleable -->
             <v-card-text class="pa-6 notif-body">
               <template v-if="notifications.length > 0">
                 <v-data-table density="comfortable" hide-default-footer :items="notifications"
@@ -149,7 +164,6 @@
                   </template>
                 </v-data-table>
               </template>
-
               <div v-else class="text-center">
                 <p class="text-subtitle-1">Aún no hay notificaciones.</p>
               </div>
@@ -162,7 +176,8 @@
               <v-avatar size="78" style="position: absolute; top: 70%; right: -5%;">
                 <v-img src="/assets/img/Home/Pokeball.png"></v-img>
               </v-avatar>
-              <h2 class="textNoticias">Tu Equipo <span v-if="profile?.is_coach">({{ profile?.coached_name }})</span>
+              <h2 class="textNoticias">
+                Tu Equipo <span v-if="profile?.is_coach">({{ profile?.coached_name }})</span>
               </h2>
             </div>
 
@@ -170,7 +185,6 @@
               <v-row class="pa-6">
                 <v-col cols="4" v-for="(pokemon, i) in team" :key="i" class="text-center">
                   <div class="position-relative d-inline-block">
-                    <!-- Imagen principal del Pokémon -->
                     <PokemonCard :pokemon="pokemon" @click="selectPokemon(pokemon)" />
                     <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png" />
                   </div>
@@ -189,6 +203,8 @@
       </v-col>
     </v-row>
   </v-container>
+
+  <!-- MODAL DETALLE POKÉMON -->
   <v-dialog v-model="display">
     <v-row>
       <v-spacer v-on:click="display = false" />
@@ -212,10 +228,7 @@ import { useGameStore } from "@/stores/app";
 
 export default {
   name: "MainPage",
-  components: {
-    PokemonCard,
-    PokemonDetailPanel
-  },
+  components: { PokemonCard, PokemonDetailPanel },
 
   data() {
     return {
@@ -224,33 +237,57 @@ export default {
       selected_pokemon: null,
       display: false,
       notifications: [],
-      notification_headers: [
-      ],
+      notification_headers: [],
       loading_team: false,
-      countdownTargetUtc: '2025-08-28T19:00:00Z',
-      countdownTimerId: null,
-      remainingMs: 0,
+
+      // ======= 2 horas =======
+      TRANSITION_MS: 2 * 60 * 60 * 1000,
+
+      // Hitos (UTC)
+      timeline: [
+        { key: "end_tramo_2", labelCountdown: "INICIO DEL TRAMO 2", labelTransition: "🚀 ¡INICIAMOS EL TRAMO 2!", atMs: Date.parse("2025-08-29T06:00:00Z") },
+        { key: "stay_tramo_2", labelCountdown: "TRAMO 2", labelTransition: "¡FIN DEL TRAMO 2!", atMs: Date.parse("2025-09-01T06:00:00Z") },
+        { key: "start_torneo_2", labelCountdown: "INICIO 2° TORNEO", labelTransition: "🏁 ¡INICIA EL 2° TORNEO!", atMs: Date.parse("2025-09-01T19:00:00Z") },
+        { key: "start_tramo_3", labelCountdown: "INICIO DEL TRAMO 3", labelTransition: "🚀 ¡INICIA EL TRAMO 3!", atMs: Date.parse("2025-09-02T06:00:00Z") },
+        { key: "stay_tramo_3", labelCountdown: "TRAMO 3", labelTransition: "¡FIN DEL TRAMO 3!", atMs: Date.parse("2025-09-06T06:00:00Z") },
+        { key: "end_tramo_3", labelCountdown: "INICIO 3° TORNEO", labelTransition: "🏁 ¡INICIA EL 3° TORNEO!", atMs: Date.parse("2025-09-06T19:00:00Z") },
+        { key: "start_tramo_4", labelCountdown: "INICIO DEL TRAMO 4", labelTransition: "🚀 ¡INICIA EL TRAMO 4!", atMs: Date.parse("2025-09-07T06:00:00Z") },
+        { key: "stay_tramo_4", labelCountdown: "TRAMO 4", labelTransition: "¡FIN DEL TRAMO 4!", atMs: Date.parse("2025-09-11T06:00:00Z") },
+        { key: "end_tramo_4", labelCountdown: "INICIO 4° TORNEO", labelTransition: "🚀 ¡INICIA EL 4° TORNEO!", atMs: Date.parse("2025-09-11T19:00:00Z") },
+        { key: "start_tramo_5", labelCountdown: "FINALES DEDSAFIO", labelTransition: "🏁 ¡FINALES INICIADAS!", atMs: Date.parse("2025-09-12T19:00:00Z") },
+      ],
+
+      // índice actual y fase
+      tlIndex: 0,                        
+      phase: 'countdown',               
+      transitionUntil: null,             
+      tickerId: null,                    
+      remainingMs: 0,                    
     };
   },
+
   computed: {
-    store: () => {
-      return useGameStore();
+    store: () => useGameStore(),
+    emulator_on() { return this.store ? this.store.emulator_on : null; },
+    game_data() { return this.store ? this.store.game_data : null; },
+    api_token() { return this.store ? this.store.api_token : null; },
+    logged_in() { return this.api_token && this.api_token.length > 0; },
+    profile() { return this.store ? this.store.profile_data : null; },
+
+    hasCurrentTarget() {
+      return this.tlIndex >= 0 && this.tlIndex < this.timeline.length;
     },
-    emulator_on() {
-      return this.store ? this.store.emulator_on : null
+
+    currentCountdownLabel() {
+      if (!this.hasCurrentTarget) return "SIN EVENTOS PENDIENTES";
+      return this.timeline[this.tlIndex].labelCountdown;
     },
-    game_data() {
-      return this.store ? this.store.game_data : null;
+
+    currentTransitionLabel() {
+      if (!this.hasCurrentTarget) return "¡Gracias por acompañarnos!";
+      return this.timeline[this.tlIndex].labelTransition || "🚀 ¡INICIAMOS!";
     },
-    api_token() {
-      return this.store ? this.store.api_token : null;
-    },
-    logged_in() {
-      return this.api_token && this.api_token.length > 0;
-    },
-    profile() {
-      return this.store ? this.store.profile_data : null;
-    },
+
     remaining() {
       const ms = Math.max(0, this.remainingMs || 0);
       const totalSeconds = Math.floor(ms / 1000);
@@ -265,70 +302,127 @@ export default {
         seconds: String(seconds).padStart(2, '0'),
       };
     },
-    countdownExpired() {
-      return this.remainingMs <= 0;
-    },
   },
-  async mounted() {
-    const token = this.api_token;
-    this.startCountdown(this.countdownTargetUtc);
 
+  async mounted() {
+    this.initTimelinePhase();
+
+    // Empieza el ticker principal (1s)
+    this.startTicker();
+
+    const token = this.api_token;
     if (token) {
       this.loading_team = true;
-      const config = {
-        headers: { Authorization: `Token ${token}` },
-      };
-
+      const config = { headers: { Authorization: `Token ${token}` } };
       try {
         const res = await getAxios().get(`/api/trainers/get_team/`, config);
         this.team = res.data;
-        this.loading_team = false;
       } catch (err) {
-        this.loading_team = false;
         this.team = [];
         console.error("Error al cargar el equipo:", err);
+      } finally {
+        this.loading_team = false;
       }
     }
-    getAxios().get('/api/notifications/').then(response => {
-      this.notifications = response.data;
-    })
-    getAxios().get('/api/newsletter/').then(response => {
-      this.newsletter = response.data;
-    });
+    getAxios().get('/api/notifications/').then(r => { this.notifications = r.data; });
+    getAxios().get('/api/newsletter/').then(r => { this.newsletter = r.data; });
   },
+
   beforeUnmount() {
-    if (this.countdownTimerId) {
-      clearInterval(this.countdownTimerId);
-      this.countdownTimerId = null;
+    if (this.tickerId) {
+      clearInterval(this.tickerId);
+      this.tickerId = null;
     }
   },
+
   methods: {
     selectPokemon(pokemon) {
       this.selected_pokemon = pokemon;
-      console.log(pokemon)
       this.display = true;
     },
-    startCountdown(targetIsoUtc) {
-      this.countdownTargetUtc = targetIsoUtc;
 
-      const target = new Date(targetIsoUtc);
+    getTimeLeftMs(atMs) {
+      return atMs - Date.now();
+    },
+
+    initTimelinePhase() {
+      const now = Date.now();
+      const idxNext = this.timeline.findIndex(t => t.atMs > now);
+      const idxPrev = (idxNext === -1 ? this.timeline.length : idxNext) - 1;
+
+      if (idxPrev >= 0) {
+        const prevAt = this.timeline[idxPrev].atMs;
+        const until = prevAt + this.TRANSITION_MS;
+        if (now >= prevAt && now < until) {
+          this.tlIndex = idxPrev;
+          this.phase = 'transition';
+          this.transitionUntil = until;
+          this.remainingMs = 0; 
+          return;
+        }
+      }
+
+      if (idxNext === -1) {
+        this.phase = 'done';
+        this.tlIndex = this.timeline.length;
+        this.remainingMs = 0;
+      } else {
+        this.phase = 'countdown';
+        this.tlIndex = idxNext;
+        this.remainingMs = Math.max(0, this.getTimeLeftMs(this.timeline[idxNext].atMs));
+      }
+    },
+
+    startTicker() {
+      if (this.tickerId) clearInterval(this.tickerId);
+
       const tick = () => {
-        const now = new Date();
-        const diff = target.getTime() - now.getTime();
+        if (this.phase === 'done') {
+          this.remainingMs = 0;
+          return;
+        }
+
+        if (!this.hasCurrentTarget) {
+          this.phase = 'done';
+          this.remainingMs = 0;
+          return;
+        }
+
+        if (this.phase === 'transition') {
+          if (this.transitionUntil !== null && Date.now() >= this.transitionUntil) {
+            const next = this.tlIndex + 1;
+            if (next >= this.timeline.length) {
+              this.tlIndex = next;
+              this.phase = 'done';
+              this.remainingMs = 0;
+            } else {
+              this.tlIndex = next;
+              this.phase = 'countdown';
+              this.transitionUntil = null;
+              this.remainingMs = Math.max(0, this.getTimeLeftMs(this.timeline[next].atMs));
+            }
+          }
+          return;
+        }
+
+        const targetMs = this.timeline[this.tlIndex].atMs;
+        const diff = this.getTimeLeftMs(targetMs);
         this.remainingMs = Math.max(0, diff);
-        if (diff <= 0 && this.countdownTimerId) {
-          clearInterval(this.countdownTimerId);
-          this.countdownTimerId = null;
+
+        // Llegó a cero? -> entrar en transición de este hito
+        if (diff <= 0) {
+          this.phase = 'transition';
+          this.transitionUntil = targetMs + this.TRANSITION_MS;
+          this.remainingMs = 0;
         }
       };
 
-      if (this.countdownTimerId) clearInterval(this.countdownTimerId);
-
+      // primer cálculo inmediato y luego cada segundo
       tick();
-      this.countdownTimerId = setInterval(tick, 1000);
+      this.tickerId = setInterval(tick, 1000);
     },
   },
-}
+};
 </script>
 
 <style scoped>
