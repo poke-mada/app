@@ -4,7 +4,7 @@
       v-model="localQuery"
       variant="solo"
       prepend-inner-icon="mdi-magnify"
-      placeholder="Search in document..."
+      placeholder="Buscar en normativa"
       clearable
       class="mb-3"
       @update:model-value="emitQuery"

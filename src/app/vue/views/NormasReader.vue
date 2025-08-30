@@ -8,11 +8,11 @@
                             <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
                                 <v-img src="/assets/img/Home/Pokeball.png"></v-img>
                             </v-avatar>
-                            <h2 class="textNoticias">Eventos</h2>
+                            <h2 class="textNoticias">Normativas</h2>
                         </div>
                         <!-- Buscador arriba -->
                         <v-text-field v-model="query" variant="solo" prepend-inner-icon="mdi-magnify"
-                            placeholder="Search in document..." clearable class="mb-4" :loading="loading" />
+                            placeholder="Buscar en normativa..." clearable class="mb-4" :loading="loading" />
 
                         <v-row no-gutters>
                             <v-col cols="12">
@@ -33,7 +33,7 @@
                                             <h2 class="text-h5 font-weight-bold">{{ currentSection.title }}</h2>
                                             <v-btn variant="text" size="small"
                                                 @click="copyLink(null, null, 'https://docs.google.com/document/d/114Sa9mP-2flzt03jvCIyE9a0tH-pm4xcvu9B71VjpY0/edit?tab=t.rfii1s3ol65x#heading=h.2u6h4qbxd6vu')">
-                                                <v-icon start>mdi-link-variant</v-icon> Copy link
+                                                <v-icon start>mdi-link-variant</v-icon> Copiar link
                                             </v-btn>
                                             <v-snackbar v-model="showSnack" timeout="2000" color="success"
                                                 location="top right">
