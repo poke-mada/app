@@ -10,13 +10,14 @@ import {
     declareGlobalConfig,
     emmiter,
     GLOBAL_CONFIG,
-    MODS_FILE_LIME3, SAVE_FILE_LIME3,
+    MODS_FILE_LIME3, RAM_ROM2 as rom2, SAVE_FILE_LIME3,
     SERVER_URL, TEST_CLIENT_PATH, update_save_file
 } from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
 import {compareVersions} from "compare-versions";
 import {
-    getOrCreatePokemonItem, giveMoneyToPlayer,
+    getBagAddress, getBagLength,
+    getOrCreatePokemonItem, giveMoneyToPlayer, readPokemonBag,
 } from "@/app/api/ram_editor/RamAccesor";
 import {
     addPokemonSaveData,
@@ -138,36 +139,37 @@ async function exchangeRewardBundle(ipc, data) {
         const rewards = response.data.rewards;
         const itemRewards = rewards.filter(i => i.reward_type === 0);
         const pokemonRewards = rewards.filter(i => i.reward_type === 3);
-        if (itemRewards.length > 0 || pokemonRewards.length > 0) {
+        if (itemRewards.length > 0) {
             ipc.reply('show_save_dialog')
             for (const reward of itemRewards) {
                 getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
                     console.log(`Added x${reward.quantity} ${reward.item} to ${reward.bag}`)
                 });
             }
-
+            emmiter.on('perform_save', async () => {
+                emmiter.removeAllListeners('perform_save')
+            })
+        }
+        if (pokemonRewards.length > 0) {
+            ipc.reply('show_save_dialog')
             emmiter.on('perform_save', async () => {
                 let newData;
-                let needsRestart = false;
-                emmiter.removeAllListeners('perform_save')
+                emmiter.removeAllListeners('perform_save');
+
                 for (const reward of pokemonRewards) {
                     const pokemonData = Buffer.from(reward.pokemon_data);
                     // eslint-disable-next-line no-unused-vars
                     newData = addPokemonSaveData(pokemonData, true);
-                    needsRestart = true;
                 }
                 writeSaveBytes(newData);
                 ipc.reply('perform_save');
-                if (needsRestart) {
-                    ipc.reply('notification', {
-                        title: '¡Reinicia Tu Partida!',
-                        message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
-                        persistent: true
-                    })
-                }
+                ipc.reply('notification', {
+                    title: '¡Reinicia Tu Partida!',
+                    message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
+                    persistent: true
+                });
             })
         }
-        const citra = new CitraClient();
 
     }
 
@@ -292,7 +294,7 @@ async function openShowdownClient(ipc, data, opts = {}) {
         passKeyVia = 'query', // 'cookie' (recomendado) | 'query' | 'configjs'
     } = opts
     const part = `persist:ps-client-${Date.now()}`
-    const ses = el_session.fromPartition(part, { cache: true })
+    const ses = el_session.fromPartition(part, {cache: true})
     const win = new BrowserWindow({
         width,
         height,
@@ -330,6 +332,49 @@ function openLink(ipc, data) {
     shell.openExternal(data);
 }
 
+async function requestItemsHandler() {
+    const item_bag_items = await readPokemonBag('items')
+    const meds_bag_items = await readPokemonBag('meds')
+    const berry_bag_items = await readPokemonBag('berries')
+
+    return item_bag_items.concat(meds_bag_items).concat(berry_bag_items);
+}
+
+async function manageMarketTransactions(ipc, raw_data) {
+    const data = JSON.parse(raw_data);
+    const api_token = data.token;
+    const serializedItems = data.items;
+
+    for (const item of serializedItems) {
+        await getOrCreatePokemonItem(item.bag, item.index, -item.quantity, true)
+    }
+    ipc.reply('show_save_dialog')
+    emmiter.on('perform_save', async () => {
+        ipc.reply('perform_save');
+        ipc.reply('update_market');
+
+        session.post('/api/market/transfer_items/', {
+            items: JSON.stringify(data.items)
+        }, {
+            headers: {
+                Authorization: `Token ${api_token}`
+            }
+        }).catch((reason) => {
+            for (const item of serializedItems) {
+                getOrCreatePokemonItem(item.bag, item.index, item.quantity, true)
+            }
+            ipc.reply('notification', {
+                title: '¡Un Error Ha Ocurrido!',
+                message: 'ha ocurrido un error, contacta a soporte (para_mada)',
+                details: JSON.stringify(reason)
+            })
+            console.log(reason)
+            ipc.reply('perform_save')
+        });
+        emmiter.removeAllListeners('perform_save')
+    })
+}
+
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);
     ipcMain.on('download_save', downloadSaveEvent);
@@ -346,7 +391,9 @@ export function registerEvents() {
     ipcMain.on('open-link', openLink);
 
     ipcMain.handle('open-file-dialog', async () => {
-        const result = await dialog.showOpenDialog({ properties: ["openFile"] });
+        const result = await dialog.showOpenDialog({properties: ["openFile"]});
         return result.filePaths;
     });
+    ipcMain.handle('request-items', requestItemsHandler)
+    ipcMain.on('push_item_to_market', manageMarketTransactions)
 }

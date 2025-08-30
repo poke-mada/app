@@ -3,7 +3,7 @@ import {CombatEnv, CombatType} from "@/app/api/ram_editor/RamAccesor";
 import {decryptPokemonData as decryptData} from "@/app/api/lib/PokemonCrypt";
 import {getSaveName, stopWatching, watchSave} from "@/app/api/save_editor";
 import {logger, save_combat_log} from "@/app/api/handlers/logging";
-import {validateBattleData, validatePokemon} from "@/app/api/lib/validators";
+import {validateBattleData, validatePokemon, validatePokemonData} from "@/app/api/lib/validators";
 import {GLOBAL_CONFIG, RAM_ROM, RAM_ROM2 as rom} from "@/stores/back_constants";
 import {session} from "@/stores/backend";
 import config from "@/app/api/lib/config";
@@ -57,6 +57,8 @@ class GameData {
                     const enemy_data = Object.values(this.combat_info.enemy_battle_data);
                     if (enemy_data.filter(pk => pk !== null && pk.is_valid).length > 0) {
                         this.enemy_data.team = enemy_data;
+                    } else {
+                        this.enemy_data.team = this.enemy_data.team_data;
                     }
                     this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
 
@@ -75,10 +77,10 @@ class GameData {
                         pkm.nature_name = team_pkm.nature_name
                         pkm.nature_num = team_pkm.nature_num
                     }
+
                     if (Object.values(this.combat_info.your_battle_data).filter(pk => pk !== null).length === this.your_data.team) {
                         this.your_data.team = Object.values(this.combat_info.your_battle_data);
                     }
-                    this.detectCurrentCombat(this.enemy_data);
                 }
                 if (pokemon_game.alreadySent !== JSON.stringify(this)) {
                     ipc.reply('updated_game_data', this);
@@ -87,6 +89,7 @@ class GameData {
             }
         } catch (e) {
             logger.error(e)
+            console.log(e)
         } finally {
             ipc.reply('citra_connection_closed')
             this.is_communicating = false;
@@ -205,7 +208,6 @@ class TeamData {
         }
 
         if (game_data.combat_info.next_pokemon && this.owner === TeamOwner.ENEMY) {
-            console.log(game_data.combat_info.next_pokemon)
             const filtered = this.team_data.filter(pokemon => pokemon && pokemon.species.toLowerCase() === game_data.combat_info.next_pokemon);
             this.selected_pokemon.push(filtered[0].dex_number)
         } else {
@@ -230,7 +232,6 @@ class TeamData {
                 let move_data;
                 if (this.is_enemy) {
                     let allyParty = Object.entries(game_data.your_data.team).filter((v) => {
-                        // eslint-disable-next-line no-unused-vars
                         let [index, pokemon] = v;
                         return pokemon && pokemon.dex_number !== 0;
                     });
@@ -241,7 +242,7 @@ class TeamData {
                 }
 
                 let pokemon = new PokemonTeamData(move_data, data);
-                if (validatePokemon(pokemon.dex_number)) {
+                if (validatePokemon(pokemon.dex_number) && pokemon.is_valid) {
                     if (JSON.stringify(this.team[slot]) === JSON.stringify(pokemon)) return;
                     if (this.owner === TeamOwner.YOU) {
                         this.team[slot] = pokemon;
@@ -395,20 +396,7 @@ class CombatData {
     }
 
     async manageCombatLog(citra, address) {
-        const message = (await rom.readMessageBox(citra, address))
-            .replace('\n', ' ')
-            .replace('\u0010', '')
-            .replace('\u0002', '')
-            .replace('\xC8', '')
-            .replace('\x82', '')
-            .replace('Ȃ', '')
-            .replace('+ ȁ♣', '')
-            .replace('♣', '')
-            .replace('\u0010', '')
-            .replace('\u0001', '')
-            .replace('븀', '')
-            .split('\u0000')[0].trim();
-
+        const message = await rom.readMessageBox(citra, address, 152, true);
         if (!message) {
             return;
         }
@@ -417,9 +405,8 @@ class CombatData {
             this.combat_log_messages.push(message);
         }
 
-
         if (message.includes('va a sacar a ')) {
-            const removed_trainer_thrash = message.split('va a sacar a ')[1];
+            const removed_trainer_thrash = message.split('sacar a ')[1];
             const next_pokemon_clean = removed_trainer_thrash.split('!')[0]
             this.next_pokemon = next_pokemon_clean.toLowerCase();
         } else {
@@ -428,20 +415,9 @@ class CombatData {
     }
 
     async manageMoveLog(citra, address) {
-        const message = (await rom.readMessageBox(citra, address))
-            .replace('\n', ' ')
-            .replace('\u0010', '')
-            .replace('\u0002', '')
-            .replace('\xC8', '')
-            .replace('\x82', '')
-            .replace('Ȃ', '')
-            .replace('+ ȁ♣', '')
-            .replace('♣', '')
-            .replace('\u0010', '')
-            .replace('\u0001', '')
-            .replace('븀', '')
-            .split('\u0000')[0].trim();
+        const message = (await rom.readMessageBox(citra, address, 152, true));
 
+        console.log(message)
         if (!message) {
             return;
         }
@@ -474,11 +450,15 @@ class CombatData {
             let move_log_address;
             //let trainer_log_address;
             let combat_log_address;
-            if (this.combat_type === CombatType.NORMAL) {
+            if (this.combat_env === CombatEnv.WILD && this.combat_type === CombatType.NORMAL) {
+                move_log_address = rom.log_addresses.move_log.wild;
+                combat_log_address = rom.log_addresses.combat_log.wild;
+                //trainer_log_address = rom.log_addresses.trainer_log.multi;
+            } else if (this.combat_env === CombatEnv.TRAINER && this.combat_type === CombatType.NORMAL) {
                 move_log_address = rom.log_addresses.turn_log.single;
                 combat_log_address = rom.log_addresses.combat_log.single;
                 //trainer_log_address = rom.log_addresses.trainer_log.single;
-            } else if (this.combat_type === CombatType.DOUBLE) {
+            } else if (this.combat_env === CombatEnv.TRAINER && this.combat_type === CombatType.DOUBLE) {
                 move_log_address = rom.log_addresses.move_log.multi;
                 combat_log_address = rom.log_addresses.combat_log.multi;
                 //trainer_log_address = rom.log_addresses.trainer_log.multi;

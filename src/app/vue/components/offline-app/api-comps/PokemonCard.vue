@@ -3,7 +3,7 @@
     <template v-slot:activator="{ props }">
       <div class="badge-container">
         <v-img :src="get_sprite() ? get_sprite() : missingno" width="70" alt=""
-          :class="this.selected ? 'bordered' : ''" @click="$emit('click', pokemon)" v-bind="props"
+          :class="classes" @click="$emit('click', pokemon)" v-bind="props"
           class="cursor-pointer" />
         <!-- Badge solo si tiene held_item -->
         <v-img v-if="hasHeldItem" src="/assets/img/Home/itemPoke.png" width="22" class="custom-badge" />
@@ -43,6 +43,17 @@ export default {
     },
     hasHeldItem() {
       return this.pokemon?.held_item >= 1;
+    },
+    classes() {
+      const classes = [];
+
+      if (this.selected) {
+        classes.push('bordered')
+      }
+      if (this.pokemon.disabled) {
+        classes.push('disabled')
+      }
+      return classes.join(' ')
     }
   },
   data() {
@@ -60,6 +71,10 @@ export default {
 
 .bordered {
   filter: drop-shadow(0 0 0.75rem dodgerblue);
+}
+
+.disabled * {
+  filter: grayscale(100%);
 }
 
 .img-thumbnail {

@@ -1,5 +1,5 @@
 export function validatePokemonData(pokemon) {
-    return pokemon.maxhp <= 999 && pokemon.dex_number >= 1 && pokemon.dex_number <= 821 && pokemon.level <= 100;
+    return pokemon.maxhp <= 999 && pokemon.dex_number >= 1 && pokemon.dex_number <= 821 && pokemon.level <= 100 && pokemon.is_valid;
 }
 
 export function validatePokemonSaveData(pokemon) {

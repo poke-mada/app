@@ -132,8 +132,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col
-                v-if="(selected_card.inventory || selected_card.always_available) && ![68, 53, 56].includes(selected_card.id)">
+            <v-col v-if="!profile.is_coach && (selected_card.inventory || selected_card.always_available) && ![68, 53, 56].includes(selected_card.id)">
               <v-btn variant="tonal" text="Usar" color="warning" @click="canjear"/>
             </v-col>
             <v-col v-if="selected_card.price">
@@ -187,6 +186,7 @@
 import {getAxios, emitter} from "@/stores";
 import {SERVER_URL} from '@/stores/constants';
 import CoinsManualComponent from "@/app/vue/components/app-comps/displays/CoinsManualComponent";
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "WildcardListComponent",
@@ -525,6 +525,12 @@ export default {
       const start = (this.page - 1) * this.perPage;
       return this.wildcards.slice(start, start + this.perPage);
     },
+    store() {
+      return useGameStore();
+    },
+    profile() {
+      return this.store.profile_data;
+    }
   },
   mounted() {
     this.full_reload();

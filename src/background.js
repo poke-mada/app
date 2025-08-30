@@ -7,7 +7,7 @@ import path from "path";
 import {declareGlobalConfig} from "@/stores/back_constants";
 import {registerEvents} from "@/app/api/handlers/events";
 
-
+const NODE_INTEGRATION = false;
 const isDevelopment = process.env.NODE_ENV !== 'production'
 
 // Scheme must be registered before the app is ready
@@ -23,9 +23,9 @@ async function createWindow () {
     title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
     autoHideMenuBar: true,
     webPreferences: {
-      devTools: false, // forzado a true; el gating lo hacemos con DEV_MODE al abrir
-      nodeIntegration: false,
-      contextIsolation: true,
+      devTools: process.env.DEV_MODE, // forzado a true; el gating lo hacemos con DEV_MODE al abrir
+      nodeIntegration: NODE_INTEGRATION,
+      contextIsolation: !NODE_INTEGRATION,
       preload: path.join(__dirname, 'preload.js')
     }
   })

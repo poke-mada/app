@@ -2,7 +2,7 @@ import {RAM_ROM2 as rom} from "@/stores/back_constants";
 
 function extractLegible(text) {
     // Regex que busca caracteres legibles en español y símbolos QWERTY
-    const patron = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,;:¡!¿?\-_\(\)\[\]\{\}"'@#\$%&*/=<>|\\^~]+/g;
+    const patron = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,;:¡!¿?\-_\(\)\[\]\{\}"'@#\$%&*=<>|^~]+/g;
     // Unir todas las coincidencias encontradas
     const partesLegibles = text.match(patron);
     return partesLegibles ? partesLegibles.join('') : '';
@@ -82,12 +82,16 @@ export class RomData {
         return await citra.readMemory(pokemon_address, rom.wild_battle_data.combat_data.slot_data_size)
     }
 
-    async readMessageBox(citra, address, messageLenght = 152) {
+    async readMessageBox(citra, address, messageLenght = 152, print = false) {
         const messageBytes = await citra.readMemory(address, messageLenght);
-        return extractLegible(truncateBuffer(messageBytes).toString('utf16le').replace('\n', ' '))
+        const legibleMessage = extractLegible(truncateBuffer(messageBytes).toString('utf16le').replace('\n', ' '));
+        if (print) {
+            console.log(legibleMessage)
+        }
+        return legibleMessage.trim()
     }
 
-    async readMote(citra, address, messageLenght = 152) {
+    async readMote(citra, address, messageLenght = 26) {
         const messageBytes = await citra.readMemory(address, messageLenght);
         return truncateBuffer(messageBytes).toString('utf16le')
     }

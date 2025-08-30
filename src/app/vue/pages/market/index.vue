@@ -7,303 +7,23 @@
               class="divCardSup divSectionMerch d-flex justify-center align-center">
         <v-tab @click="selected_post = null;" :value="1">Mercado</v-tab>
         <v-tab @click="selected_post = null;" :value="2">Mis Anuncios</v-tab>
-        <v-tab @click="selected_post = null;" :value="3">Inventario</v-tab>
+        <v-tab @click="selected_post = null;" :value="3">Transferir Items</v-tab>
+        <v-tab @click="selected_post = null;" :value="4">Inventario</v-tab>
       </v-tabs>
       <v-tabs-window v-model="tab" class="paddinP1 h-100">
         <v-tabs-window-item :key="1" :value="1">
-          <v-container class="w-100" v-if="!selected_post">
-            <!-- Encabezado -->
-            <v-row class="font-weight-bold border-bottom py-2">
-              <v-col cols="2">IMAGEN</v-col>
-              <v-col cols="3">NOMBRE</v-col>
-              <v-col cols="3">CANTIDAD/MOTE</v-col>
-              <v-col cols="3">PROPIETARIO</v-col>
-              <v-col cols="1">
-                <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
-              </v-col>
-              <v-divider class="mb-2"/>
-            </v-row>
-            <!-- Lista -->
-           <!-- Si hay posts -->
-<template v-if="posts.length > 0">
-  <v-row
-    v-for="post in posts"
-    :key="post.id"
-    class="d-flex flex-row justify-center align-center border-bottom"
-  >
-    <v-col cols="2">
-      <v-img :src="post.sprite" max-height="60" aspect-ratio="1/1"/>
-    </v-col>
-    <v-col cols="3">
-      {{ post.item_name }}
-    </v-col>
-    <v-col cols="3">
-      {{ post.mote_or_quantity }}
-    </v-col>
-    <v-col cols="2">
-      {{ post.creator_name }}
-    </v-col>
-    <v-col cols="2">
-      <v-btn @click="select_post(post)" class="btn-grad-contact mt-4">
-        <span class="btn-text">VER</span>
-        <span class="btn-icon">
-          <svg class="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-width="3px" stroke-linecap="round" stroke-linejoin="round"
-                  d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </span>
-      </v-btn>
-    </v-col>
-    <v-divider class="mb-2"/>
-  </v-row>
-</template>
-
-<!-- Si NO hay posts -->
-<div v-else class="text-center py-8">
-  <p class="text-subtitle-1">Aún no hay publicaciones en el mercado.</p>
-</div>
-
-          </v-container>
-          <v-container class="w-100" v-if="selected_post">
-            <div class="ofertasDivPoke">
-              <v-row class="font-weight-bold border-bottom py-2">
-                <v-col cols="3" class="d-flex justify-center">IMAGEN</v-col>
-                <v-col cols="3" class="d-flex justify-center">NOMBRE</v-col>
-                <v-col cols="3" class="d-flex justify-center">CANTIDAD/MOTE</v-col>
-                <v-col cols="3" class="d-flex justify-center">PROPIETARIO</v-col>
-                <v-divider class="mb-2"/>
-              </v-row>
-              <v-row class="d-flex flex-row justify-center align-center border-bottom">
-                <v-col cols="3">
-                  <v-img :src="selected_post.sprite" max-height="60" aspect-ratio="1/1"/>
-                </v-col>
-                <v-col cols="3" class="d-flex justify-center">
-                  {{ selected_post.item_name }}
-                </v-col>
-                <v-col cols="3" class="d-flex justify-center">
-                  {{ selected_post.mote_or_quantity }}
-                </v-col>
-                <v-col cols="3" class="d-flex justify-center">
-                  {{ selected_post.creator_name }}
-                </v-col>
-              </v-row>
-            </div>
-            <!-- Encabezado -->
-            <div>
-              <v-container class="tittleColores p-0 mb-5">
-                <h1>OFERTAS</h1>
-                <v-divider class="mb-2"/>
-              </v-container>
-              <v-row>
-                <v-col cols="4" v-for="offer in offers" :key="offer.id">
-                  <v-card class="rounded-xl" max-width="500" style="position: relative; border: 1px solid var(--pink)">
-                    <!-- Encabezado PERFIL OFERTA -->
-                    <div class="divCardSupPurple d-flex justify-center align-center">
-                      <v-avatar size="50">
-                        <v-img :src="offer.profile_picture"></v-img>
-                      </v-avatar>
-                      <div class="nameOfertaSection">
-                        <h2 class="name">{{ offer.owner_name }}</h2>
-                        <p class="textMensaje">"Mensaje del usuario"</p>
-                      </div>
-                    </div>
-
-                    <!-- OFERTA DE CADA UNO -->
-                    <div class="paddingCardOferta">
-                      <v-row v-if="offer.type_offer === 'Object'">
-                        <div v-for="item in offer.items" :key="item.id"
-                             class="d-flex flex-column justify-center align-items-center w-100">
-                          <div class="cardColores d-flex justify-center align-center">
-                            <v-img :src="item.sprite" max-width="112"/>
-                            <div class="d-flex justify-center align-center flex-column">
-                              <p class="text-center bold">{{ item.item_name }}</p>
-                              <p class="text-center f-sm"> x{{ item.mote_or_quantity }}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </v-row>
-                      <v-row v-if="offer.type_offer != 'Object'">
-                        <div v-for="item in offer.items" :key="item.id"
-                             class="d-flex flex-column justify-center align-items-center w-100">
-                          <div class="cardColores d-flex justify-center align-center">
-                            <v-img :src="item.sprite" max-width="112"/>
-                            <div class="d-flex justify-center align-center flex-column">
-                              <p class="text-center bold">{{ item.mote_or_quantity }}</p>
-                              <p class="text-center f-sm">Nv. {{ item.level }}</p>
-                              <v-img :src="`./assets/types/Types/${item.type}.png`" width="32" aspect-ratio="1/1"/>
-                            </div>
-                          </div>
-                        </div>
-                      </v-row>
-                    </div>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </div>
-          </v-container>
+          <MarketPlaceComponent @post_selected="select_post" v-if="!selected_post"/>
+          <PostDetailComponent :post="selected_post" v-if="selected_post"/>
         </v-tabs-window-item>
         <v-tabs-window-item :key="2" :value="2">
-         <v-container class="w-100" v-if="!selected_post">
-  <!-- Encabezado -->
-  <v-row class="font-weight-bold border-bottom py-2">
-    <v-col cols="2">IMAGEN</v-col>
-    <v-col cols="3">NOMBRE</v-col>
-    <v-col cols="3">CANTIDAD/MOTE</v-col>
-    <v-col cols="3">Estatus</v-col>
-    <v-col cols="1">
-      <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
-    </v-col>
-    <v-divider class="mb-2"/>
-  </v-row>
-
-  <!-- Lista (solo si hay datos) -->
-  <template v-if="my_posts.length > 0">
-    <v-row
-      v-for="post in my_posts"
-      :key="post.id"
-      class="d-flex flex-row justify-center align-center border-bottom"
-    >
-      <v-col cols="2">
-        <v-img :src="post.items[0].sprite" max-height="60" aspect-ratio="1/1"/>
-      </v-col>
-      <v-col cols="3">
-        {{ post.items[0].name }}
-      </v-col>
-      <v-col cols="3">
-        {{ post.items[0].mote_or_quantity }}
-      </v-col>
-      <v-col cols="2">
-        {{ post.status_display }}
-      </v-col>
-      <v-col cols="2">
-        <v-btn @click="select_post(post)" class="btn-grad-contact mt-4">
-          <span class="btn-text">VER</span>
-          <span class="btn-icon">
-            <svg class="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-width="3" stroke-linecap="round" stroke-linejoin="round"
-                    d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
-        </v-btn>
-      </v-col>
-      <v-divider class="mb-2"/>
-    </v-row>
-  </template>
-
-  <!-- Estado vacío -->
-  <div v-else class="text-center py-8">
-    <p class="text-subtitle-1">Aún no tienes anuncios creados.</p>
-  </div>
-
-  <!-- Acción crear oferta (la dejamos siempre visible como en tu versión) -->
-  <div class="w-100">
-    <v-card-actions class="mt-5 d-flex justify-end align-center">
-      <v-btn class="btnColorEvent h-100 pa-3" :to="{ name: 'market-create' }">
-        Crear oferta
-      </v-btn>
-    </v-card-actions>
-  </div>
-</v-container>
-          <template v-else>
-            <CreateOffer @cancel="closeCreate" @created="closeCreate"/>
-          </template>
+          <MyPostsComponent @post_selected="select_post" v-if="!selected_post"/>
+          <MyPostDetailComponent :post="selected_post" v-if="selected_post"/>
         </v-tabs-window-item>
         <v-tabs-window-item :key="3" :value="3" class="h-75">
-  <v-container class="h-100 w-100">
-    <v-row>
-      <!-- INVENTARIO DE PARTIDA -->
-      <v-col cols="6">
-        <v-card class="inventory-card rounded-xl borderPink">
-          <v-card-title class="divCardSupPurple d-flex align-center">
-            <h3 class="tittleCardPurple">INVENTARIO DE PARTIDA</h3>
-          </v-card-title>
-          <v-card-text class="inventory-body cardPadingInventory">
-            <v-row class="inventory-header font-weight-bold border-bottom ptb text-center">
-              <v-col cols="3">IMAGEN</v-col>
-              <v-col cols="4">NOMBRE</v-col>
-              <v-col cols="3">CANTIDAD</v-col>
-              <v-col cols="2">
-                <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
-              </v-col>
-              <v-divider class="mb-2"/>
-            </v-row>
-
-            <!-- Lista o mensaje vacío -->
-            <template v-if="inventory.length > 0">
-              <div
-                class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center"
-                v-for="item in inventory"
-                :key="item.id"
-              >
-                <v-row class="mb-2 pointer hoverCard">
-                  <v-col cols="3">
-                    <v-img :src="item.sprite" height="65px"/>
-                  </v-col>
-                  <v-col cols="4" class="d-flex justify-center align-center p-0">
-                    <span class="text-center">{{ item.item_name }}</span>
-                  </v-col>
-                  <v-col cols="3" class="d-flex justify-center align-center p-0">
-                    {{ item.mote_or_quantity }}
-                  </v-col>
-                  <v-col cols="2"></v-col>
-                </v-row>
-                <v-divider class="mb-2"/>
-              </div>
-            </template>
-            <div v-else class="text-center py-8">
-              <p class="text-subtitle-1">El inventario está vacío.</p>
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-
-      <!-- INVENTARIO DE LA APP -->
-      <v-col cols="6">
-        <v-card class="inventory-card rounded-xl borderPink">
-          <v-card-title class="divCardSupPurple d-flex align-center">
-            <h3 class="tittleCardPurple">INVENTARIO DE LA APP</h3>
-          </v-card-title>
-          <v-card-text class="inventory-body cardPadingInventory">
-            <v-row class="inventory-header font-weight-bold border-bottom ptb text-center">
-              <v-col cols="3">IMAGEN</v-col>
-              <v-col cols="4">NOMBRE</v-col>
-              <v-col cols="3">CANTIDAD</v-col>
-              <v-col cols="2">
-                <v-img height="20px" src="/assets/icons/FilterBlack.svg"></v-img>
-              </v-col>
-              <v-divider class="mb-2"/>
-            </v-row>
-
-            <!-- Lista o mensaje vacío -->
-            <template v-if="inventory.length > 0">
-              <div
-                class="list-group-item bg-gray-300 m-1 p-3 rounded-md text-center"
-                v-for="item in inventory"
-                :key="item.id"
-              >
-                <v-row class="mb-2 pointer hoverCard">
-                  <v-col cols="3">
-                    <v-img :src="item.sprite" height="65px"/>
-                  </v-col>
-                  <v-col cols="4" class="d-flex justify-center align-center p-0">
-                    <span class="text-center">{{ item.item_name }}</span>
-                  </v-col>
-                  <v-col cols="3" class="d-flex justify-center align-center p-0">
-                    {{ item.mote_or_quantity }}
-                  </v-col>
-                  <v-col cols="2"></v-col>
-                </v-row>
-                <v-divider class="mb-2"/>
-              </div>
-            </template>
-            <div v-else class="text-center py-8">
-              <p class="text-subtitle-1">El inventario está vacío.</p>
-                    </div>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-container>
+          <InventoryComponent/>
+        </v-tabs-window-item>
+        <v-tabs-window-item :key="4" :value="3" class="h-75">
+          <InventoryComponent/>
         </v-tabs-window-item>
 
       </v-tabs-window>
@@ -319,30 +39,27 @@ const tab = ref(null)
 </script>
 
 <script>
-import {defineAsyncComponent} from 'vue'
 import {getAxios} from "@/stores";
+import MarketPlaceComponent from '@/app/vue/pages/market/menus/MarketPlaceComponent';
+import MyPostsComponent from '@/app/vue/pages/market/menus/MyPostsComponent';
+import PostDetailComponent from '@/app/vue/pages/market/menus/market_place/PostDetailComponent';
+import MyPostDetailComponent from '@/app/vue/pages/market/menus/my_posts/MyPostDetailComponent';
+import InventoryComponent from '@/app/vue/pages/market/inventory';
 
 export default {
   name: 'MarketPage',
   components: {
-    CreateOffer: defineAsyncComponent(() => import('@/app/vue/pages/market/create.vue'))
+    MarketPlaceComponent,
+    PostDetailComponent,
+    MyPostsComponent,
+    MyPostDetailComponent,
+    InventoryComponent
   },
   props: {},
   data() {
     return {
       tab: 1,
       showCreate: false,
-      offers: [],
-      posts: [],
-      my_posts: [],
-      inventory: [
-        {
-          id: 4,
-          sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/yache-berry.png',
-          item_name: 'Baya Rimoya',
-          mote_or_quantity: '2',
-        }
-      ],
       selected_post: null,
     }
   },
@@ -355,18 +72,7 @@ export default {
     this.load_posts();
     this.load_my_posts();
     if (this.$route.name === 'market-create' || this.$route.meta?.openCreate) {
-      this.tab = 2
       this.showCreate = true
-    }
-  },
-  watch: {
-    $route(to) {
-      if (to.name === 'market-create' || to.meta?.openCreate) {
-        this.tab = 2
-        this.showCreate = true
-      } else {
-        this.showCreate = false
-      }
     }
   },
   methods: {

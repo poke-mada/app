@@ -12,7 +12,7 @@
       <div class="paddinP1">
         <!-- Header tabla -->
         <v-row class="mail-header align-center">
-          <v-col cols="2" class="th">Imagen</v-col>
+          <v-col cols="2" class="th"></v-col>
           <v-col cols="3" class="th">Título</v-col>
           <v-col cols="3" class="th">Remitente</v-col>
           <v-col cols="4" class="th d-flex justify-end">
@@ -26,30 +26,15 @@
         <!-- SI HAY RECOMPENSAS -->
         <div v-if="available_rewards.length > 0">
           <v-row class="pa-4" v-for="(bundle, index) in paginatedRewards" :key="bundle.id ?? index">
-            <v-col cols="2" class="d-flex justify-center align-center">
-              <img
-                v-if="bundle.type === 0"
-                src="/assets/icons/Regalo.svg"
-                alt="Premio"
-              />
-              <img
-                v-else-if="bundle.type === 1"
-                src="/assets/icons/Roulette.svg"
-                alt="Ruleta"
-              />
-              <img
-                v-else-if="bundle.type === 2"
-                src="/assets/icons/BuzonCard.svg"
-                alt="Comodín"
-              />
-              <img
-                v-else
-                src="/assets/icons/BuzonCard.svg"
-                alt="Otro"
-              />
+            <v-col cols="2" class="d-flex fr justify-center align-center">
+              <img v-if="bundle.type === 0" src="/assets/icons/Regalo.svg" alt="Premio"/>
+              <img v-else-if="bundle.type === 1" src="/assets/icons/Roulette.svg" alt="Ruleta"/>
+              <img v-else-if="bundle.type === 2" src="/assets/icons/BuzonCard.svg" alt="Comodín"/>
+              <img v-else src="/assets/icons/BuzonCard.svg" alt="Otro"/>
             </v-col>
-            <v-col cols="3" class="d-flex align-center">
-              {{ bundle.name }}
+            <v-col cols="3" class="d-flex align-start flex-column justify-center">
+              <span>{{ bundle.name }}</span>
+              <a href="#" @click.prevent="openModal(bundle.id)">Leer más</a>
             </v-col>
 
             <v-col cols="3" class="d-flex align-center">
@@ -57,7 +42,7 @@
             </v-col>
 
             <v-col cols="4" class="btnReclamarDiv">
-              <v-btn v-if="emulator_on" @click="claim_reward(bundle.id)" class="btn-grad-contact mt-4">
+              <v-btn v-if="emulator_on && !profile_data.is_coach" @click="claim_reward(bundle.id)" class="btn-grad-contact mt-4">
                 <span class="btn-text">RECLAMAR</span>
                 <span class="btn-icon">
                   <svg class="stroke3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -65,8 +50,17 @@
                   </svg>
                 </span>
               </v-btn>
-
-              <v-tooltip v-else location="top">
+              <v-tooltip v-else-if="profile_data.is_coach" location="top">
+                <template #default>Solo el participante puede canjear las recompensas</template>
+                <template #activator="{ props }">
+                  <div v-bind="props">
+                    <v-btn class="btn-grad-contact mt-4" disabled>
+                      <span class="btn-text">RECLAMAR</span>
+                    </v-btn>
+                  </div>
+                </template>
+              </v-tooltip>
+              <v-tooltip v-else-if="!emulator_on" location="top">
                 <template #default>Necesitas tener el emulador conectado a la aplicación</template>
                 <template #activator="{ props }">
                   <div v-bind="props">
@@ -97,12 +91,54 @@
       </div>
     </v-card>
   </div>
+
+  <!-- Modal de detalle -->
+  <v-dialog v-model="showModal" max-width="60%">
+    <v-card class="cardBorderInfo" id="event">
+      <v-alert color="#FFC81F" class="divCardSup pa-3 d-flex justify-center align-center">
+        <h2 class="textInfoEvent">
+          {{ selected_reward.name }}
+        </h2>
+      </v-alert>
+      <v-card-text>
+        <v-container class="tittleDobleColor">
+          <h1>RECOMPENSAS</h1>
+          <v-divider class="mb-3"></v-divider>
+        </v-container>
+        <v-container class="d-flex justify-center">
+          <div class="gradient-border-text" v-if="selected_reward.rewards.length <= 0">
+            <p>{{selected_reward.text_reward}}</p>
+          </div>
+          <div class="gradient-border-text" v-else>
+            <v-data-table
+                :items="as_data_table(selected_reward.rewards)"
+                :headers="rewards_headers"
+                hide-default-footer>
+              <template #item="{item}">
+                <tr>
+                  <td class="pa-0 ml-4">
+                    <v-img :src="item.image" height="48"/>
+                  </td>
+                  <td>{{ item.name }}</td>
+                  <td>{{ item.quantity }}</td>
+                </tr>
+              </template>
+            </v-data-table>
+          </div>
+        </v-container>
+      </v-card-text>
+      <v-card-actions class="justify-end">
+        <v-btn color="primary" @click="showModal = false">Cerrar</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
 
 <script>
 import { getAxios } from "@/stores";
 import { useGameStore } from "@/stores/app";
+import {STATICS_URL} from "@/app/api/lib/poke-api";
 
 export default {
   name: 'RewardsAppPage',
@@ -111,6 +147,13 @@ export default {
       available_rewards: [],
       currentPage: 1,
       perPage: 5,
+      showModal: false,
+      rewards_headers: [
+        {title: ''},
+        {title: 'Descripcion'},
+        {title: 'Cantidad'}
+      ],
+      selected_reward: null
     };
   },
   async mounted() {
@@ -137,7 +180,10 @@ export default {
     emulator_on() {
       return this.store.emulator_on;
     },
-      totalPages() {
+    profile_data() {
+      return this.store.profile_data;
+    },
+    totalPages() {
       const pages = Math.ceil(this.available_rewards.length / this.perPage);
       return Math.max(1, pages);
     },
@@ -147,6 +193,11 @@ export default {
     },
   },
   methods: {
+    async openModal(reward) {
+      const { data } = await getAxios().get(`/api/rewards/${reward}/`);
+      this.selected_reward = data;
+      this.showModal = true;
+    },
     async load_rewards() {
       const { data } = await getAxios().get('/api/trainers/get_rewards/');
       this.available_rewards = Array.isArray(data) ? data : [];
@@ -166,7 +217,38 @@ export default {
       }
 
       window.electron?.sendMessage?.('reward', bundle_data);
-    }
+    },
+    as_data_table(rewards) {
+      return rewards.map((reward) => ({
+        image: this.get_reward_image(reward),
+        name: this.get_reward_name(reward),
+        quantity: reward.quantity
+      }))
+    },
+    get_reward_image(reward) {
+      switch (reward.reward_type) {
+        case 0: // ITEM
+          return `${STATICS_URL}/sprites/master/sprites/items/${reward.item.index}.png`
+        case 1: // WILDCARD
+          return reward.wildcard.sprite
+        case 2: // MONEY
+          return './assets/coin.png'
+        case 3: // POKEMON
+          return `${STATICS_URL}/sprites/master/sprites/pokemon/${reward.pokemon.dex_number}.png`
+      }
+    },
+    get_reward_name(reward) {
+      switch (reward.reward_type) {
+        case 0: // ITEM
+          return reward.item.name
+        case 1: // WILDCARD
+          return reward.wildcard.name
+        case 2: // WILDCARD
+          return 'Monedas'
+        case 3: // POKEMON
+          return reward.pokemon.mote
+      }
+    },
   }
 };
 </script>

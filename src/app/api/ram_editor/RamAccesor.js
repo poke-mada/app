@@ -78,6 +78,37 @@ export async function getOrCreatePokemonItem(bag, item, quantity, add_flag = fal
     throw new Error("not enough space in the bag")
 }
 
+export async function readPokemonBag(bag_name, citra = new CitraClient()) {
+    let items = [];
+    let slot = 0;
+    const item_slot_offset = 4;
+    const bag_address = rom2.item_data.items;
+    const specific_bag_address = getBagAddress(rom2.item_data, bag_name);
+    const bag_limit = getBagLength(rom2.item_data, bag_name);
+    let current_offset = 0;
+
+    while (current_offset <= bag_limit) {
+        const read_address = bag_address - specific_bag_address + slot * item_slot_offset;
+        let message_data = await citra.readMemory(read_address, item_slot_offset);
+        const current_item = message_data.readUInt16LE();
+        const current_quantity = message_data.readUInt16LE(2);
+
+        if (current_item === 0) {
+            break;
+        }
+
+        if (current_item !== 113) {
+            items.push([current_item, current_quantity, bag_name])
+        }
+
+        slot += 1
+        current_offset += item_slot_offset
+    }
+
+    return items;
+}
+
+
 // eslint-disable-next-line no-unused-vars
 export function getBagAddress(item_data, bag_name) {
     return item_data[`${bag_name}_offset`];

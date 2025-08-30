@@ -102,18 +102,22 @@ export const XY = new RomData(
     },
     {
         combat_log: {
-            single: 0x8523114,
+            wild: 0x8541B2C,
+            single: 0x85238BC,
             multi: 0,
         },
         trainer_log: {
-            single: 0x8523C94,
+            wild: 0,
+            single: 0,
             multi: 0,
         },
         move_log: {
+            wild: 0x845C004, // 0x845C004,0x8541B2C
             multi: 0x84CF064,
             single: 0x845C004
         },
         turn_log: {
+            wild: 0x8541AE4,
             single: 0x8541AE4,
             multi: 0
         }

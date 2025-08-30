@@ -57,14 +57,14 @@
           <v-img src="/assets/icons/Buzon.svg" width="28" height="28" class="me-2" cover v-else />
         </template>
       </v-list-item>
-      <v-list-item class="itemBox" to="/roulettes" title="Ruletas" value="roulettes">
+      <v-list-item class="itemBox" to="/roulettes" title="Ruletas" value="roulettes" v-if="!profile.is_coach">
         <template #prepend>
           <v-img src="/assets/icons/active/Circulo.svg" width="28" height="28" class="me-2" cover
             v-if="$route.path === '/roulettes'" />
           <v-img src="/assets/icons/Circulo.svg" width="28" height="28" class="me-2" cover v-else />
         </template>
       </v-list-item>
-      <v-list-item class="itemBox" to="/market" title="Mercado" value="market" v-if="streamer_name === 'para_mada'">
+      <v-list-item class="itemBox" to="/market" title="Mercado" value="market">
         <template #prepend>
           <v-img src="/assets/icons/active/store.svg" width="28" height="28" class="me-2" cover
             v-if="$route.path === '/market'" />
@@ -89,7 +89,7 @@
         <v-list-item v-else prepend-avatar="./assets/lime_logo_off.png" class="mr-1 mt-2 mb-2"
           title="Emulador Desconectado">
           <template #append>
-            <v-btn size="small" variant="tonal" :loading="reconnecting" @click.stop="retry_connect">
+            <v-btn size="small" variant="tonal" :loading="reconnecting" @click.stop="retry_connect" v-if="!profile.is_coach">
               Reintentar
             </v-btn>
           </template>
