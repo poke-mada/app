@@ -37,13 +37,13 @@ export default {
   computed: {
     first_slot() {
       if (this.team === 'enemy') {
-        return parseInt(this.team_data.selected_pokemon[0]) || null;
+        return parseInt(this.team_data.selected_pokemon[1]) || null;
       }
       return this.team_data.selected_pokemon[0];
     },
     second_slot() {
       if (this.team === 'enemy') {
-        return parseInt(this.team_data.selected_pokemon[1]) || null;
+        return parseInt(this.team_data.selected_pokemon[0]) || null;
       }
       if (this.team_data.selected_pokemon[1] === undefined) {
         return this.ally_data.selected_pokemon[1];

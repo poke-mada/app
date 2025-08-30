@@ -1,29 +1,34 @@
 // noinspection JSUnresolvedVariable
 
-import {ipcMain, Notification} from "electron";
+import {BrowserWindow, ipcMain, Notification, session as el_session, dialog, shell} from "electron";
 import {session} from "@/stores/backend";
 import path from "path";
 import fs from "fs";
 import {CitraClient} from "@/app/api/ram_editor/CitraClient";
-import {declareGlobalConfig, emmiter, GLOBAL_CONFIG, MODS_FILE_LIME3} from "@/stores/back_constants";
+import {
+    APPDATA_FOLDER,
+    declareGlobalConfig,
+    emmiter,
+    GLOBAL_CONFIG,
+    MODS_FILE_LIME3, RAM_ROM2 as rom2, SAVE_FILE_LIME3,
+    SERVER_URL, TEST_CLIENT_PATH, update_save_file
+} from "@/stores/back_constants";
 import {autoUpdater} from "electron-updater";
-import { Howl } from 'howler';
 import {compareVersions} from "compare-versions";
 import {
-    getOrCreatePokemonItem, giveMoneyToPlayer,
-    modifyPokemonBattleData,
-    modifyPokemonData,
-    setPokemon
+    getBagAddress, getBagLength,
+    getOrCreatePokemonItem, giveMoneyToPlayer, readPokemonBag,
 } from "@/app/api/ram_editor/RamAccesor";
 import {
     addPokemonSaveData,
-    clearPokemonSaveData,
-    modifyPokemonSaveData,
     writeSaveBytes
 } from "@/app/api/save_editor/SaveAccesor";
-import {SavePokemon} from "@/app/api/save_editor/SavePokemon";
 import {PokemonGame} from "@/app/api/handlers/PokemonGame";
 import AdmZip from "adm-zip";
+import axios from "axios";
+import https from "https";
+import config from "@/app/api/lib/config";
+
 
 function downloadSaveEvent(ipc, trainer_name) {
     session.get(`/last_save/${trainer_name}`, {
@@ -39,12 +44,47 @@ function downloadSaveEvent(ipc, trainer_name) {
     })
 }
 
+async function downloadShowdownClient(ipc) {
+    console.log('[SHOWDOWN-APP] started showdown download process')
+    let showdownClientDownloaded = config.get('showdown-client-downloaded', false)
+    if (!showdownClientDownloaded) {
+        console.log('[SHOWDOWN-APP] showdown download allowed')
+        const zip_file_path = path.join(APPDATA_FOLDER, 'showdown-client.zip');
+        const zipfile = fs.createWriteStream(zip_file_path);
+
+        const lambda_response = await axios.get('https://5j5zxvz74jvbztrrhh6wjt2iji0apnuz.lambda-url.us-east-1.on.aws/');
+
+        const s3_url = lambda_response.data;
+
+        https.get(s3_url, (response) => {
+            response.on("data", (chunk) => {
+                console.log('[SHOWDOWN-APP] downloading showdown client...')
+            });
+            response.pipe(zipfile);
+            zipfile.on("finish", () => {
+                zipfile.close();
+                try {
+                    ipc.reply('enable-showdown-module')
+                    extractZip(zip_file_path, APPDATA_FOLDER)
+                    console.log('[SHOWDOWN-APP] showdown client downloaded!')
+                    config.set('showdown-client-downloaded', true)
+                } catch (e) {
+                    console.log(e)
+                }
+            });
+        });
+    } else {
+        ipc.reply('enable-showdown-module')
+        console.log('[SHOWDOWN-APP] showdown client already downloaded!')
+    }
+}
+
 async function openMainChannel(ipc) {
     let game = new PokemonGame()
     if (!process.env.WEBPACK_DEV_SERVER_URL) {
         autoUpdater.setFeedURL({
             provider: 'generic',
-            url: 'https://para-mada-deploy.s3.us-east-1.amazonaws.com/dedsafio/',
+            url: 'https://para-mada-deploy.s3-accelerate.amazonaws.com/dedsafio/',
         });
 
         let new_version = null;
@@ -65,50 +105,12 @@ async function openMainChannel(ipc) {
             });
         });
     }
+    await downloadShowdownClient(ipc);
 
     emmiter.removeAllListeners('perform_save')
     await game.startComms(ipc);
 }
 
-
-async function inventoryModificationEvent(data) {
-    let citra = new CitraClient();
-    await getOrCreatePokemonItem(19, data.event_qty, true, citra)
-}
-
-async function pokemonModificationEvent(ipc, data) {
-    const pokemonData = fs.readFileSync('E:\\pkhex\\pkmn\\charmeleon.ek6');
-    if (data.level === 'ram') {
-        const citra = new CitraClient();
-        switch (data.effect) {
-            case 'boosts':
-                await modifyPokemonBattleData(data.slot, data.boosts, citra);
-                break;
-            case 'clean':
-                await setPokemon(SavePokemon.getEmptySlot(), data.slot, citra)
-                break;
-            case 'edit':
-                await modifyPokemonData(data.slot, data.new_data, citra)
-                break;
-            case 'add':
-                //await addPokemonData(pokemonData, citra)
-                break;
-        }
-    } else if (data.level === 'save') {
-        switch (data.effect) {
-            case 'clean':
-                clearPokemonSaveData(data.slot)
-                break;
-            case 'edit':
-                modifyPokemonSaveData(data.slot, data.new_data);
-                break;
-            case 'add':
-            default:
-                addPokemonSaveData(pokemonData)
-                break;
-        }
-    }
-}
 
 function storeFrontData(ipc, data) {
     for (const [key, value] of Object.entries(data)) {
@@ -131,79 +133,107 @@ async function exchangeRewardBundle(ipc, data) {
             message: 'ha ocurrido un error, contacta a soporte (para_mada)',
             details: JSON.stringify(reason)
         })
+        console.log(reason)
         ipc.reply('perform_save')
     });
     if (response.status === 200) {
         const rewards = response.data.rewards;
-        ipc.reply('show_save_dialog')
         const itemRewards = rewards.filter(i => i.reward_type === 0);
-        const nonItemRewards = rewards.filter(i => i.reward_type !== 0);
-        const citra = new CitraClient();
-
-        for (const reward of itemRewards) {
-            getOrCreatePokemonItem(reward.item_reward.bag, reward.item_reward.item, reward.item_reward.quantity, true, citra).then(() => {
-                console.log(`Added x${reward.item_reward.quantity} ${reward.item_reward.item} to ${reward.item_reward.bag}`)
-            });
+        const pokemonRewards = rewards.filter(i => i.reward_type === 3);
+        if (itemRewards.length > 0) {
+            ipc.reply('show_save_dialog')
+            for (const reward of itemRewards) {
+                getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
+                    console.log(`Added x${reward.quantity} ${reward.item} to ${reward.bag}`)
+                });
+            }
+            emmiter.on('perform_save', async () => {
+                emmiter.removeAllListeners('perform_save')
+            })
         }
+        if (pokemonRewards.length > 0) {
+            ipc.reply('show_save_dialog')
+            emmiter.on('perform_save', async () => {
+                let newData;
+                emmiter.removeAllListeners('perform_save');
 
-        emmiter.on('perform_save', async () => {
-            let newData;
-            let needsRestart = false;
-            emmiter.removeAllListeners('perform_save')
-            for (const reward of nonItemRewards) {
-                if (reward.reward_type === 0) {// item
-                } else if (reward.reward_type === 3) {// pokemon
-                    const pokemonData = Buffer.from(reward.pokemon_reward.pokemon_data);
+                for (const reward of pokemonRewards) {
+                    const pokemonData = Buffer.from(reward.pokemon_data);
                     // eslint-disable-next-line no-unused-vars
                     newData = addPokemonSaveData(pokemonData, true);
-                    needsRestart = true;
                 }
-            }
-            writeSaveBytes(newData);
-            ipc.reply('perform_save');
-            if (needsRestart) {
+                writeSaveBytes(newData);
+                ipc.reply('perform_save');
                 ipc.reply('notification', {
                     title: '¡Reinicia Tu Partida!',
                     message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
                     persistent: true
-                })
-            }
-        })
+                });
+            })
+        }
+
     }
 
 }
 
-async function extractZip(zipFilePath, destinationPath) {
+function extractZip(zipFilePath, destinationPath) {
     const zip = new AdmZip(zipFilePath);
-
     zip.extractAllTo(destinationPath, true);
 }
 
 async function joinEvent(ipc, data) {
     const event_id = data.event_id;
-    const token = data.token;
-    const util = require('util');
-    const stream = require('stream');
-    const pipeline = util.promisify(stream.pipeline);
+    const https = require("https");
 
-    const response = await session.get(`/api/events/${event_id}/mod_file/`, {
+    const zipfile = fs.createWriteStream('mod_zip.zip');
+    const event_response = await axios.get(`${SERVER_URL}/api/events/${event_id}/mod_file/`, {
         headers: {
-            Authorization: `Token ${token}`
-        },
-        responseType: 'stream'
-    });
-    await pipeline(response.data, fs.createWriteStream('mod_zip.zip'));
-    await extractZip('mod_zip.zip', MODS_FILE_LIME3)
-
-    ipc.reply('notification', {
-        title: '¡Reinicia Tu Partida!',
-        message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
-        persistent: true
+            Authorization: `Token ${data.token}`
+        }
     })
+    const s3_url = event_response.data;
+    https.get(s3_url, (response) => {
+        const total = parseInt(response.headers["content-length"], 10);
+        let received = 0;
+        response.on("data", (chunk) => {
+            received += chunk.length;
+            const percent = Math.round((received / total) * 100);
+            ipc.reply("download-progress", percent);
+        });
+        response.pipe(zipfile);
+        zipfile.on("finish", () => {
+            zipfile.close();
+            try {
+                extractZip('mod_zip.zip', MODS_FILE_LIME3)
+                ipc.reply("event-joined");
+                ipc.reply('notification', {
+                    title: '¡Reinicia Tu Partida!',
+                    message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
+                    persistent: true
+                })
+            } catch (e) {
+                ipc.reply('notification', {
+                    title: '¡Un Error Ha Ocurrido!',
+                    message: 'ha ocurrido un error, contacta a soporte (para_mada)',
+                    details: JSON.stringify(e)
+                })
+            } finally {
+                ipc.reply("download-stop");
+            }
+        });
+    });
+
 }
 
-async function leaveEvent(ipc) {
+async function leaveEvent(ipc, data) {
+    const event_id = data.event_id;
+    const token = data.token_id;
 
+    await session.post(`/api/event/${event_id}/leave/`, null, {
+        headers: {
+            Authorization: `Token ${token}`
+        }
+    })
     try {
         const items = fs.readdirSync(MODS_FILE_LIME3, {withFileTypes: true});
 
@@ -217,7 +247,7 @@ async function leaveEvent(ipc) {
     } catch (err) {
         console.error('Error al borrar carpetas:', err);
     }
-
+    ipc.reply('event-left');
     ipc.reply('notification', {
         title: '¡Reinicia Tu Partida!',
         message: 'Los cambios se han efectuado, puedes reiniciar tu partida (no olvides dar F5 a la app luego de iniciar partida)',
@@ -259,6 +289,104 @@ function showNotification(ipc, data) {
     }
 }
 
+async function fetchSidFromDRF(data) {
+    const token = data.token;
+    const response = await session.get('/api/trainers/showdown_key/', {
+        headers: {
+            Authorization: `Token ${token}`
+        }
+    })
+    return response.data
+}
+
+async function openShowdownClient(ipc, data, opts = {}) {
+    const {
+        width = 1200,
+        height = 800,
+        passKeyVia = 'query', // 'cookie' (recomendado) | 'query' | 'configjs'
+    } = opts
+    const part = `persist:ps-client-${Date.now()}`
+    const ses = el_session.fromPartition(part, {cache: true})
+    const win = new BrowserWindow({
+        width,
+        height,
+        autoHideMenuBar: true,
+        webPreferences: {
+            contextIsolation: true,
+            nodeIntegration: false,
+            devTools: false,       // en prod quedará false
+            sandbox: true,
+            preload: path.join(__dirname, 'preload-client.js'), // si lo necesitas
+            session: ses,
+        }
+    });
+    console.log('abriendo cliente de showdown...')
+
+    const SID = await fetchSidFromDRF(data);
+    const baseUrl = 'file://' + TEST_CLIENT_PATH.replace(/\\/g, '/')
+    const url = passKeyVia === 'query'
+        ? `${baseUrl}?~~158.69.213.100:8000&client_key=${encodeURIComponent(SID)}`
+        : baseUrl
+    await win.loadURL(url)
+}
+
+function requestSavePath(ipc) {
+    ipc.reply('save-path-data', SAVE_FILE_LIME3)
+}
+
+function updateSavePath(ipc, data) {
+    config.set('savePath', data);
+    update_save_file();
+    ipc.reply('save-path-data', data);
+}
+
+function openLink(ipc, data) {
+    shell.openExternal(data);
+}
+
+async function requestItemsHandler() {
+    const item_bag_items = await readPokemonBag('items')
+    const meds_bag_items = await readPokemonBag('meds')
+    const berry_bag_items = await readPokemonBag('berries')
+
+    return item_bag_items.concat(meds_bag_items).concat(berry_bag_items);
+}
+
+async function manageMarketTransactions(ipc, raw_data) {
+    const data = JSON.parse(raw_data);
+    const api_token = data.token;
+    const serializedItems = data.items;
+
+    for (const item of serializedItems) {
+        await getOrCreatePokemonItem(item.bag, item.index, -item.quantity, true)
+    }
+    ipc.reply('show_save_dialog')
+    emmiter.on('perform_save', async () => {
+        ipc.reply('perform_save');
+        ipc.reply('update_market');
+
+        session.post('/api/market/transfer_items/', {
+            items: JSON.stringify(data.items)
+        }, {
+            headers: {
+                Authorization: `Token ${api_token}`
+            }
+        }).catch((reason) => {
+            for (const item of serializedItems) {
+                getOrCreatePokemonItem(item.bag, item.index, item.quantity, true)
+            }
+            ipc.reply('notification', {
+                title: '¡Un Error Ha Ocurrido!',
+                message: 'ha ocurrido un error, contacta a soporte (para_mada)',
+                details: JSON.stringify(reason)
+            })
+            console.log(reason)
+            ipc.reply('perform_save')
+        });
+        emmiter.removeAllListeners('perform_save')
+    })
+}
+
 export function registerEvents() {
     ipcMain.on('open_channel', openMainChannel);
     ipcMain.on('download_save', downloadSaveEvent);
@@ -268,4 +396,16 @@ export function registerEvents() {
     ipcMain.on('reward', exchangeRewardBundle);
     ipcMain.on('wildcard', manageWildcardEvents);
     ipcMain.on('notify', showNotification);
+    ipcMain.on('open-showdown', openShowdownClient);
+
+    ipcMain.on('request-save-path', requestSavePath);
+    ipcMain.on('update-save-path', updateSavePath);
+    ipcMain.on('open-link', openLink);
+
+    ipcMain.handle('open-file-dialog', async () => {
+        const result = await dialog.showOpenDialog({properties: ["openFile"]});
+        return result.filePaths;
+    });
+    ipcMain.handle('request-items', requestItemsHandler)
+    ipcMain.on('push_item_to_market', manageMarketTransactions)
 }

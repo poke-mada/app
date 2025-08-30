@@ -1,24 +1,22 @@
 <template>
   <!-- SECCION DE COMBATE CUANDO NO HAY COMBATES ACTIVOS Y SE VE TU EQUIPO  -->
-  <v-card border class="mt-2">
-    <v-alert :color="team === 'enemy' ? '#0600FF' : '#D5048D'"
+  <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;"
+    :style="{ display: combat_type !== 'WILD' ? 'block' : 'none' }">
+    <div :style="{ backgroundColor: team === 'enemy' ? '#0600FF' : '#D5048D' }"
       class="divCardSup pa-3 d-flex justify-center align-center">
+      <v-avatar size="78" style="position: absolute; top: 80%; left: -5%;">
+        <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
+      </v-avatar>
       <h2 class="textTeamCombats" v-if="team === 'enemy'">
         Pokemon Enemigo
       </h2>
       <h2 class="textTeamCombats" v-if="team === 'you'">
         Tu Equipo
       </h2>
-    </v-alert>
-    <v-row class="pa-1">
+    </div>
+    <v-row class="mb-2 mt-1 pl-6">
       <v-col cols="6" v-for="(pokemon, i) in this.data.team" :key="i">
-        <v-row>
-          <v-spacer />
-          <v-col>
-            <PokemonCard :pokemon="pokemon" @click="selectPokemon(i)" />
-          </v-col>
-          <v-spacer />
-        </v-row>
+        <PokemonCard :pokemon="pokemon" @click="selectPokemon(i)" />
       </v-col>
     </v-row>
   </v-card>

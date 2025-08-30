@@ -3,10 +3,10 @@
   <v-tooltip location="top">
     <template v-slot:activator="{ props }">
       <v-alert v-bind="props" class="containerMovPokeBattle pa-1" :class="stab ? 'golden' : ''" rounded="pill" elevation="1">
-        <v-row align="center" no-gutters>
+        <v-row align="center" no-gutters class="mt-1 mb-1">
           <!-- Tipo -->
           <v-col cols="auto">
-            <v-img :src="type_image_path" width="32" height="32" />
+            <v-img :src="type_image_path" width="32" height="32" class="ml-2"/>
           </v-col>
 
           <!-- Nombre del movimiento -->
@@ -14,17 +14,8 @@
             {{ movement.move_name }}
           </v-col>
 
-          <v-col cols="auto" v-if="category !== 'Status'">
-            <div :style="{
-              backgroundColor: categoryColor(),
-              color: 'white',
-              borderRadius: '999px',
-              padding: '4px 8px',
-              fontWeight: 'bold',
-              fontSize: '14px',
-            }">
-              {{ category }}
-            </div>
+          <v-col cols="auto">
+            <v-img :src="getCategoryIcon(category)" width="32" height="32" :title="category" class="ml-2 mr-4" />
           </v-col>
           <v-col cols="auto" v-if="category !== 'Status' && enemy_data">
             <div :style="{
@@ -129,6 +120,13 @@ export default {
         default:
           return '#607D8B';
       }
+    },
+    getCategoryIcon(category) {
+      const lower = category.toLowerCase();
+      if (lower === 'fisico') return './imgs/physical_move.png';
+      if (lower === 'especial') return './imgs/special_move.png';
+      if (lower === 'status') return './imgs/status_move.png';
+      return null;
     },
     pokemon_types(pokemon) {
       if (pokemon.battle_data) {

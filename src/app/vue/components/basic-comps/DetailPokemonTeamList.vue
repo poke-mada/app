@@ -1,14 +1,14 @@
 <template>
   <!-- SECCION DE BATALLA CON POKEMONS SALVAJES -->
   <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;"
-    :style="{ display: combat_type !== 'WILD' ? 'block' : 'none' }">
+          :style="{ display: combat_type !== 'WILD' ? 'block' : 'none' }">
     <div :style="{ backgroundColor: team === 'enemy' ? '#0600FF' : '#D5048D' }"
-      class="divCardSup pa-3 d-flex justify-center align-center">
+         class="divCardSup pa-3 d-flex justify-center align-center">
       <v-avatar size="78" style="position: absolute; top: 80%; left: -5%;">
         <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
       </v-avatar>
       <span class="textTeamCombats" v-if="team === 'enemy'">
-        Equipo EnemigoS
+        Equipo Enemigo
       </span>
       <span class="textTeamCombats" v-if="team === 'you'">
         Tu Equipo
@@ -19,12 +19,8 @@
         <v-col v-for="(pokemon, i) in this.data.team.slice(0, 3)" :key="i">
           <div class="position-relative d-inline-block">
             <!-- Imagen principal del Pokémon -->
-            <PokemonCard :pokemon="pokemon && pokemon.discovered ? pokemon : null" @click="selectPokemon(pokemon)" />
-            <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png" />
-
-            <!-- Badge solo si tiene held_item -->
-            <img v-if="pokemon && pokemon.held_item && pokemon.held_item !== '0'" src="/assets/img/Home/itemPoke.png"
-              width="22" class="custom-badge" />
+            <PokemonCard :pokemon="pokemon && (pokemon.discovered || team === 'you') ? pokemon : null" @click="selectPokemon(pokemon)"/>
+            <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
           </div>
         </v-col>
       </v-row>
@@ -32,23 +28,19 @@
         <v-col v-for="(pokemon, i) in this.data.team.slice(3, 6)" :key="i">
           <div class="position-relative d-inline-block">
             <!-- Imagen principal del Pokémon -->
-            <PokemonCard :pokemon="pokemon && pokemon.discovered ? pokemon : null" @click="selectPokemon(pokemon)" />
-            <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png" />
-
-            <!-- Badge solo si tiene held_item -->
-            <img v-if="pokemon && pokemon.held_item && pokemon.held_item !== '0'" src="/assets/img/Home/itemPoke.png"
-              width="22" class="custom-badge" />
+            <PokemonCard :pokemon="pokemon && (pokemon.discovered || team === 'you') ? pokemon : null" @click="selectPokemon(pokemon)"/>
+            <img class="iconBallPoke" width="22" src="/assets/img/Home/Poké_Ball_icon.png"/>
           </div>
         </v-col>
       </v-row>
     </div>
   </v-card>
   <!-- LOG DE CMBATE ABAJO DE MI EQUIPO -->
-  <template v-if="team === 'you'">
+  <template v-if="team === 'you' && combat_type !== 'DOUBLE'">
     <v-container class="containerLogsCombats">
       <v-btn color="teal" @click="combat_log_display = true">
         <span class="logText">LOG DE BATALLA</span>
-        <v-img src="/assets/icons/ComatsWhite.svg" width="24" height="24" alt="Log icon" cover />
+        <v-img src="/assets/icons/ComatsWhite.svg" width="24" height="24" alt="Log icon" cover/>
       </v-btn>
     </v-container>
   </template>
@@ -59,14 +51,14 @@
         <!-- titulos de log de batalla  -->
         <div class="divCardLog pa-3 d-flex justify-center align-center">
           <h2 class="textTeamCombatsLog">LOG DE BATALLA</h2>
-          <v-img src="/assets/icons/ComatsWhite.svg" class="tamaImg" alt="Log icon" cover />
+          <v-img src="/assets/icons/ComatsWhite.svg" class="tamaImg" alt="Log icon" cover/>
         </div>
 
         <div class="pa-4">
           <v-list>
             <v-list-item v-for="(item, i) in lastMoves" :key="i">
               <v-list-item-content class="logsElementsDiv">
-                <v-img src="/assets/img/combat/PokeballLog1.png" alt="Pokeball" width="24" height="24" max-width="24" />
+                <v-img src="/assets/img/combat/PokeballLog1.png" alt="Pokeball" width="24" height="24" max-width="24"/>
                 <v-list-item-title class="marginLogs letrasMinus">{{ item.message }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
@@ -76,10 +68,14 @@
     </v-container>
   </template>
 
-  <CombatLogDialog v-model="combat_log_display" :move-log="move_log" />
+  <CombatLogDialog v-model="combat_log_display" :move-log="move_log"/>
 
   <v-dialog v-model="display">
-    <PokemonDetailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" />
+    <v-row>
+      <v-spacer @click="display = false"/>
+      <PokemonDetailPanel  tailPanel :pokemon="this.selected_pokemon" :enemy_data="enemy_data" :side="team"/>
+      <v-spacer @click="display = false"/>
+    </v-row>
   </v-dialog>
 </template>
 
@@ -142,9 +138,11 @@ export default {
   },
   methods: {
     selectPokemon: function (pokemon) {
+      if (!pokemon) {
+        return
+      }
       this.selected_pokemon = pokemon;
       if (this.team === 'you') {
-        console.log("Tu equipo cargado:", this.team);
         this.display = true;
       }
     },
@@ -155,4 +153,7 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+* {
+}
+</style>

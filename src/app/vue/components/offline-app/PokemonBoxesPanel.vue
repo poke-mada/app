@@ -1,78 +1,118 @@
 <!--suppress JSUnresolvedVariable -->
 <template>
-  <v-row>
-    <v-col cols="12">
-      <PkCard>
-        <template v-slot:title>
-          <v-alert type="success" class="p-0">
-            <template v-slot:prepend>
-            </template>
-            <span>
-            Caja Pokemon
-          </span>
-          </v-alert>
-        </template>
-        <div class="pa-4">
-          <v-row justify="space-between">
-            <v-col>
-              <v-autocomplete label="Cajas" :items="this.box_data.selectable_boxes" item-value="box_number"
-                              item-title="box_identifier"
-                              v-model="selected_box" @update:modelValue="open_box"></v-autocomplete>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col>
-              <v-btn @click="pokemon_team_display = true; selected_pokemon = null">Ver Equipo</v-btn>
-            </v-col>
-            <v-spacer></v-spacer>
-            <v-col>
-              <v-autocomplete label="Entrenadores" :items="trainers" item-value="id" item-title="streamer_name"
-                              v-model="selected_trainer" @update:modelValue="selected_box = 0;open_box();"></v-autocomplete>
-            </v-col>
-          </v-row>
-          <v-row v-if="loading_box" class="w-100 h-100" justify="center" align="center">
-            <v-col>
-              <v-progress-linear indeterminate height="25">
-                Loading...
-              </v-progress-linear>
-            </v-col>
-          </v-row>
-          <v-row v-if="box_data.box && !loading_box">
-            <v-col cols="2" v-for="(slot, index) in [...Array(30)].keys()" :key="index"
-                   style="border: 1px solid #CACACACA">
-              <v-row>
-                <v-spacer></v-spacer>
-                <v-col>
-                  <PokemonCard :pokemon="get_slot(slot) ? get_slot(slot).pokemon : null" @click="select_pokemon"/>
-                </v-col>
-                <v-spacer></v-spacer>
-              </v-row>
-            </v-col>
-          </v-row>
-        </div>
-      </PkCard>
-    </v-col>
-  </v-row>
-  <v-dialog  class="hola" v-model="display_box_detail">
-    <PokemonDetailPanel :pokemon="selected_pokemon"/>
+  <div class="noticiasSection d-flex align-items-center justify-center align-center">
+    <v-card class="rounded-xl vcard-pkm" elevation="6" style="position: relative;">
+      <!-- Encabezado con ícono flotante -->
+      <div class="divCardSup pa-5 d-flex justify-center align-center">
+        <v-avatar size="134" style="position: absolute; top: 87%; right: -10%;">
+          <v-img src="/assets/img/Home/Pokeball.png"></v-img>
+        </v-avatar>
+        <h2 class="textNoticias">Cajas</h2><ExpManualComponent :stealable="this.box_data?.box?.stealable ?? false" />
+      </div>
+
+      <div class="pa-4">
+        <v-row justify="space-between" class="custom-row mb-5">
+          <!-- Select Caja -->
+          <v-col cols="3">
+            <v-autocomplete id="cajasSelect" class="custom-select" variant="solo" hide-details flat :items="box_data.selectable_boxes"
+              item-value="box_number" item-title="box_identifier" v-model="selected_box" @update:modelValue="open_box">
+              <template #selection="{ item }">
+                <span class="select-text">{{ item.title || 'CAJA' }}</span>
+              </template>
+              <template #append-inner>
+                <div class="divSelectIcon">
+                  <v-icon class="select-icon">mdi-chevron-down</v-icon>
+                </div>
+              </template>
+            </v-autocomplete>
+          </v-col>
+          <v-spacer></v-spacer>
+          <!-- Select Entrenadores -->
+          <v-col cols="6">
+            <v-autocomplete class="custom-select" variant="solo" hide-details flat :items="trainers" item-value="id"
+              item-title="streamer_name" v-model="selected_trainer" @update:modelValue="selected_box = 0; open_box();">
+              <template #selection="{ item }">
+                <span class="select-text">{{ item.title || 'SELECCIONAR PARTICIPANTE' }}</span>
+              </template>
+              <template #append-inner>
+                <div class="divSelectIcon">
+                  <v-icon class="select-icon">mdi-chevron-down</v-icon>
+                </div>
+              </template>
+            </v-autocomplete>
+          </v-col>
+          <!-- Botón Ver Equipo -->
+          <v-spacer/>
+          <v-col>
+            <v-btn class="gradient-btn" @click="pokemon_team_display = true; selected_pokemon = null">
+              VER EQUIPO
+              <v-icon end>mdi-chevron-right</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-row v-if="loading_box" class="w-100 h-100" justify="center" align="center">
+          <v-col>
+            <v-progress-linear indeterminate height="25">
+              Loading...
+            </v-progress-linear>
+          </v-col>
+        </v-row>
+        <v-row v-if="box_data.box && !loading_box">
+          <v-col cols="2" v-for="(slot, index) in [...Array(30)].keys()" :key="index"
+            style="border: 1px solid #CACACACA">
+            <v-row>
+              <v-spacer></v-spacer>
+              <v-col>
+                <PokemonCard :pokemon="get_slot(slot) ? get_slot(slot).pokemon : null" @click="select_pokemon" />
+              </v-col>
+              <v-spacer></v-spacer>
+            </v-row>
+          </v-col>
+        </v-row>
+      </div>
+    </v-card>
+  </div>
+  <v-dialog v-model="display_box_detail">
+    <v-row>
+      <v-spacer @click="display_box_detail = false" />
+      <v-col>
+        <PokemonDetailPanel
+            :pokemon="selected_pokemon"
+            :allow_steal="steal_allowed_for_selected()"
+            :allow_transfer="selected_box === 4 && false"
+            :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"/>
+      </v-col>
+      <v-spacer @click="display_box_detail = false" />
+    </v-row>
   </v-dialog>
   <v-dialog v-model="pokemon_team_display">
     <v-row>
+      <v-spacer @click="pokemon_team_display = false"/>
       <v-col cols="3">
-        <VerticalPokemonTeamList team="you" :data="{team: this.box_data.team}" @select_pokemon="select_pokemon_team"/>
+        <VerticalPokemonTeamList team="you" :data="{ team: this.box_data.team }"
+          @select_pokemon="select_pokemon_team" />
       </v-col>
+      <v-spacer @click="pokemon_team_display = false"/>
       <v-col>
-        <PokemonDetailPanel v-if="selected_pokemon" :pokemon="selected_pokemon"/>
+        <PokemonDetailPanel v-if="selected_pokemon"
+                            :allow_steal="steal_allowed_for_selected_in_team()"
+                            :allow_transfer="selected_box === 4 && false"
+                            :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"
+                            :pokemon="selected_pokemon" />
       </v-col>
+      <v-spacer @click="pokemon_team_display = false"/>
     </v-row>
   </v-dialog>
 </template>
 
 <script>
-import {session} from '@/stores'
+import { getAxios } from '@/stores'
 import PokemonCard from "@/app/vue/components/offline-app/api-comps/PokemonCard";
 import PokemonDetailPanel from "@/app/vue/components/offline-app/api-comps/PokemonDetailPanel";
 import VerticalPokemonTeamList from "@/app/vue/components/offline-app/api-comps/VerticalPokemonTeamList";
-import PkCard from "@/app/vue/components/custom-comps/pk-card";
+import ExpManualComponent from '@/app/vue/components/app-comps/displays/ExpManualComponent.vue'
+import {useGameStore} from "@/stores/app";
 
 export default {
   name: "PokemonTeamPanel",
@@ -80,7 +120,7 @@ export default {
     VerticalPokemonTeamList,
     PokemonCard,
     PokemonDetailPanel,
-    PkCard
+    ExpManualComponent
   },
   props: {
     api_token: {
@@ -97,15 +137,7 @@ export default {
     }
   },
   data() {
-    const token = this.api_token || localStorage.getItem('api_token');
-    let config = {
-      headers: {
-        Authorization: `Token ${token}`
-      }
-    }
-
     return {
-      config: config,
       loading_box: true,
       selected_trainer: 0,
       trainers: [],
@@ -113,34 +145,43 @@ export default {
       pokemon_team_display: false,
       selected_box: 0,
       selected_pokemon: null,
+      has_w_robo: false,
+      has_w_robo_justo: false,
       box_data: {
         selectable_boxes: [],
         team: [null, null, null, null, null, null],
       }
     }
   },
+  computed: {
+    store: () => useGameStore(),
+    my_trainer_id() {
+      return this.store.profile_data.trainer_id
+    }
+  },
   updated() {
-    session.get('/api/trainers/list_trainers/', this.config).then((response) => {
+    getAxios().get('/api/trainers/list_trainers/').then((response) => {
       this.trainers = response.data
     });
   },
   async mounted() {
-    const response = await session.get('/api/trainers/get_trainer')
-    this.selected_trainer = response.data.id;
+    this.selected_trainer = parseInt(this.my_trainer_id);
     await this.load_trainers();
     await this.open_box();
+    await this.has_robo();
+    await this.has_robo_justo();
   },
   methods: {
     async load_trainer_team() {
-      const response = await session.get(`/api/trainers/${this.selected_trainer}/`, this.config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/`).catch(() => ({data:{current_team: {team: []}}}));
       this.box_data.team = response.data.current_team.team
     },
     async load_trainers() {
-      const response = await session.get('/api/trainers/list_trainers/', this.config);
+      const response = await getAxios().get('/api/trainers/list_trainers/');
       this.trainers = response.data;
     },
     async load_boxes() {
-      const response = await session.get(`/api/trainers/${this.selected_trainer}/list_boxes/`, this.config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/list_boxes/`).catch(() => ({data:[]}));
       this.box_data.selectable_boxes = response.data;
     },
     async open_box() {
@@ -149,9 +190,8 @@ export default {
         params: {
           box: this.selected_box
         },
-        headers: this.config.headers
       };
-      const response = await session.get(`/api/trainers/${this.selected_trainer}/box/`, config);
+      const response = await getAxios().get(`/api/trainers/${this.selected_trainer}/box/`, config).catch(() => ({data:{slots: []}}));
 
       this.box_data.box = response.data;
       this.loading_box = false;
@@ -161,7 +201,9 @@ export default {
     select_pokemon(pokemon) {
       if (pokemon) {
         this.display_box_detail = true;
+        const box_owner = this.box_data.box.owner_profile.toString();
         this.selected_pokemon = pokemon;
+        this.selected_pokemon.profile_owner = box_owner;
       }
     },
     get_box() {
@@ -177,11 +219,41 @@ export default {
       return null;
     },
     select_pokemon_team(pokemon) {
+      const box_owner = this.box_data.box.owner_profile.toString();
       this.selected_pokemon = this.box_data.team[pokemon];
+      this.selected_pokemon.profile_owner = box_owner;
     },
+    steal_allowed_for_selected() {
+      const box_owner = this.box_data.box.owner.toString();
+      const me_id = this.my_trainer_id?.toString();
+      console.log(this.box_data.box)
+      return box_owner !== me_id && this.box_data.box.stealable
+    },
+    steal_allowed_for_selected_in_team() {
+      const box_owner = this.box_data.box.owner.toString();
+      const me_id = this.my_trainer_id?.toString();
+      return box_owner !== me_id && this.box_data.box.stealable
+    },
+    async has_robo() {
+      try {
+        const response = (await getAxios().get('/api/wildcards/68/has_card/'));
+        this.has_w_robo = response.data;
+      } catch (e) {
+        console.log(e)
+        this.has_w_robo = false;
+      }
+    },
+    async has_robo_justo() {
+      try {
+        const response = (await getAxios().get('/api/wildcards/53/has_card/'));
+        this.has_w_robo_justo = response.data;
+      } catch (e) {
+        console.log(e)
+        this.has_w_robo_justo = false;
+      }
+    }
   },
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

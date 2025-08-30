@@ -18,7 +18,7 @@
         <v-row justify="end">
           <v-col>
             <div v-if="pokemon">
-              <v-img :src="`./assets/types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
+              <v-img :src="`./assets/types/Types/${type_name(type.name)}.png`" v-for="(type, i) in pokemon_types" :key="i"
                      width="32" inline></v-img>
             </div>
           </v-col>
@@ -83,7 +83,7 @@ export default {
     return {
       pokemon: null,
       dialog: false,
-      missingno: 'https://static.wikia.nocookie.net/bec6f033-936d-48c5-9c1e-7fb7207e28af'
+      missingno: 'https://res.cloudinary.com/dtattuxue/image/upload/v1753918578/Pokeball_qi5tk3.svg'
     }
   }
 }

@@ -1,10 +1,12 @@
 <template>
   <v-tooltip location="bottom">
-    <template v-slot:activator="{props}">
-      <img :src="pokemon ? pokemon.sprite_url : missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''"
-           @click="$emit('click', pokemon)" v-bind="props" class="cursor-pointer"/>
-      <v-badge color="error" dot bordered location="bottom right" v-if="pokemon && pokemon.held_item_num && pokemon.held_item_num !== '0'">
-      </v-badge>
+    <template v-slot:activator="{ props }">
+      <div class="badge-container">
+        <img :src="pokemon ? pokemon.sprite_url : missingno" width="70" alt="" :class="this.selected ? 'bordered' : ''"
+             @click="pokemon ? $emit('click', pokemon) : null" v-bind="props" class="cursor-pointer" />
+        <!-- Badge solo si tiene held_item -->
+        <v-img v-if="pokemon && pokemon.item_name !== 'None'" src="/assets/img/Home/itemPoke.png" width="22" class="custom-badge" />
+      </div>
     </template>
     {{ pokemon ? pokemon.mote : '' }}
   </v-tooltip>
@@ -27,15 +29,19 @@ export default {
   },
   data() {
     return {
-      missingno: 'https://static.wikia.nocookie.net/bec6f033-936d-48c5-9c1e-7fb7207e28af'
+      missingno: 'https://res.cloudinary.com/dtattuxue/image/upload/v1753918578/Pokeball_qi5tk3.svg'
     }
   }
 }
 </script>
 
 <style scoped>
-
 .bordered {
   filter: drop-shadow(0 0 0.75rem dodgerblue);
+}
+.badge-container {
+  position: relative;
+  width: 70px;
+  height: 70px;
 }
 </style>

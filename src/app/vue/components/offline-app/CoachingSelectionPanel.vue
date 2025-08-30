@@ -24,12 +24,12 @@ export default {
     }
   },
   updated() {
-    session.get('/api/trainers/list_trainers/').then((response) => {
+    getAxios().get('/api/trainers/list_trainers/').then((response) => {
       this.trainers = response.data
     });
   },
   created() {
-    session.get('/api/trainers/list_trainers/').then((response) => {
+    getAxios().get('/api/trainers/list_trainers/').then((response) => {
       this.trainers = response.data
     });
   },

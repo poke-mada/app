@@ -23,7 +23,7 @@
     </v-snackbar>
     <v-layout>
       <NavDrawer :streamer_name="this.streamer_name" style="height: 100vh; position: fixed"/>
-      <FloatingInfoCard/>
+      <FloatingInfoCard v-if="logged_in"/>
       <v-main style="min-height: 100vh; background: url('./assets/bgDif.jpg') no-repeat fixed; background-size: cover">
         <router-view/>
       </v-main>
@@ -50,6 +50,7 @@
       </template>
     </v-snackbar>
     <UpdateDialog :update_data="update_data" v-if="update_dialog"/>
+    <DownloadDialog :download_data="download_data" v-if="download_dialog"/>
     <v-dialog v-model="logoff_dialog">
       <v-row class="h-100 w-100" justify="center" align="center">
         <v-col cols="6">
@@ -84,7 +85,7 @@
             </template>
             <template v-slot:text>
               <p>
-                ¡Necesitas guardar la partida para poder continuar usando la aplicación!
+                ¡Necesitas guardar la partida para poder efectuar los cambios!
               </p>
             </template>
           </v-card>
@@ -114,9 +115,9 @@
 <script>
 import NavDrawer from "@/app/vue/components/app-comps/NavDrawer";
 import UpdateDialog from '@/app/vue/components/page-comps/UpdateDialog';
+import DownloadDialog from '@/app/vue/components/page-comps/DownloadDialog';
 import FloatingInfoCard from '@/app/vue/components/app-comps/displays/FloatingInfoCard.vue'
-import {emitter, session} from "@/stores";
-import {Howl} from 'howler';
+import {emitter} from "@/stores";
 
 const {useGameStore} = require("@/stores/app");
 
@@ -125,15 +126,22 @@ export default {
   components: {
     UpdateDialog,
     NavDrawer,
-    FloatingInfoCard
+    FloatingInfoCard,
+    DownloadDialog
   },
   data() {
     return {
+      dataSocket: null,
       trainer_name: null,
       update_dialog: false,
       update_data: {
         progress: 69,
         version: '0.0.0'
+      },
+      download_dialog: false,
+      download_data: {
+        progress: 69,
+        message: 'Descargando'
       },
       save_dialog: false,
       logoff_dialog: false,
@@ -149,7 +157,6 @@ export default {
         persistent: false,
       },
       economy: 0,
-      streamer_name: '',
       notification_alert: false,
       notification: {
         type: 'success',
@@ -160,28 +167,40 @@ export default {
   },
   methods: {
     log_off() {
-      localStorage.removeItem('api_token');
-      localStorage.removeItem('trainer_id');
-      localStorage.removeItem('coins');
+      this.store.logout()
       this.$router.push('/login')
     }
   },
   computed: {
     store: () => useGameStore(),
+    profile_data() {
+      return this.store.profile_data
+    },
+    logged_in() {
+      const token = this.store.api_token
+      return token && token.length > 0
+    },
+    streamer_name() {
+      return this.store.streamer_name;
+    },
+    game_data_socket() {
+      return this.store.gameDataSocket;
+    }
   },
   async mounted() {
-    const sound = new Howl({
-      src: ['./assets/sounds/alert.mp3']
-    })
-    let trainer_response = await session.get(`/api/trainers/get_profile/`);
+    this.store.start_websocket();
+    if (this.profile_data?.is_coach) {
+        this.store.start_game_data_websocket()
+    } else {
+      this.store.start_player_game_data_websocket()
+      window.electron.onDataReceived('updated_game_data', async (event, data) => {
+        emitter.emit('update_game_data', data)
+      });
+    }
 
-    const streamer_name = trainer_response.data.name;
-    this.streamer_name = streamer_name;
-    const dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
-
-    window.electron.onDataReceived('updated_game_data', async (event, data) => {
+    emitter.on('update_game_data', (data) =>{
       this.store.activate(data);
-    });
+    })
 
     window.electron.onDataReceived('citra_connection_closed', async () => {
       this.store.deactivate();
@@ -191,10 +210,31 @@ export default {
       this.custom_dialog.display = true;
       this.custom_dialog.title = data.title;
       this.custom_dialog.message = data.message;
+      console.log(data)
     });
 
     window.electron.onDataReceived('trainer_name', (event, trainer_name) => {
       return this.store.set_trainer_name(trainer_name);
+    });
+
+    window.electron.onDataReceived('download-progress', (event, data) => {
+      if (!this.download_dialog) {
+        this.download_dialog = true;
+      }
+      let download_message = 'Descargando';
+      if (data === 100) {
+        download_message = 'Extrayendo archivo'
+      }
+      this.download_data = {
+        progress: data,
+        message: download_message
+      };
+    });
+    window.electron.onDataReceived('enable-showdown-module', () => {
+      this.store.allowShowdown();
+    })
+    window.electron.onDataReceived('download-stop', () => {
+      this.download_dialog = false;
     });
 
     window.electron.onDataReceived('update-progress', (event, data) => {
@@ -207,51 +247,6 @@ export default {
     window.electron.sendMessage('store', {
       token: localStorage.getItem('api_token')
     });
-
-    dataSocket.onmessage = (event) => {
-      const message = JSON.parse(event.data);
-      const data = JSON.parse(message.message);
-      switch (data.type) {
-        case 'event_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Nuevo Evento!',
-            message: `¡Un nuevo evento está por comenzar!`
-          });
-          sound.play();
-          break;
-        case 'attack_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Te han atacado!',
-            message: `¡${data.data.user_name} te ha atacado!`
-          });
-          sound.play();
-          break;
-        case 'coins_notification':
-          emitter.emit('coins_updated', data.data)
-          break;
-        case 'start_timer_notification':
-          window.electron.sendMessage('notify', {
-            title: '¡Empieza!',
-            message: `Ya puedes recibir ayuda de tu coach`
-          });
-
-          setTimeout(() => {
-            window.electron.sendMessage('notify', {
-              title: '¡Se acabó el tiempo!',
-              message: `Ya no puedes recibir ayuda del coach`
-            });
-            sound.play();
-          }, data.data * 1000)
-          break;
-      }
-    }
-
-    dataSocket.onopen = async () => {
-      let response = await session.get(`api/trainers/get_economy/`);
-      if (this.coins !== response.data) {
-        emitter.emit('coins_updated', response.data)
-      }
-    }
 
     window.electron.startComms();
 
@@ -268,8 +263,13 @@ export default {
       this.notification = {
         title: data.title,
         message: data.message,
-        persistent: data.persistent
+        persistent: data.persistent,
       }
+    });
+    emitter.on('custom-dialog', (data) => {
+      this.custom_dialog.display = true;
+      this.custom_dialog.title = data.title;
+      this.custom_dialog.message = data.message;
     });
 
     emitter.on('action-notification', (data) => {
@@ -287,7 +287,7 @@ export default {
 
 <style>
 #app {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-family: 'Segoe UI', sans-serif;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -301,9 +301,5 @@ body {
 
 ::-webkit-scrollbar {
   display: none;
-}
-
-* {
-  cursor: default;
 }
 </style>

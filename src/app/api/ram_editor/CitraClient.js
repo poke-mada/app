@@ -74,7 +74,6 @@ class CitraClient {
             await this.readMemory(0, 1);
             return true;
         } catch (e) {
-            console.log(e)
             return false;
         }
     }
@@ -107,8 +106,8 @@ class CitraClient {
                     mutableReadAddress += replyData.length;
                 }
             }
+            // eslint-disable-next-line no-useless-catch
         } catch(e) {
-            console.log(readAddress, readSize)
             throw e;
         } finally {
             this.socket.removeAllListeners('message')

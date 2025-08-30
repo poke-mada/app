@@ -6,49 +6,31 @@
     </v-col>
   </v-row>
   <v-row v-if="combat_data" class="ma-1 h-100">
+    <v-col sm="12" md="4">
+      <DetailPokemonTeamList team="enemy" :data="this.combat_data.enemy_trainer.current_team"
+                             :enemy_data="this.combat_data.your_trainer.current_team"
+                             :trainer_name="this.combat_data.enemy_trainer.name"/>
+    </v-col>
     <v-col>
-      <DoubleCombatPanel :trainer_name="this.combat_data.enemy_trainer.name"
-                         @selected_pokemon="select_enemy_pokemon" team="enemy"
-                         :data="combat_data.enemy_trainer.current_team"
-                         :enemy_data="combat_data.your_trainer.current_team"/>
-      <v-row>
-        <v-col sm="12" md="4">
-          <DetailPokemonTeamList team="enemy" :data="this.combat_data.enemy_trainer.current_team"
-                                 :enemy_data="this.combat_data.your_trainer.current_team"
-                                 :trainer_name="this.combat_data.enemy_trainer.name"/>
-        </v-col>
+      <v-row class="h-100 w-100" justify="center" align="center">
         <v-col>
-          <v-row class="h-100 w-100" justify="center" align="center">
-            <v-col>
-              <v-card>
-                <template v-slot:text>
-                  <v-row class="w-100 ma-0">
-                    <v-col>
-                      <v-btn class="w-100" color="teal" @click="speed_table_display = true"
-                             text="Tabla de velocidades"/>
-                    </v-col>
-                  </v-row>
-                  <v-row class="w-100 ma-0">
-                    <v-col>
-                      <v-btn class="w-100" color="teal" @click="coverage_table_display = true"
-                             text="Tabla de tipos"/>
-                    </v-col>
-                  </v-row>
-                </template>
-              </v-card>
-            </v-col>
-          </v-row>
-        </v-col>
-        <v-col sm="12" md="4">
-          <DetailPokemonTeamList team="you" :data="this.combat_data.your_trainer.current_team"
-                                 :enemy_data="this.combat_data.enemy_trainer.current_team"
-                                 :trainer_name="this.combat_data.your_trainer.name"/>
+          <v-card>
+            <template v-slot:text>
+              <v-row class="w-100 ma-0">
+                <v-col>
+                  <v-btn class="w-100" color="teal" @click="speed_table_display = true"
+                         text="Tabla de velocidades"/>
+                </v-col>
+              </v-row>
+            </template>
+          </v-card>
         </v-col>
       </v-row>
-      <DoubleCombatPanel :trainer_name="this.combat_data.your_trainer.name"
-                         @selected_pokemon="select_you_pokemon" team="you"
-                         :data="combat_data.your_trainer.current_team"
-                         :enemy_data="combat_data.enemy_trainer.current_team"/>
+    </v-col>
+    <v-col sm="12" md="4">
+      <DetailPokemonTeamList team="you" :data="this.combat_data.your_trainer.current_team"
+                             :enemy_data="this.combat_data.enemy_trainer.current_team"
+                             :trainer_name="this.combat_data.your_trainer.name"/>
     </v-col>
   </v-row>
   <v-dialog v-model="speed_table_display">
@@ -74,19 +56,17 @@
 
 <script>
 import TeamSelectorPanel from "@/app/vue/components/offline-app/showdown/TeamSelectorPanel";
-import DoubleCombatPanel from "@/app/vue/components/offline-app/showdown/DoubleCombatPanel";
 import DetailPokemonTeamList from '@/app/vue/components/offline-app/api-comps/DetailPokemonTeamList';
 import SpeedTable from "@/app/vue/components/offline-app/api-comps/SpeedTable";
 import CoverageTableDisplay from "@/app/vue/components/offline-app/api-comps/CoverageTableDisplay.vue";
 import {POKEMON_TYPES} from '@/data/type_data';
-import {session} from "@/stores";
+import {getAxios} from "@/stores";
 
 export default {
   name: "ShowdownCombatPanel",
   components: {
     DetailPokemonTeamList,
     TeamSelectorPanel,
-    DoubleCombatPanel,
     SpeedTable,
     CoverageTableDisplay
   },
@@ -119,14 +99,12 @@ export default {
   },
   methods: {
     async search_combat(data) {
-      let enemy_trainer = await session.get(`/api/trainers/${data.selected_enemy_trainer}/`, {
+      let enemy_trainer = await getAxios().get(`/api/trainers/${data.selected_enemy_trainer}/`, {
         params: {localization: 'en'},
-        headers: this.config.headers
       }).then((response) => response.data);
 
-      let your_trainer = await session.get(`/api/trainers/${data.selected_trainer}/`, {
+      let your_trainer = await getAxios().get(`/api/trainers/${data.selected_trainer}/`, {
         params: {localization: 'en'},
-        headers: this.config.headers
       }).then((response) => response.data);
 
       for (const pokemon of enemy_trainer.current_team.team) {
@@ -154,5 +132,4 @@ export default {
 }
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

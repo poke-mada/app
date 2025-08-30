@@ -2,7 +2,7 @@ import {RAM_ROM2 as rom} from "@/stores/back_constants";
 
 function extractLegible(text) {
     // Regex que busca caracteres legibles en español y símbolos QWERTY
-    const patron = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,;:¡!¿?\-_\(\)\[\]\{\}"'@#\$%&*/=<>|\\^~]+/g;
+    const patron = /[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9\s.,;:¡!¿?\-_\(\)\[\]\{\}"'@#\$%&*=<>|^~]+/g;
     // Unir todas las coincidencias encontradas
     const partesLegibles = text.match(patron);
     return partesLegibles ? partesLegibles.join('') : '';
@@ -82,12 +82,16 @@ export class RomData {
         return await citra.readMemory(pokemon_address, rom.wild_battle_data.combat_data.slot_data_size)
     }
 
-    async readMessageBox(citra, address, messageLenght = 152) {
+    async readMessageBox(citra, address, messageLenght = 152, print = false) {
         const messageBytes = await citra.readMemory(address, messageLenght);
-        return extractLegible(truncateBuffer(messageBytes).toString('utf16le').replace('\n', ' '))
+        const legibleMessage = extractLegible(truncateBuffer(messageBytes).toString('utf16le').replace('\n', ' '));
+        if (print) {
+            console.log(legibleMessage)
+        }
+        return legibleMessage.trim()
     }
 
-    async readMote(citra, address, messageLenght = 152) {
+    async readMote(citra, address, messageLenght = 26) {
         const messageBytes = await citra.readMemory(address, messageLenght);
         return truncateBuffer(messageBytes).toString('utf16le')
     }
@@ -169,7 +173,14 @@ export const XY = Object.freeze(new RomData(
                 accuracy: 0x101,
                 evasion: 0x102,
             },
-            types: 0xF8
+            types: 0xF8,
+            item: 0xA,
+            ability: 0x146,
+            moves: {
+                address: 0x10E,
+                offset: 14,
+                pp: 0x10E + 2
+            }
         },
         box_data: {},
         wild_battle_data: {
@@ -276,8 +287,9 @@ export const XY = Object.freeze(new RomData(
         },
         game: {
             chat_address1: 0x8804906,
-            chat_address2: 0x8805DFE,
-            chat_length: 500
+            chat_address2: 0x8805DF8,
+            chat_length: 500,
+            already_won_lysson_message: /oye\.\.\. sé que no es gran cosa, pero creo que es mejor compartirlo\./
         }
     }
 ));

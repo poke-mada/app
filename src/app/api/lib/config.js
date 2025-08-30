@@ -33,9 +33,23 @@ export function loadConfig() {
     ensureConfigFile();
     if (configCache) return configCache;
 
-    const raw = fs.readFileSync(configPath, 'utf-8');
-    configCache = JSON.parse(raw);
-    return configCache;
+    try {
+        const raw = fs.readFileSync(configPath, 'utf-8');
+
+        // Si el archivo está vacío, usar el defaultConfig
+        if (!raw.trim()) {
+            saveConfig(defaultConfig);
+            return defaultConfig;
+        }
+
+        configCache = JSON.parse(raw);
+        return configCache;
+    } catch (err) {
+        console.error("Error al cargar configuración:", err);
+        // Reemplaza el archivo dañado con la config por defecto
+        saveConfig(defaultConfig);
+        return defaultConfig;
+    }
 }
 
 // Guardar config
@@ -45,9 +59,13 @@ export function saveConfig(data) {
 }
 
 // Accesos rápidos
-export function get(key) {
+export function get(key, default_value = null) {
     const config = loadConfig();
-    return config[key];
+    try {
+        return config[key];
+    } catch (e) {
+        return default_value;
+    }
 }
 
 export function set(key, value) {

@@ -16,8 +16,8 @@ import ShowdownAppPage from "@/app/vue/pages/showdown";
 import TeamAppPage from "@/app/vue/pages/team";
 import RewardsAppPage from "@/app/vue/pages/rewards";
 import EventsAppPage from "@/app/vue/pages/events";
-import MarketAppPage from "@/app/vue/pages/market/index";
-import MarketCreateAppPage from "@/app/vue/pages/market/create";
+import MarketPage from "@/app/vue/pages/market/index";
+import BannersMainPage from "@/app/vue/pages/roulette/BannersMainPage";
 
 const routes = [
   { path: '/', component: MainAppPage },
@@ -29,15 +29,44 @@ const routes = [
   { path: '/team', component: TeamAppPage },
   { path: '/wildcards', component: WildcardsAppPage },
   { path: '/rewards', component: RewardsAppPage },
+  { path: '/roulettes', component: BannersMainPage },
   { path: '/events', component: EventsAppPage },
-  { path: '/market', component: MarketAppPage },
-  { path: '/market_create', component: MarketCreateAppPage },
+  { path: '/market', component: MarketPage },
+  {
+    path: '/market/offer/create',
+    name: 'create-offer',
+    component: MarketPage,
+  },
+  {
+    path: '/market/post/create',
+    name: 'create-post',
+    component: MarketPage,
+  }
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
 })
+
+//  Auth guard 
+router.beforeEach((to) => {
+  const token = localStorage.getItem('api_token');
+  const isLogin = to.path === '/login';
+
+  // sin token fuerza login 
+  if (!token && !isLogin) {
+    return { path: '/login', query: { redirect: to.fullPath } };
+  }
+
+  // con token evita mostrar /login
+  if (token && isLogin) {
+    return { path: '/' };
+  }
+
+  // continuar normal
+  return true;
+});
 
 // Workaround for https://github.com/vitejs/vite/issues/11804
 router.onError((err, to) => {

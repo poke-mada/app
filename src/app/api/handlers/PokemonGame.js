@@ -1,9 +1,9 @@
 import {CitraClient, InBattlePokemonData, PokemonTeamData} from '@/app/api/ram_editor'
 import {CombatEnv, CombatType} from "@/app/api/ram_editor/RamAccesor";
 import {decryptPokemonData as decryptData} from "@/app/api/lib/PokemonCrypt";
-import {getSaveName, watchSave} from "@/app/api/save_editor";
+import {getSaveName, stopWatching, watchSave} from "@/app/api/save_editor";
 import {logger, save_combat_log} from "@/app/api/handlers/logging";
-import {validateBattleData, validatePokemon} from "@/app/api/lib/validators";
+import {validateBattleData, validatePokemon, validatePokemonData} from "@/app/api/lib/validators";
 import {GLOBAL_CONFIG, RAM_ROM, RAM_ROM2 as rom} from "@/stores/back_constants";
 import {session} from "@/stores/backend";
 import config from "@/app/api/lib/config";
@@ -31,6 +31,12 @@ class GameData {
 
     async startComms(rom, ipc, pokemon_game, save_file_path) {
         let citra = new CitraClient();
+        try {
+            stopWatching();
+        } catch (e) {
+            console.error('=============================')
+            console.error('Error ha ocurrido', e)
+        }
         watchSave();
         try {
             this.comms_closed = false;
@@ -47,34 +53,48 @@ class GameData {
                 await this.enemy_data.startComms(rom, this, this.combat_info.addresses.enemy, this.combat_info.enemy_selected, citra);
                 await this.ally_data.startComms(rom, this, this.combat_info.addresses.ally, this.combat_info.ally_selected, citra);
 
-                let your_team_length = this.your_data.team.filter((pokemon) => pokemon && validatePokemon(pokemon.dex_number)).length
-                for (let slot = 0; slot < your_team_length; slot++) {
-                    let pokemon = this.your_data.team[slot];
-                    if (!pokemon) continue;
-                    pokemon.discovered = true;
-                    pokemon.battle_data = this.combat_info.your_battle_data[slot];
-                }
-                const enemy_data = Object.values(this.combat_info.enemy_battle_data);
-                if (enemy_data.length > 0) {
-                    this.enemy_data.team = enemy_data;
-                }
-                this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
-                await this.detectAnyDeath(this.your_data.team);
-                this.detectCurrentCombat(this.enemy_data);
+                if (this.combat_info.combat_type !== CombatType.OFF && this.combat_info.combat_env !== CombatEnv.OFF) {
+                    const enemy_data = Object.values(this.combat_info.enemy_battle_data);
+                    if (enemy_data.filter(pk => pk !== null && pk.is_valid).length > 0) {
+                        this.enemy_data.team = enemy_data;
+                    } else {
+                        this.enemy_data.team = this.enemy_data.team_data;
+                    }
+                    this.ally_data.team = Object.values(this.combat_info.ally_npc_battle_data);
 
+                    // eslint-disable-next-line no-unused-vars
+                    for (const [slot, pkm] of Object.entries(this.combat_info.your_battle_data)) {
+                        if (!pkm) {
+                            continue
+                        }
+
+                        const possibles = this.your_data.team.filter(pokemon => pokemon && pokemon.dex_number === pkm.dex_number);
+                        const team_pkm = possibles[0];
+                        if (!team_pkm) {
+                            continue;
+                        }
+                        pkm.pid = team_pkm.pid
+                        pkm.nature_name = team_pkm.nature_name
+                        pkm.nature_num = team_pkm.nature_num
+                    }
+
+                    if (Object.values(this.combat_info.your_battle_data).filter(pk => pk !== null).length === this.your_data.team) {
+                        this.your_data.team = Object.values(this.combat_info.your_battle_data);
+                    }
+                }
                 if (pokemon_game.alreadySent !== JSON.stringify(this)) {
                     ipc.reply('updated_game_data', this);
                     pokemon_game.alreadySent = JSON.stringify(this);
                 }
             }
         } catch (e) {
-            console.log(e)
             logger.error(e)
+            console.log(e)
         } finally {
             ipc.reply('citra_connection_closed')
             this.is_communicating = false;
             this.comms_closed = true;
-            console.log('e2')
+            console.log('citra disconnected')
             citra.socket.close()
         }
     }
@@ -128,28 +148,41 @@ class GameData {
         await this.manageImposterLog(chatMessage1);
         await this.manageImposterLog(chatMessage2);
         await this.manageImposterLog(chatMessage3);
+        await this.manageLyssonWin(chatMessage1);
+        await this.manageLyssonWin(chatMessage2);
+        await this.manageLyssonWin(chatMessage3);
     }
 
-    async detectAnyDeath(team) {
-        const alreadyDeath = config.get('deaths');
-        for (let pokemon of team) {
-            if (pokemon && !alreadyDeath.includes(pokemon.pid) && pokemon.battle_data && (pokemon.battle_data.current_hp <= 0)) {
-                const response = await session.post('/api/trainers/register_death/', {
-                    pid: pokemon.pid,
-                    mote: pokemon.mote,
-                    species: pokemon.dex_number
-                }, {
-                    headers: {
-                        'Authorization': `Token ${GLOBAL_CONFIG.token}`
-                    }
-                }).catch(() => {
-                })
-                if (response) {
-                    alreadyDeath.push(pokemon.pid)
-                }
-            }
+    async manageLyssonWin(chatMessage) {
+        if (!chatMessage) {
+            return;
         }
-        config.set('deaths', alreadyDeath);
+        const lowerMsg = chatMessage.toLowerCase()
+        const foundData = lowerMsg.match(rom.game_data.already_won_lysson_message);
+
+        if (!foundData) {
+            return;
+        }
+
+        const lysson_defeated = config.get('lysson_defeated');
+        if (lysson_defeated) {
+            return;
+        }
+
+        const response = await session.post('/api/trainers/register_lysson/', {
+        }, {
+            headers: {
+                'Authorization': `Token ${GLOBAL_CONFIG.token}`,
+                "Content-Type": 'multipart/form-data'
+            }
+        }).catch((res) => {
+            console.log(res)
+            console.log('Failed for Found a new one!')
+        });
+
+        if (response) {
+            config.set('lysson_defeated', true);
+        }
     }
 
     detectCurrentCombat(enemy_data) {
@@ -199,7 +232,6 @@ class TeamData {
                 let move_data;
                 if (this.is_enemy) {
                     let allyParty = Object.entries(game_data.your_data.team).filter((v) => {
-                        // eslint-disable-next-line no-unused-vars
                         let [index, pokemon] = v;
                         return pokemon && pokemon.dex_number !== 0;
                     });
@@ -210,7 +242,7 @@ class TeamData {
                 }
 
                 let pokemon = new PokemonTeamData(move_data, data);
-                if (validatePokemon(pokemon.dex_number)) {
+                if (validatePokemon(pokemon.dex_number) && pokemon.is_valid) {
                     if (JSON.stringify(this.team[slot]) === JSON.stringify(pokemon)) return;
                     if (this.owner === TeamOwner.YOU) {
                         this.team[slot] = pokemon;
@@ -364,20 +396,7 @@ class CombatData {
     }
 
     async manageCombatLog(citra, address) {
-        const message = (await rom.readMessageBox(citra, address))
-            .replace('\n', ' ')
-            .replace('\u0010', '')
-            .replace('\u0002', '')
-            .replace('\xC8', '')
-            .replace('\x82', '')
-            .replace('Ȃ', '')
-            .replace('+ ȁ♣', '')
-            .replace('♣', '')
-            .replace('\u0010', '')
-            .replace('\u0001', '')
-            .replace('븀', '')
-            .split('\u0000')[0].trim();
-
+        const message = await rom.readMessageBox(citra, address, 152, true);
         if (!message) {
             return;
         }
@@ -386,9 +405,8 @@ class CombatData {
             this.combat_log_messages.push(message);
         }
 
-
         if (message.includes('va a sacar a ')) {
-            const removed_trainer_thrash = message.split('va a sacar a ')[1];
+            const removed_trainer_thrash = message.split('sacar a ')[1];
             const next_pokemon_clean = removed_trainer_thrash.split('!')[0]
             this.next_pokemon = next_pokemon_clean.toLowerCase();
         } else {
@@ -397,20 +415,9 @@ class CombatData {
     }
 
     async manageMoveLog(citra, address) {
-        const message = (await rom.readMessageBox(citra, address))
-            .replace('\n', ' ')
-            .replace('\u0010', '')
-            .replace('\u0002', '')
-            .replace('\xC8', '')
-            .replace('\x82', '')
-            .replace('Ȃ', '')
-            .replace('+ ȁ♣', '')
-            .replace('♣', '')
-            .replace('\u0010', '')
-            .replace('\u0001', '')
-            .replace('븀', '')
-            .split('\u0000')[0].trim();
+        const message = (await rom.readMessageBox(citra, address, 152, true));
 
+        console.log(message)
         if (!message) {
             return;
         }
@@ -443,11 +450,15 @@ class CombatData {
             let move_log_address;
             //let trainer_log_address;
             let combat_log_address;
-            if (this.combat_type === CombatType.NORMAL) {
+            if (this.combat_env === CombatEnv.WILD && this.combat_type === CombatType.NORMAL) {
+                move_log_address = rom.log_addresses.move_log.wild;
+                combat_log_address = rom.log_addresses.combat_log.wild;
+                //trainer_log_address = rom.log_addresses.trainer_log.multi;
+            } else if (this.combat_env === CombatEnv.TRAINER && this.combat_type === CombatType.NORMAL) {
                 move_log_address = rom.log_addresses.turn_log.single;
                 combat_log_address = rom.log_addresses.combat_log.single;
                 //trainer_log_address = rom.log_addresses.trainer_log.single;
-            } else if (this.combat_type === CombatType.DOUBLE) {
+            } else if (this.combat_env === CombatEnv.TRAINER && this.combat_type === CombatType.DOUBLE) {
                 move_log_address = rom.log_addresses.move_log.multi;
                 combat_log_address = rom.log_addresses.combat_log.multi;
                 //trainer_log_address = rom.log_addresses.trainer_log.multi;
