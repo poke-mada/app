@@ -1,0 +1,282 @@
+[
+  {
+    "id": "inicio",
+    "title": "Inicio",
+    "items": [
+      {
+        "id": "resumen",
+        "title": "¿Cómo funcionará DEDsafio Pokémon?",
+        "html": "<p>Bienvenida al documento de normas. Usa el buscador para encontrar artículos específicos.</p><p>DEDsafio Pokémon es un evento en el cual participarán más de 70 creadores de contenido.</p><p>Durante 21 días los nuevos entrenadores deberán de pasarse el juego “Pokémon X” con una serie de reglas que serán desglosadas en este documento. Además de participar en una serie de torneos para así llegar a encontrar al campeón del evento.</p><p>DEDsafio Pokémon estableció un formato y normas únicas que los participantes deben seguir.</p>"
+      }
+    ]
+  },
+  {
+    "id": "reglas",
+    "title": "Reglas",
+    "items": [
+      {
+        "id": "reglas-generales",
+        "title": "1. Reglas Generales",
+        "html": "<p>El desconocimiento de una regla no exime su cumplimiento.</p><ul><li>Las infracciones a este documento serán sancionadas de forma pública en el Discord.</li><li>El uso o intento de usar vacíos legales sin informar al staff será sancionado sin opción a respuesta.</li><li>DEDsafio Pokémon debe jugarse y completarse íntegramente en directo; no se puede avanzar fuera de stream. Si se solicita evidencia y no existe VOD/clip, contará como infracción.</li><li>Prohibido reiniciar el emulador para cualquier cosa que no sea un bug (soft reset).</li><li>Velocidad del emulador permitida: mínima 100% y máxima 150% (incluye caza de shinies).</li><li>Debe usarse específicamente el emulador y paquete de texturas entregados por la organización.</li><li>Prohibido el uso de programas externos para modificar la partida guardada. El staff tiene historial de saves; cualquier modificación implica expulsión directa.</li></ul>"
+      },
+      {
+        "id": "muerte-pokemon",
+        "title": "2. Muerte de los Pokémon",
+        "html": "<p>Cada vez que un Pokémon sea derrotado, debe colocarse en el PC, caja <strong>Número 7</strong>, renombrada <strong>“MUERTOS”</strong>. Además, suma +1 al contador de muertes.</p><ul><li>Las muertes <em>empiezan a contar</em> a partir de la primera medalla. Antes de eso, si un Pokémon es debilitado, se puede seguir usando y no suma al contador.</li><li>Los Pokémon muertos deben permanecer en la caja 7 (salvo uso de comodín de revivir). El sistema detecta automáticamente lo que haya en esa caja.</li><li>Un Pokémon muerto no puede utilizarse de ninguna forma, ni subir de nivel.</li><li>El contador de muertes se <strong>reinicia en cada tramo</strong>.</li><li>Se puede revivir un Pokémon una sola vez con el comodín correspondiente. <em>Excepción:</em> el inicial puede revivirse ilimitadamente con su comodín.</li><li>Si un Pokémon revivido vuelve a morir, debe liberarse. <em>Excepción:</em> el inicial.</li><li>Habrá eventos con reglas específicas para muertes en combate.</li><li>Si todos tus Pokémon (equipo + PC) mueren: puedes revivir 6 a elección y sumar +6 al contador; puedes subirlos hasta +2 niveles por encima del level cap más cercano. Si te vuelves a quedar sin Pokémon, quedas fuera definitivamente.</li><li>Debes respetar efectos negativos de comodines (p. ej. jugar con 5 Pokémon).</li></ul>"
+      },
+      {
+        "id": "captura-pokemon",
+        "title": "3. Captura de Pokémon",
+        "html": "<ul><li>Solo puedes capturar el <strong>primer Pokémon salvaje</strong> que encuentres en cada ruta.</li><li>Si ese primer encuentro se derrota, huye, escapas o termina el combate, <strong>pierdes la captura</strong> de esa ruta.</li><li>Si el primer encuentro es <strong>Shiny</strong>, puedes capturarlo y <em>no</em> cuenta como primero de ruta.</li><li>Si el primer encuentro es una <strong>horda</strong>, eliges el que quieras de la horda.</li><li>Si el primer encuentro pertenece a la <strong>misma línea evolutiva</strong> de algo que ya capturaste (incluyendo muertos, liberados, robados, etc.) no cuenta: repites encuentros hasta uno apto.</li><li>Un Pokémon <strong>liberado</strong> no puede volver a obtenerse de ninguna forma (incluye shiny, robos o como Pokémon de ruta).</li><li>Habrá eventos con reglas específicas para capturas.</li><li><strong>Atención:</strong> capturar una especie deshabilita conseguir cualquier fase de su cadena evolutiva, incluidas evoluciones alternativas (excepto Eevee).</li></ul><p><em>Ejemplo:</em> al capturar “Ralts”, ya no podrás obtener “Kirlia”, “Gardevoir” ni “Gallade”.</p><h4>Reglas relacionadas con capturas</h4><ul><li>Se pueden revivir <strong>fósiles</strong> en Pueblo Petroglifo <em>una sola vez por tipo</em> (Domo, Hélix, Ámbar Viejo, Raíz, Garra, Cráneo, Coraza, Tapa, Pluma, Mandíbula, Aleta).</li><li>Existe un comodín para <strong>recapturar</strong> en ruta: máx. 2 usos por ruta (en total, hasta 3 capturas en esa ruta).</li><li>Si un Pokémon tiene <strong>Impostor</strong> (habilidad baneada), no cuenta como primero de ruta: repites encuentro.</li><li>Si un Pokémon te es <strong>robado</strong>, solo podrás recuperarlo robándolo de otro participante distinto.</li><li>Si encuentras un <strong>shiny</strong> de una especie que ya tienes (incluye toda su línea y alternas, excepto Eevee), puedes decidir con cuál quedarte y liberar el otro <em>sin comodín de liberación</em>.</li><li>“Pokémon de la Comunidad” y “Skip de la Comunidad” tienen sus propias reglas (ver secciones).</li></ul>"
+      },
+      {
+        "id": "motes",
+        "title": "4. Nombres de los Pokémon (Motes)",
+        "html": "<ul><li>Todos los Pokémon capturados deben tener <strong>mote</strong>.</li><li>El mote no puede ser el mismo <strong>nombre de la especie</strong>.</li><li>Si un Pokémon no tiene mote, debe guardarse en el PC y no puede usarse hasta poder renombrarlo en el juego (Pueblo Vanitas).</li><li>Al restaurar un fósil, asegúrate de tener espacio para poner mote; si no, no te dejará.</li></ul>"
+      },
+      {
+        "id": "objetos-curativos",
+        "title": "5. Objetos Curativos",
+        "html": "<h4>Listado</h4><p><strong>Pociones y derivados:</strong> Poción, Superpoción, Hiperpoción, Máxima Poción, Restaurar Todo, Agua Fresca, Refresco, Limonada, Leche Mu-mu, Zumo de baya, Polvoenergía, Raíz Energía, Corazón dulce, Caramelo Furia.</p><p><strong>Curación de estados:</strong> Antídoto, Antiparaliz, Antiquemar, Antihielo, Despertar, Cura Total, Galleta Lava, Barrita Plus, Porcehelado, Crépe Luminalia, Polvo Curación.</p><p><strong>Bayas:</strong> Aranja, Zidra, Zreza, Atania, Meloc, Safre, Perasi, Caquic, Ziuela, Higog, Wiki, Ango, Guaya, Pabaya.</p><h4>Obtención</h4><ul><li>Prohibido comprar en la <strong>tienda principal</strong> salvo con comodín (“Objeto Curativo” o “Dama de la cura”).</li><li>Se pueden encontrar curativos en el suelo de forma aleatoria.</li><li>Hay 3 NPC que venden un curativo: puedes comprarles <strong>1 vez</strong> (ver “NPC Vendedores”).</li></ul><h4>Uso</h4><ul><li>Fuera de combate: sin límite.</li><li>En combate: hasta <strong>3</strong> por combate.</li><li>Eventos y la <strong>Liga Pokémon</strong> pueden tener reglas específicas.</li></ul>"
+      },
+      {
+        "id": "limite-nivel",
+        "title": "6. Límite de Nivel",
+        "html": "<p>Ningún Pokémon puede <strong>sobrepasar</strong> el nivel del siguiente líder de gimnasio, zona o jefe de tramo (level cap).</p><table><thead><tr><th>Encuentro</th><th>Cap</th><th>Encuentro</th><th>Cap</th></tr></thead><tbody><tr><td>1er. Gimnasio “Violeta”</td><td>17</td><td>7mo. Gimnasio “Ástrid”</td><td>65</td></tr><tr><td>2do. Gimnasio “Lino”</td><td>30</td><td>Jefe de Tramo “Lysson”</td><td>75</td></tr><tr><td>3er. Gimnasio “Corelia”</td><td>38</td><td>8vo. Gimnasio “Édel”</td><td>85</td></tr><tr><td>4to. Gimnasio “Amaro”</td><td>44</td><td>Último rival en Calle Victoria</td><td>90</td></tr><tr><td>5to. Gimnasio “Lem”</td><td>50</td><td>Liga Pokémon</td><td>100</td></tr><tr><td>6to. Gimnasio “Valeria”</td><td>54</td><td></td><td></td></tr></tbody></table><ul><li>Si un Pokémon supera el cap por cualquier razón, queda <strong>cancelado</strong> y debe ir a la PC hasta que avances el cap.</li><li>Si supera el cap <em>durante</em> el combate con líder/jefe de tramo, puedes seguir usándolo <em>solo</em> en ese combate.</li><li>En Calle Victoria, si supera 90 antes de vencer al rival, debe guardarse en PC de inmediato; tras la victoria, podrás reutilizarlo.</li></ul>"
+      },
+      {
+        "id": "limites-equipo",
+        "title": "7. Límites del Equipo Pokémon",
+        "html": "<ul><li><strong>Máx. 1</strong> Legendario menor/singular <em>o</em> 1 Pseudo-legendario (cuenta toda su línea).</li><li><strong>Lista leg. menores/singulares permitidos</strong>: Articuno, Zapdos, Moltres, Mew; Raikou, Entei, Suicune, Celebi; Regirock, Regice, Registeel, Latias, Latios, Jirachi, Deoxys; Heatran, Cresselia, Uxie, Mesprit, Azelf, Phione, Manaphy, Darkrai, Shaymin (y Forma Cielo); Cobalion, Terrakion, Virizion, Tornadus, Thundurus, Landorus, Victini, Meloetta, Genesect, Keldeo; Diancie, Hoopa Contenido, Volcanion.</li><li><strong>Lista pseudo-legendarios</strong>: Dratini/Dragonair/Dragonite; Larvitar/Pupitar/Tyranitar; Slakoth/Vigoroth/Slaking; Bagon/Shelgon/Salamence; Beldum/Metang/Metagross; Gible/Gabite/Garchomp; Deino/Zweilous/Hydreigon; Goomy/Sliggo/Goodra.</li><li><strong>Máx. 1 Mega-Evolución</strong>. Si tu mega es legendario menor o pseudo, ocupa <em>ambos</em> espacios (mega + legendario/pseudo).</li><li><strong>Máx. 2</strong> Pokémon <strong>Shiny</strong>.</li><li><strong>Cláusula de objetos:</strong> no puedes repetir el mismo objeto equipado en 2+ Pokémon del equipo.</li><li><strong>Megapiedras:</strong> no puedes llevar la misma megapiedra en 2+ Pokémon.</li></ul>"
+      },
+      {
+        "id": "cambios-evolucion",
+        "title": "8. Cambios en las evoluciones",
+        "html": "<p>Algunas evoluciones fueron modificadas para ser más accesibles. Revisa la <em>Lista de Cambios en Evolución</em> provista por la organización.</p>"
+      },
+      {
+        "id": "cambios-stats-pokemon",
+        "title": "9. Cambios de Estadísticas en Pokémon",
+        "html": "<p>Se ajustaron estadísticas para ampliar la variedad de especies útiles. Consulta la <em>Lista de Cambios de estadísticas</em>.</p>"
+      },
+      {
+        "id": "cambios-stats-movimientos",
+        "title": "10. Cambios de Estadísticas en Movimientos",
+        "html": "<p>Algunos movimientos fueron balanceados para mejorar la experiencia. Consulta la <em>Lista de Cambios en Movimientos</em>.</p>"
+      },
+      {
+        "id": "npc-vendedores",
+        "title": "11. NPC Vendedores",
+        "html": "<p>Clasificación de vendedores:</p><ul><li><strong>Caramelos Raros</strong>: Pueblo Acuarela y todos los Centros Pokémon.</li><li><strong>Escama Corazón</strong>: Centro Pokémon de Ciudad Romantis (para Recuerda-Movimientos).</li><li><strong>Vendedor principal</strong>: el del mostrador (si hay 2, el de la izquierda).</li><li><strong>Vendedores de Objetos Curativos</strong> (una compra única): Ciudad Relieve (Refresco: “Ponme uno nada más”), Pueblo Fresco (Leche Mu-mu: “Una botella”), Pueblo Mosaico (Refresco), Central Eléctrica (Agua Fresca).</li><li><strong>Vendedores especiales</strong> (solo con comodín correspondiente): segundo vendedor del Centro Pokémon (Compra de MT), Boutique de Poké Ball (Permiso de Poké Balls), Boutique de la Piedra (Piedra Evolutiva), etc.</li></ul>"
+      },
+      {
+        "id": "prohibiciones",
+        "title": "12. Prohibiciones del juego en general",
+        "html": "<p>Funciones nativas prohibidas:</p><ul><li><strong>Pokédex</strong> (revela especies de rutas no visitadas).</li><li><strong>Poderes O</strong>, <strong>Superentrenamiento</strong>.</li><li><strong>Poké Recreo</strong>: solo para evolucionar Eevee a Sylveon.</li><li><strong>Huerto de Bayas</strong>.</li></ul><p>Cláusulas adicionales:</p><ul><li><strong>Cláusula de Dormir</strong>: solo puedes dormir a 1 Pokémon rival a la vez (NPCs sin restricción).</li><li><strong>Canto Mortal</strong>: prohibido combinarlo con movimientos/habilidades que impidan el cambio del rival (p. ej. Sombra Trampa, Trampa Arena, Bloqueo, Giro Fuego).</li><li><strong>Farmeo de objetos</strong> prohibido: no robar ítems a salvajes de forma intencional (Antojo, Robo, Hurto, etc.). Solo obtienes su objeto si lo capturas (salvo excepciones marcadas por la organización).</li></ul>"
+      },
+      {
+        "id": "baneos",
+        "title": "13. Baneos",
+        "html": "<h4>Habilidades prohibidas</h4><p>Multitipo, Superguarda, Don Floral, Cambio Táctico, Modo Daruma, Predicción, Ausente, Inicio Lento, Alas Vendaval, Amor Filial, Veleta, <strong>Impostor</strong> (puede salir, pero los participantes no pueden usarla; si te sale, debe ir a la PC hasta poder cambiarla).</p><h4>Movimientos que no aprenderá ningún Pokémon</h4><p>Combate, Esquema, Reducción, Doble Equipo, Relevo, Geocontrol, Danza Aleteo, Rompecoraza, Cambio de Marcha, Ráfaga, Mil Temblores, Mil Flechas, Cerco Dimensional, Brecha Negra, Guillotina, Fisura, Frío Polar, Perforador.</p>"
+      },
+      {
+        "id": "recuerda-movimientos",
+        "title": "14. Recuerda Movimientos",
+        "html": "<ul><li><strong>1 movimiento por fase evolutiva</strong> (p. ej. uno en Charmander, otro en Charmeleon, otro en Charizard).</li><li>Al <strong>finalizar cada tramo</strong> puedes volver a recordar movimientos en un mismo Pokémon.</li><li>Especies con <strong>formas</strong> (Rotom, Deoxys, Furfrou, etc.): solo <strong>1 movimiento por especie</strong> entre todas sus formas; al cambiar de tramo puedes volver a elegir uno entre sus formas.</li></ul>"
+      },
+      {
+        "id": "pokemon-comunidad",
+        "title": "15. Pokémon de la Comunidad",
+        "html": "<p>Permite una <strong>captura extra</strong> por tramo elegida por streamer + comunidad (en su <em>primera fase</em>).</p><ul><li>Cuenta cualquier miembro de su <strong>línea evolutiva</strong> durante el tramo.</li><li>Debe registrarse en la app y notificarlo en Discord.</li><li>Si aparece salvaje en rutas válidas del tramo, puedes capturarlo aunque ya hayas capturado en esa ruta.</li><li><strong>Cambia cada tramo</strong> y <strong>no se puede repetir</strong> especie o su línea.</li><li>Solo capturable en rutas y tiempo del tramo. Si lo encuentras y se va/derrota/escapas, puedes volver a buscarlo en ese tramo.</li><li>Si no lo encontraste en su tramo, queda prohibido capturarlo (ni a su línea) el resto del evento.</li></ul>"
+      },
+      {
+        "id": "skip-comunidad",
+        "title": "16. Skip de la Comunidad",
+        "html": "<ul><li>Usarlo en una ruta <strong>no visitada</strong> y <strong>antes</strong> del primer encuentro.</li><li>Permite atrapar 1 Pokémon adicional en esa ruta (además del primero de ruta).</li><li>Se <strong>reinicia cada tramo</strong>. Debes anunciar “Activo el Skip de la Comunidad” y marcarlo en la app.</li><li>Te permite <strong>skipping</strong> hasta 3 veces con encuesta en stream “¿Capturamos al Pokémon?”. Si la encuesta dice que no, huyes y repites; tras 3 “no”, el siguiente debes intentar capturarlo.</li><li>Si la encuesta dice “sí”, debes intentar capturarlo (si se pierde el combate, el skip se consume igual).</li></ul>"
+      },
+      {
+        "id": "fin-tramo",
+        "title": "17. Fin del Tramo",
+        "html": "<p>Un tramo concluye al vencer al <strong>Jefe de Tramo</strong>. El equipo con el que lo venzas participa en el <em>Torneo Fin de Tramo</em>.</p><ul><li>Antes del gimnasio final del tramo o Lysson, envía <strong>captura</strong> del equipo completo (datos, movimientos, habilidad, objeto, etc.) al Discord.</li><li>Tras vencer al jefe: <strong>guarda y cierra</strong> el juego; no hagas acciones extra.</li></ul><h4>Ten en cuenta</h4><ul><li>Ganar al Jefe otorga <strong>comodín de ruleta</strong>.</li><li>“Escudo Protector” y “Reversa” se pierden al terminar el tramo (salvo que salgan en la ruleta obtenida).</li><li>No podrás utilizar ni recibir efectos de comodines al finalizar.</li></ul>"
+      },
+      {
+        "id": "torneo-fin-tramo",
+        "title": "18. Torneo Fin de Tramo",
+        "html": "<p>Al terminar cada tramo, se disputa un torneo para ascender de liga. Ver <em>¿Cómo funcionará el Torneo Fin de Tramo en DEDsafio Pokémon?</em>.</p>"
+      },
+      {
+        "id": "liga-pokemon",
+        "title": "19. Liga Pokémon",
+        "html": "<ul><li>Tu equipo debe cumplir “Límites del Equipo Pokémon”.</li><li>Una vez dentro y con evidencia enviada, <strong>no</strong> se pueden realizar/recibir efectos de comodines (solo <em>Ayuda del Coach</em> está permitida).</li><li>Antes de entrar puedes comprar “Restaurar Todo” y “Cura Total”.</li><li>Dentro encontrarás una <strong>enfermera</strong> que cura tras cada combate.</li><li>Alto Mando y Campeona están a <strong>nivel 100</strong>; el orden de Alto Mando es libre.</li><li>El equipo con el que entres será, en su mayoría, el que uses en el Torneo Final.</li></ul><h4>Reglas</h4><ul><li>Antes de entrar, envía <strong>captura</strong> con los 6 Pokémon (no hace falta datos completos).</li><li>Durante combates, <strong>máx. 3</strong> objetos curativos en total.</li><li>Puedes cambiar objetos entre combates.</li><li>Pokémon debilitados en un combate se pueden <strong>revivir</strong> con la enfermera tras el combate, pero cada KO suma al contador de muertes.</li><li>Si pierdes a los 6 en un combate: pasan a “muertos” y deben ir a la caja 7; puedes reintentar enviando nueva captura con el nuevo equipo.</li></ul>"
+      },
+      {
+        "id": "postgame",
+        "title": "20. Postgame",
+        "html": "<ul><li>Intercambio con “Xana” al salir de casa (randomizado).</li><li>Intercambio con “Dianta” en la cafetería de Ciudad Luminalia (randomizado).</li><li>Capturas especiales: <strong>Mazmorra rara</strong> (modelo Mewtwo, combate randomizado), <strong>Cueva Desenlace</strong> (modelo Zygarde, combate randomizado), <strong>Pokémon Errante</strong> (usa Pokédex para rastrearlo tras Liga; 11 apariciones antes de capturarlo en Cueva Talasia).</li><li>Ciudad Batik se puede visitar, pero: prohibida Mansión Batalla; MTs de PB y de Batik fueron redistribuidas; combates de Batik no están preparados.</li></ul>"
+      },
+      {
+        "id": "equipo-definitivo",
+        "title": "21. Equipo Definitivo",
+        "html": "<ul><li>Debe cumplir “Límites del Equipo Pokémon”.</li><li>Parte “en su mayoría” del equipo con el que venciste la Liga.</li><li>Durante Postgame puedes cambiar <strong>hasta 2 Pokémon</strong> del equipo.</li><li>Puedes ajustar objetos, movimientos, habilidades (con <em>Cápsula de Habilidad</em>) y naturaleza (solo con comodín de <em>Naturaleza Neutra</em>), siempre cumpliendo las normas.</li><li>El <em>Recuerda-Movimientos</em> <strong>no</strong> se reinicia en Postgame.</li><li>Debes enviar capturas de cada Pokémon del Equipo Definitivo (movimientos, habilidad, objetos, etc.) a tiempo en Discord.</li></ul><p><em>Ejemplo:</em> Venciste la Liga con Thundurus, Mega-Alakazam, Excadrill, Venusaur, Gengar y Clefable. En Postgame cambias a Excadrill por Scizor y a Gengar por Chandelure (2 cambios permitidos).</p>"
+      },
+      {
+        "id": "torneo-final",
+        "title": "22. Torneo Final",
+        "html": "<p>Etapa final entre participantes con su <em>Equipo Definitivo</em> para coronar al campeón. Ver <em>¿Cómo funcionará el Torneo Final en DEDsafio Pokémon?</em>.</p>"
+      }
+    ]
+  },
+  {
+    "id": "economia",
+    "title": "Economía",
+    "items": [
+      {
+        "id": "economia-overview",
+        "title": "¿Cómo funciona la economía?",
+        "html": "<p>En <strong>DEDsafio Pokémon</strong> las <strong>monedas</strong> añaden una capa estratégica a la aventura. Con ellas podrás comprar <em>comodines</em>, negociar con otros participantes o incluso <em>atacarlos</em>. A continuación se detallan las formas de obtener monedas y cómo se emplean.</p>"
+      },
+      {
+        "id": "completar-tramo",
+        "title": "1) Completar el Tramo",
+        "html": "<p>Al completar un tramo y enviar evidencia en el canal de Discord correspondiente, recibes monedas extra según tu posición.</p><h4>Tramo 1</h4><ul><li><strong>1.º – 3.º</strong>: 5 monedas</li><li><strong>4.º – 10.º</strong>: 3 monedas</li><li><strong>11.º – 20.º</strong>: 2 monedas</li><li><strong>21.º – 30.º</strong>: 1 moneda</li></ul><h4>Tramo 2 en adelante (por liga)</h4><ul><li><strong>1.º</strong>: 5 monedas</li><li><strong>2.º</strong>: 4 monedas</li><li><strong>3.º</strong>: 3 monedas</li><li><strong>4.º</strong>: 2 monedas</li><li><strong>5.º – 6.º</strong>: 1 moneda</li></ul>"
+      },
+      {
+        "id": "muertes-por-tramo",
+        "title": "2) Muertes por tramo",
+        "html": "<p>Al terminar un tramo recibes <strong>15 monedas base</strong> menos el número de muertes del tramo.</p><p><em>Ejemplos:</em></p><ul><li>15 − 5 muertes = <strong>10</strong> monedas</li><li>15 − 11 muertes = <strong>4</strong> monedas</li><li>15 − 17 muertes = <strong>0</strong> monedas</li></ul>"
+      },
+      {
+        "id": "ruletas",
+        "title": "3) Ruletas",
+        "html": "<p>Las <strong>ruletas</strong> pueden otorgar monedas o comodines especiales. Se consiguen:</p><ul><li>Una ruleta inicial para todos los participantes.</li><li>Al derrotar a un <strong>líder de gimnasio</strong> (excepto el primero).</li><li>Al derrotar a un <strong>jefe de tramo</strong>.</li><li>Comprando y usando el <strong>comodín de ruleta</strong>.</li><li>Como recompensa de ciertos <strong>eventos</strong>.</li></ul>"
+      },
+      {
+        "id": "liberar-pokemon",
+        "title": "4) Liberar Pokémon (Venta Ilegal)",
+        "html": "<p>En la app existe el comodín <strong>“Venta Ilegal”</strong> (sin costo) para liberar un Pokémon a cambio de <strong>2 monedas</strong>. Solo permite liberar Pokémon <strong>capturados y no muertos</strong>.</p><p><strong>Atención:</strong> liberar una especie deshabilita obtener cualquier fase de su cadena evolutiva (incluidas alternas), <em>excepto Eevee</em>.</p><p><em>Ejemplo:</em> si liberas a <strong>Gallade</strong>, ya no podrás obtener <strong>Ralts, Kirlia</strong> ni <strong>Gardevoir</strong>.</p>"
+      },
+      {
+        "id": "shiny-venta-lujo",
+        "title": "5) Pokémon Shiny (Venta Ilegal de Lujo)",
+        "html": "<p>Comodín <strong>“Venta Ilegal de Lujo”</strong> (sin costo) para liberar un <strong>shiny</strong>. La recompensa decrece por uso y se <strong>restablece al terminar el tramo</strong>:</p><ul><li>Primer shiny: <strong>4</strong> monedas</li><li>Segundo shiny: <strong>3</strong> monedas</li><li>Tercer shiny: <strong>2</strong> monedas</li><li>Cuarto shiny: <strong>1</strong> moneda</li></ul>"
+      },
+      {
+        "id": "concursos-eventos",
+        "title": "6) Concursos, eventos y retos",
+        "html": "<p>Durante la aventura se publicarán <strong>concursos</strong>, <strong>eventos</strong> y <strong>retos de tramo</strong> que pueden otorgar monedas, comodines u otras recompensas. Mantente atento a los anuncios en el servidor de Discord.</p>"
+      },
+      {
+        "id": "impostores",
+        "title": "7) Impostores",
+        "html": "<p>Existen NPC especiales llamados <strong>Impostores</strong>. Al hablar con ellos (dos veces) obtienes monedas según tu posición en encontrarlos:</p><ul><li><strong>1.º – 14.º</strong>: entre <strong>2–4</strong> monedas</li><li><strong>15.º – 32.º</strong>: entre <strong>1–3</strong> monedas</li></ul>"
+      },
+      {
+        "id": "comodines-que-dan-monedas",
+        "title": "8) Comodines que otorgan monedas",
+        "html": "<ul><li><strong>Monedero Perdido</strong>: obtienes entre <strong>1 y 5</strong> monedas.</li><li><strong>Apuesta Segura</strong>: <strong>10</strong> monedas si tienes <strong>1 o 0</strong> muertes contra el Jefe de Tramo.</li><li><strong>Pesca en Cadena</strong>: <strong>10</strong> monedas si logras una cadena de <strong>60</strong> pescas sin fallar.</li><li><strong>Token Bancario</strong>: <strong>15</strong> monedas en el siguiente tramo.</li><li><strong>Robo de Monedas</strong>: robas <strong>5</strong> monedas a otro participante.</li></ul>"
+      },
+      {
+        "id": "tradeos",
+        "title": "9) Tradeos",
+        "html": "<p>La app oficial permite <strong>intercambiar recursos</strong> con otros participantes (incluye <em>bits</em>, <em>monedas</em>, <em>Pokémon</em>, <em>objetos</em> y más) para fomentar la interacción entre creadores.</p>"
+      },
+      {
+        "id": "torneos-economia",
+        "title": "10) Torneos",
+        "html": "<p>Ganar torneos de tramo también otorga monedas:</p><ul><li><strong>1.º</strong>: 5 monedas</li><li><strong>2.º</strong>: 4 monedas</li><li><strong>3.º</strong>: 3 monedas</li><li><strong>4.º</strong>: 2 monedas</li><li><strong>5.º</strong>: 1 moneda</li></ul>"
+      }
+    ]
+  },
+  {
+    "id": "comodines",
+    "title": "Comodines",
+    "items": [
+      {
+        "id": "definicion",
+        "title": "¿Qué son los Comodines?",
+        "html": "<p>Los comodines son <strong>ventajas especiales</strong> que los entrenadores podrán usar durante el evento. Se consiguen mediante la economía del evento, pero su uso está regulado para mantener el balance, la emoción y la competitividad.</p>"
+      },
+      {
+        "id": "tipos",
+        "title": "1) Tipos de Comodines",
+        "html": "<ul><li><strong>Estéticos y de Broma</strong>: Solo para trollear al participante.</li><li><strong>Cura y Apoyo</strong>: Obtener objetos curativos o ayuda en combates.</li><li><strong>Revivir y Protección</strong>: Revivir Pokémon caídos o protegerlos.</li><li><strong>Estadísticas y Mejoras</strong>: Mejorar el desempeño de los Pokémon.</li><li><strong>Objetos y MTs</strong>: Comprar complementos o accesorios.</li><li><strong>Captura</strong>: Ampliar el equipo con nuevas capturas.</li><li><strong>Ofensivos</strong>: Atacar rivales y complicar sus aventuras.</li><li><strong>Económicos</strong>: Incrementar monedas en el evento.</li><li><strong>Reto o Condicional</strong>: Requieren cumplir condiciones para su efecto.</li><li><strong>Comodín para el Elegido</strong>: Exclusivos para el Pokémon inicial.</li></ul>"
+      },
+      {
+        "id": "reglas-generales",
+        "title": "2) Reglas Generales",
+        "html": "<ul><li>Los comodines se adquieren mediante la economía del evento en la app oficial.</li><li>No forman parte de las mecánicas regulares del juego, son extraordinarios.</li><li>Cada entrenador decide cuándo y cómo usarlos.</li><li>El uso de un comodín debe <strong>anunciarse en directo</strong>.</li><li>Deben usarse siguiendo las instrucciones del staff y moderadores.</li><li><em>Atención:</em> algunos requieren intervención del staff (ej: robos, cambios en partida).</li></ul>"
+      },
+      {
+        "id": "ataque",
+        "title": "3) Comodines de Ataque",
+        "html": "<p>Los comodines de ataque son una de las mecánicas más importantes. Para evitar abusos existen estas normas:</p><h4>Clasificación</h4><ul><li><strong>Especiales</strong>: Robo de Monedas, Robo de Comodín, Robo de Objeto Curativo.</li><li><strong>Medios</strong>: Mismo Destino, Bloqueo Pokémon.</li><li><strong>Fuertes</strong>: Destructor, Liberar Pokémon, Toque de la Muerte, Elección Fatal, Desgaste, Llamada del Team Rocket, Robo de Pokémon, Robo Justo.</li></ul><h4>Karma</h4><ul><li>Todos inician cada tramo con 1 punto de Karma.</li><li>Se reinicia cada tramo.</li><li>Un ataque <strong>fuerte</strong> consume 1 Karma y lo transfiere al jugador atacado.</li><li>Especiales y Medios no consumen Karma.</li></ul><h4>Experiencia (EXP)</h4><ul><li>Va de 0 a 4 puntos.</li><li>Recibir ataque Fuerte = +1 EXP.</li><li>Recibir ataque Medio = +0.5 EXP.</li><li>Recibir ataque Especial = 0 EXP.</li></ul><p>Con 3 EXP puedes comprar <strong>Robo Justo</strong> por 3 monedas. Con 4 EXP lo recibes gratis, pero ya no puedes ser atacado en ese tramo.</p><p>La EXP se representa como: Pokéball (1), Superball (2), Ultraball (3), Masterball (4).</p><h4>Reglas adicionales</h4><ul><li>Karma y EXP se restablecen en cada tramo.</li><li>No se pueden usar comodines de ataque contra alguien que enfrenta al Jefe de Tramo.</li><li>Solo se puede comprar 1 <strong>Robo Justo</strong> por tramo.</li><li>Los comodines de ataque desaparecen al final de cada tramo.</li><li>Un Pokémon robado no puede volver a tu partida por ningún medio.</li></ul>"
+      },
+      {
+        "id": "proteccion",
+        "title": "4) Comodines de Protección",
+        "html": "<ul><li>Existen 2: <strong>Escudo Protector</strong> y <strong>Reversa</strong>.</li><li>Solo se obtienen por ruletas.</li><li>Se activan automáticamente al recibir un ataque Fuerte.</li><li>No se activan con ataques Especiales o Medios.</li><li>Desaparecen al final de cada tramo.</li></ul>"
+      },
+      {
+        "id": "uso-restricciones",
+        "title": "5) Uso y Restricciones",
+        "html": "<ul><li>Puedes usar los comodines que quieras si tienes la economía suficiente.</li><li>Debes declararlos <strong>antes</strong> de ejecutar la acción que afectan.</li><li>Ejemplo correcto: usar <em>Skip</em> antes de entrar en ruta.</li><li>Ejemplo incorrecto: usar <em>Skip</em> cuando ya viste el primer Pokémon de ruta.</li><li>Los comodines de reto se usan 1 vez por tramo.</li><li>Los únicos usables en combate son <strong>Reroll Salvaje</strong> y <strong>Ayuda del Coach</strong>.</li></ul>"
+      },
+      {
+        "id": "elegido",
+        "title": "6) El Elegido",
+        "html": "<p>Tu Pokémon inicial será conocido como <strong>El Elegido</strong>:</p><ul><li>Es inmune a los comodines de ataque.</li><li>Puede revivir más de una vez.</li><li>Los comodines del Elegido solo lo afectan a él.</li></ul>"
+      },
+      {
+        "id": "penalizaciones",
+        "title": "7) Penalizaciones",
+        "html": "<ul><li><strong>Advertencia verbal</strong>: primera falta (sanción leve en Discord).</li><li><strong>Pérdida del comodín</strong>: segunda falta (sanción leve en Discord).</li><li><strong>Descalificación</strong>: fraude deliberado o uso de bug sin informar al staff.</li></ul>"
+      }
+    ]
+  },
+  {
+    "id": "torneo",
+    "title": "Torneo",
+    "items": [
+      {
+        "id": "estructura-general",
+        "title": "Estructura General",
+        "html": "<p>El torneo contará con <strong>32 participantes Pros</strong> y <strong>32 Novatos</strong>, quienes competirán en un formato dividido en ligas y fases eliminatorias finales.</p>"
+      },
+      {
+        "id": "ligas",
+        "title": "División en Ligas",
+        "html": "<p>Después del primer tramo, los participantes se dividirán en 4 ligas según su desempeño (número de muertes):</p><ul><li><strong>Liga A</strong>: Puesto 1 al 8 (menos muertes).</li><li><strong>Liga B</strong>: Puesto 9 al 16.</li><li><strong>Liga C</strong>: Puesto 17 al 24.</li><li><strong>Liga D</strong>: Puesto 25 al 32 (más muertes).</li></ul>"
+      },
+      {
+        "id": "torneos-tramo",
+        "title": "Torneos Clasificatorios por Tramo",
+        "html": "<p>Cada tramo se realizará un torneo para cada liga (A, B, C y D).</p><p><strong>Formato de enfrentamiento en cada liga:</strong></p><ul><li>1° vs. 8°</li><li>2° vs. 7°</li><li>3° vs. 6°</li><li>4° vs. 5°</li></ul>"
+      },
+      {
+        "id": "ascensos-descensos",
+        "title": "Ascensos y Descensos",
+        "html": "<ul><li>Top 3 de las ligas B, C y D ascienden una división.</li><li>Bottom 3 de las ligas A, B y C descienden una división.</li></ul>"
+      },
+      {
+        "id": "recompensas",
+        "title": "Recompensas por Torneos Semanales",
+        "html": "<ul><li>Ganador: 5 monedas</li><li>2° lugar: 4 monedas</li><li>3° lugar: 3 monedas</li><li>4° lugar: 2 monedas</li><li>5° lugar: 1 moneda</li></ul>"
+      },
+      {
+        "id": "apuestas",
+        "title": "Combates de Apuesta",
+        "html": "<p>Los participantes pueden retar a otros en combates apostando monedas, Pokémon o comodines. Estas apuestas deben ser notificadas y aprobadas por el staff. Los resultados serán registrados para transparencia.</p>"
+      },
+      {
+        "id": "torneo-final",
+        "title": "Torneo Final y Seeds",
+        "html": "<p>Al finalizar los tramos, los lugares en las ligas determinan los <strong>seeds</strong> para el Torneo Final.</p><h4>Seeds y Fase Previa</h4><ul><li>Los seeds de Liga A avanzan automáticamente a octavos de final.</li><li>Los participantes de las ligas B y C compiten en una fase previa:</li><ul><li>1° B vs. 8° C</li><li>2° B vs. 7° C</li><li>… y así sucesivamente.</li></ul></ul><h4>Avance al Cuadro Principal</h4><ul><li>Los ganadores de la fase previa se enfrentan a los seeds de la Liga A en octavos de final.</li><li>Ejemplo: Ganador de (8° B vs. 1° C) enfrentará al 1° de Liga A.</li></ul><h4>Final</h4><p>Los mejores avanzan en rondas eliminatorias hasta la gran final, donde se decidirá al campeón de <strong>DEDsafio Pokémon 2</strong>.</p>"
+      },
+      {
+        "id": "resumen",
+        "title": "Resumen de Puntos Clave",
+        "html": "<ul><li><strong>Ligas</strong>: Se dividen según desempeño en el primer tramo, con ascensos y descensos semanales.</li><li><strong>Torneos por tramo</strong>: Al final de cada tramo se juega un torneo clasificatorio.</li><li><strong>Días específicos</strong>: Los días de torneo serán exclusivos para combates.</li><li><strong>Torneo Final</strong>: Seeds asignados según desempeño; ligas B y C pasan por fase previa; Liga D queda fuera del torneo final.</li></ul>"
+      }
+    ]
+  }
+]

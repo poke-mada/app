@@ -1212,10 +1212,6 @@ div.v-window.v-theme--light.v-tabs-window.paddinP1.h-100>div>div.v-window-item.v
     left: -52px;
 }
 
-.v-tab__slider {
-    background: transparent !important;
-}
-
 /* En móviles muy chicos puedes ajustar un poco más */
 @media (max-width: 600px) {
     .wc__img {

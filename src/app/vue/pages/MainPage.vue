@@ -43,7 +43,7 @@
             <v-avatar size="134" style="position: absolute; top: 70%; left: -10%;">
               <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
             </v-avatar>
-            <h2 class="textNoticias text-center">Tiempo restante 1° Torneo</h2>
+            <h2 class="textNoticias text-center">Tiempo restante <span v-if="next_date_data.is_tournament">del Torneo</span> del <span v-if="next_date_data">{{next_date_data.segment}}°</span> Tramo </h2>
           </div>
           <div class="pa-6">
             <div v-if="!countdownExpired" class="countdown-wrap">
@@ -230,6 +230,10 @@ export default {
       countdownTargetUtc: '2025-08-28T19:00:00Z',
       countdownTimerId: null,
       remainingMs: 0,
+      next_date_data: {
+        is_tournament: false,
+        segment: 0
+      }
     };
   },
   computed: {
@@ -271,7 +275,16 @@ export default {
   },
   async mounted() {
     const token = this.api_token;
-    this.startCountdown(this.countdownTargetUtc);
+
+    getAxios().get('/api/segment/next_date/').then(response => {
+      if (response.status === 200) {
+        const now = new Date().getTime();
+        console.log(now)
+        console.log(response)
+        this.startCountdown(response.data.next_date)
+        this.next_date_data = response.data;
+      }
+    })
 
     if (token) {
       this.loading_team = true;
