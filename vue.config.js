@@ -24,6 +24,7 @@ module.exports = defineConfig({
         ],
         resolve: {
             alias: {
+                extensions: ['.ts', '.tsx', '.js', '.vue', '.json'],
                 '@mdi/font': path.resolve(__dirname, 'node_modules/@mdi/font')
             }
         }

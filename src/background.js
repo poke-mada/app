@@ -24,8 +24,8 @@ async function createWindow () {
     autoHideMenuBar: true,
     webPreferences: {
       devTools: false, // forzado a true; el gating lo hacemos con DEV_MODE al abrir
-      nodeIntegration: NODE_INTEGRATION,
-      contextIsolation: !NODE_INTEGRATION,
+      nodeIntegration: false,
+      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js')
     }
   })

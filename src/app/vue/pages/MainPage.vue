@@ -39,7 +39,7 @@
         </v-card>
 
         <!-- CONTADOR DINÁMICO POR HITOS -->
-        <v-card class="rounded-xl mb-6" max-width="500" elevation="6" style="position: relative;">
+        <v-card class="rounded-xl news-card" max-width="500" elevation="6" style="position: relative;">
           <div class="divCardSup pa-5 d-flex justify-center align-center">
             <v-avatar size="134" style="position: absolute; top: 70%; left: -10%;">
               <v-img src="/assets/img/Home/Pokeball3.png"></v-img>
