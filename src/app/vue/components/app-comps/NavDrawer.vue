@@ -71,6 +71,13 @@
           <v-img src="/assets/icons/store.svg" width="28" height="28" class="me-2" cover v-else />
         </template>
       </v-list-item>
+       <v-list-item class="itemBox" to="/normas" title="Normativa" value="normativa">
+        <template #prepend>
+          <v-img src="/assets/icons/active/Document.svg" width="28" height="28" class="me-2" cover
+            v-if="$route.path === '/normas'" />
+          <v-img src="/assets/icons/Document.svg" width="28" height="28" class="me-2" cover v-else />
+        </template>
+      </v-list-item>
     </v-list>
 
     <template v-slot:append>

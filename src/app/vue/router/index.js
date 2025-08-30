@@ -1,9 +1,3 @@
-/**
- * router/index.ts
- *
- * Automatic routes for `./src/pages/*.vue`
- */
-
 // Composables
 import { createRouter, createWebHashHistory } from 'vue-router'
 import MainAppPage from "@/app/vue/pages/index";
@@ -18,6 +12,7 @@ import RewardsAppPage from "@/app/vue/pages/rewards";
 import EventsAppPage from "@/app/vue/pages/events";
 import MarketPage from "@/app/vue/pages/market/index";
 import BannersMainPage from "@/app/vue/pages/roulette/BannersMainPage";
+import NormasPage from "@/app/vue/pages/normativas/normativaPage.vue";
 
 const routes = [
   { path: '/', component: MainAppPage },
@@ -30,6 +25,7 @@ const routes = [
   { path: '/wildcards', component: WildcardsAppPage },
   { path: '/rewards', component: RewardsAppPage },
   { path: '/roulettes', component: BannersMainPage },
+  { path: '/normas', component: NormasPage },
   { path: '/events', component: EventsAppPage },
   { path: '/market', component: MarketPage },
   {
@@ -49,12 +45,12 @@ const router = createRouter({
   routes,
 })
 
-//  Auth guard 
+//  Auth guard
 router.beforeEach((to) => {
   const token = localStorage.getItem('api_token');
   const isLogin = to.path === '/login';
 
-  // sin token fuerza login 
+  // sin token fuerza login
   if (!token && !isLogin) {
     return { path: '/login', query: { redirect: to.fullPath } };
   }
@@ -64,7 +60,6 @@ router.beforeEach((to) => {
     return { path: '/' };
   }
 
-  // continuar normal
   return true;
 });
 
