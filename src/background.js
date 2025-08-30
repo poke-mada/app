@@ -20,7 +20,7 @@ async function createWindow () {
     width: 1600,
     height: 873,
     icon: './public/icons/icon.ico',
-    title: `Dedsafio Pokemon v${autoUpdater.currentVersion}`,
+    title: `Dedsafio Pokemon`,
     autoHideMenuBar: true,
     webPreferences: {
       devTools: process.env.DEV_MODE, // forzado a true; el gating lo hacemos con DEV_MODE al abrir

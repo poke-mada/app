@@ -6,7 +6,7 @@
   },
   "description": "Assistant for Dedsafio Pokemon",
   "name": "dedsafio-pokemon",
-  "version": "1.2.11",
+  "version": "1.2.12",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

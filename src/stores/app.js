@@ -85,10 +85,11 @@ export const useGameStore = defineStore('game', {
             }
             if (streamer_name) {
                 const ded_sound = new Howl({
-                    src: ['./assets/sounds/alert.mp3']
+                    src: ['./assets/sounds/alert.mp3'],
                 });
                 const inventory_sound = new Howl({
-                    src: ['./assets/sounds/notification.mp3']
+                    src: ['./assets/sounds/notification.mp3'],
+                    volume: 0.1
                 });
 
                 this.dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
@@ -167,12 +168,26 @@ export const useGameStore = defineStore('game', {
                 }
 
                 this.dataSocket.onopen = async () => {
+                    setInterval(async () => {
+                        let response = await getAxios().get(`api/trainers/get_economy/`);
+                        emitter.emit('coins_updated', response.data);
+                    }, 30000);
                     let response = await getAxios().get(`api/trainers/get_economy/`);
-                    emitter.emit('coins_updated', response.data)
+                    emitter.emit('coins_updated', response.data);
+
+                    setInterval(async () => {
+                        let kresponse = await getAxios().get(`api/trainers/get_karma/`);
+                        emitter.emit('karma_updated', kresponse.data);
+                    }, 30000);
                     let kresponse = await getAxios().get(`api/trainers/get_karma/`);
-                    emitter.emit('karma_updated', kresponse.data)
+                    emitter.emit('karma_updated', kresponse.data);
+
+                    setInterval(async () => {
+                        let eresponse = await getAxios().get(`api/trainers/get_exp/`);
+                        emitter.emit('exp_updated', eresponse.data);
+                    }, 30000);
                     let eresponse = await getAxios().get(`api/trainers/get_exp/`);
-                    emitter.emit('exp_updated', eresponse.data)
+                    emitter.emit('exp_updated', eresponse.data);
                 }
             }
         },

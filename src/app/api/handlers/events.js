@@ -141,6 +141,7 @@ async function exchangeRewardBundle(ipc, data) {
         const itemRewards = rewards.filter(i => i.reward_type === 0);
         const pokemonRewards = rewards.filter(i => i.reward_type === 3);
         if (itemRewards.length > 0) {
+            const citra = new CitraClient();
             ipc.reply('show_save_dialog')
             for (const reward of itemRewards) {
                 getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
@@ -148,6 +149,7 @@ async function exchangeRewardBundle(ipc, data) {
                 });
             }
             emmiter.on('perform_save', async () => {
+                ipc.reply('perform_save');
                 emmiter.removeAllListeners('perform_save')
             })
         }
