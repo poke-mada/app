@@ -5,7 +5,9 @@
         <GameInventory :data="game_data" @item_selected="game_select_item" @request_items="request_items"/>
       </v-col>
       <v-col cols="6">
-        <AppInventory :data="app_data" @item_selected="app_select_item"/>
+        <AppInventory :data="app_data" @item_selected="app_select_item"
+        @request_items="fetchInventoryItems"
+        />
       </v-col>
     </v-row>
     <v-row class="d-flex flex-row-reverse w-100">
