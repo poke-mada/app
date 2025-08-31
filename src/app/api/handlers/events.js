@@ -231,7 +231,7 @@ async function leaveEvent(ipc, data) {
     const event_id = data.event_id;
     const token = data.token_id;
 
-    await session.post(`/api/event/${event_id}/leave/`, null, {
+    await session.post(`/api/events/${event_id}/leave/`, null, {
         headers: {
             Authorization: `Token ${token}`
         }

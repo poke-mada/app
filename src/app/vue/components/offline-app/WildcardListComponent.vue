@@ -118,9 +118,7 @@
           </v-row>
           <v-row v-if="selected_card.inventory">
             <v-col>
-              <span>Tienes {{ selected_card.inventory }} carta{{
-                  selected_card.inventory > 1 ? 's' : ''
-                }} de este tipo</span>
+              <span>Tienes {{ selected_card.inventory }} carta{{ selected_card.inventory > 1 ? 's' : '' }} de este tipo</span>
             </v-col>
           </v-row>
           <v-row>
@@ -135,7 +133,7 @@
             <v-col v-if="!profile.is_coach && (selected_card.inventory || selected_card.always_available) && ![68, 53, 56, 8, 46].includes(selected_card.id)">
               <v-btn variant="tonal" text="Usar" color="warning" @click="canjear"/>
             </v-col>
-            <v-col v-if="selected_card.price">
+            <v-col v-if="selected_card.price !== null">
               <v-btn text="Comprar" color="success" @click="comprar()"/>
             </v-col>
           </v-row>

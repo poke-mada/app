@@ -88,8 +88,12 @@ export const useGameStore = defineStore('game', {
                     src: ['./assets/sounds/alert.mp3'],
                 });
                 const inventory_sound = new Howl({
-                    src: ['./assets/sounds/notification.mp3'],
+                    src: ['./assets/sounds/inventory.mp3'],
                     volume: 0.1
+                });
+                const notification_sound = new Howl({
+                    src: ['./assets/sounds/notification.mp3'],
+                    volume: 0.2
                 });
 
                 this.dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
@@ -142,19 +146,26 @@ export const useGameStore = defineStore('game', {
                             });
                             inventory_sound.play()
                             break;
+                        case 'alert-notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Notificacion!',
+                                message: data.data
+                            });
+                            notification_sound.play()
+                            break;
                         case 'help_notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Notificacion!',
                                 message: `¡${data.data.user_name} te ha ayudado!`
                             });
-                            inventory_sound.play()
+                            notification_sound.play()
                             break;
                         case 'start_timer_notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Empieza!',
                                 message: `Ya puedes recibir ayuda de tu coach`
                             });
-                            inventory_sound.play()
+                            notification_sound.play()
 
                             setTimeout(() => {
                                 window.electron.sendMessage('notify', {

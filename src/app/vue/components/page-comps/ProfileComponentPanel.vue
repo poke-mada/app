@@ -2,7 +2,7 @@
   <v-row class="h-100 w-75 ma-4" justify="center">
     <v-col>
       <v-row>
-        <v-col>
+        <v-col cols="12">
           <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6">
             <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
               <h3 class="textNoticias" style="text-transform: capitalize;">Información General del Perfil</h3>
@@ -54,12 +54,24 @@
         </v-col>
       </v-row>
       <v-row>
-        <v-col>
+        <v-col cols="6">
+          <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6" max-width="800">
+            <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
+              <h3 class="textNoticias" style="text-transform: capitalize;">Mecanicas desesperadas</h3>
+            </div>
+            <div class="ml-3 mb-2 mr-2 d-flex flex-row justify-center align-items-center">
+              <v-btn class="gradient-btn" text="Clausula de Wipe" v-if="profile_data?.wipe_clause"
+                     @click="confirm_wipe_open = true" />
+              <v-btn class="btn-grad-contact" text="Clausula de wipe ya utilizada" disabled v-else />
+            </div>
+          </v-card>
+        </v-col>
+        <v-col cols="6">
           <v-card class="vcard-pkm" style="border-radius: 20px 20px 20px 20px" elevation="6">
             <div class="divCardSup pa-5 d-flex justify-center align-center mb-4" style="border-radius: 20px 20px 0 0">
               <h3 class="textNoticias" style="text-transform: capitalize;">Soporte</h3>
             </div>
-            <div class="mb-2 ml-2 mr-2 d-flex d-row justify-center align-items-center">
+            <div class="mb-2 ml-2 mr-2 d-flex flex-row justify-center align-items-center">
               <v-btn class="gradient-btn" @click="report_error" text="Reportar error" v-if="emulator_on"/>
               <v-tooltip v-else-if="!emulator_on" location="top">
                 <template #default>Necesitas tener el emulador conectado a la aplicación</template>
@@ -115,7 +127,7 @@
       <v-spacer @click="selecting_community_pokemon = false" />
     </v-row>
   </v-dialog>
-  <v-dialog v-model="confirm_skip_open" max-width="480" persistent>
+  <v-dialog v-model="confirm_skip_open" max-width="480">
     <v-card class="rounded-xl">
       <template #title>
         <h3>Confirmar “Skip de la comunidad”</h3>
@@ -132,6 +144,28 @@
         <v-spacer />
         <v-btn variant="tonal" @click="confirm_skip_open = false">Cancelar</v-btn>
         <v-btn class="gradient-btn" :loading="skip_loading" @click="confirmUseSkip">
+          Confirmar
+        </v-btn>
+      </template>
+    </v-card>
+  </v-dialog>
+  <v-dialog v-model="confirm_wipe_open" max-width="480">
+    <v-card class="rounded-xl">
+      <template #title>
+        <h3>Confirmar “Clausula de Wipeo”</h3>
+      </template>
+
+      <template #text>
+        <p class="mb-2">
+          Esta acción consumirá tu <strong>Clausula de wipeo</strong>, te sumara 6 muertes al contador y dara 6 "revivir pokemon".
+        </p>
+        <p>¿Deseas continuar?</p>
+      </template>
+
+      <template #actions>
+        <v-spacer />
+        <v-btn variant="tonal" @click="confirm_wipe_open = false">Cancelar</v-btn>
+        <v-btn class="gradient-btn" :loading="wipe_loading" @click="confirmUseWipeClause">
           Confirmar
         </v-btn>
       </template>
@@ -158,6 +192,8 @@ export default {
     return {
       confirm_skip_open: false,
       skip_loading: false,
+      confirm_wipe_open: false,
+      wipe_loading: false,
       selecting_community_pokemon: false,
       save_path: '',
       profile_data: {},
@@ -1650,13 +1686,6 @@ export default {
     async load_save_path() {
       window.electron.sendMessage('request-save-path')
     },
-    use_skip() {
-      getAxios().post('/api/trainers/use_segment_skip/').then((response) => {
-        if (response.status === 200) {
-          this.profile_data.community_skip = false;
-        }
-      })
-    },
     define_community_pokemon() {
       getAxios().post('/api/trainers/declare_community_pokemon/', {
         dex_number: this.selected_pokemon
@@ -1676,7 +1705,22 @@ export default {
       getAxios().post('/api/trainers/register_deaths/', {
         deaths: this.profile_data.death_count
       })
-    }
+    },
+    async confirmUseWipeClause() {
+      if (this.wipe_loading) return;
+      this.wipe_loading = true;
+      try {
+        const response = await getAxios().post('/api/trainers/activate_wipe_clause/');
+        if (response.status === 200) {
+          this.profile_data.wipe_clause = false;
+          this.confirm_wipe_open = false;
+        }
+      } catch (e) {
+        console.error(e)
+      } finally {
+        this.wipe_loading = false
+      }
+    },
   },
   mounted() {
     this.load_profile_data();
