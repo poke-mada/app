@@ -58,7 +58,7 @@
                                                     </v-list>
                                                     <div v-if="!sectionItemsFiltered.length"
                                                         class="text-caption text-medium-emphasis mt-2">
-                                                        No matches in this section.
+                                                        Nada que mostrar aquí.
                                                     </div>
                                                 </v-sheet>
                                             </v-col>
@@ -73,7 +73,7 @@
                                                         </section>
                                                     </article>
                                                     <div v-else class="text-medium-emphasis">
-                                                        No content to display.
+                                                        No hay resultados aquí.
                                                     </div>
                                                 </div>
                                             </v-col>

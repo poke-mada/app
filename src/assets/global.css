@@ -1150,6 +1150,13 @@ div.pokemon-inmune>div {
     margin-left: 20px;
 }
 
+.divFlexMarket{
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-top: 30px;
+}
+
 .paddinP1 {
     padding: 30px 50px;
 }
