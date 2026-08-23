@@ -1,5 +1,5 @@
 let BASE_URL;
-const DEV = true;
+const DEV = false;
 if (DEV) {
     BASE_URL = 'http://localhost:8000';
 } else {

@@ -80,7 +80,7 @@
         <PokemonDetailPanel
             :pokemon="selected_pokemon"
             :allow_steal="steal_allowed_for_selected()"
-            :allow_transfer="selected_box === 4"
+            :allow_transfer="selected_box === 4 && false"
             :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"/>
       </v-col>
       <v-spacer @click="display_box_detail = false" />
@@ -96,7 +96,9 @@
       <v-spacer @click="pokemon_team_display = false"/>
       <v-col>
         <PokemonDetailPanel v-if="selected_pokemon"
-                            :allow_transfer="selected_box === 4"
+                            :allow_steal="steal_allowed_for_selected_in_team()"
+                            :allow_transfer="selected_box === 4 && false"
+                            :can_robo="has_w_robo" :can_robo_justo="has_w_robo_justo"
                             :pokemon="selected_pokemon" />
       </v-col>
       <v-spacer @click="pokemon_team_display = false"/>
@@ -230,7 +232,6 @@ export default {
     steal_allowed_for_selected_in_team() {
       const box_owner = this.box_data.box.owner.toString();
       const me_id = this.my_trainer_id?.toString();
-      console.log(this.box_data.box)
       return box_owner !== me_id && this.box_data.box.stealable
     },
     async has_robo() {

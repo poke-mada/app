@@ -88,6 +88,7 @@ export default {
 
     onWildcardsChanged(ids) {
       // ids: array con los IDs de comodines seleccionados
+      console.log(ids)
     },
 
     async select_post(post) {

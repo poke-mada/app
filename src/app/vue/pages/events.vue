@@ -177,6 +177,12 @@ export default {
   },
   async mounted() {
     await this.load_events();
+    window.electron.onDataReceived('event-left', () => {
+      this.store.leave_event();
+    });
+    window.electron.onDataReceived('event-joined', () => {
+      this.store.join_event(this.joined_event);
+    });
   },
   methods: {
     can_join(event) {
@@ -231,10 +237,6 @@ export default {
       this.available_events = response.data;
     },
     join_event(event_id) {
-      window.electron.onDataReceived('event-joined', () => {
-        this.store.join_event(event_id);
-      });
-
       window.electron.sendMessage('event', {
         event_id: event_id,
         token: this.store.api_token
@@ -259,11 +261,11 @@ export default {
       this.showModal = true;
     },
     leave_event() {
-      window.electron.onDataReceived('event-left', () => {
-        this.store.leave_event();
-      });
 
-      window.electron.sendMessage('leave_event');
+      window.electron.sendMessage('leave_event', {
+        event_id: this.store.event_id,
+        token_id: this.store.api_token,
+      });
     },
     register_event(event_id) {
       this.store.register_to_event(event_id);

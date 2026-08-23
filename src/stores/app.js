@@ -84,8 +84,16 @@ export const useGameStore = defineStore('game', {
                 }
             }
             if (streamer_name) {
-                const sound = new Howl({
-                    src: ['./assets/sounds/alert.mp3']
+                const ded_sound = new Howl({
+                    src: ['./assets/sounds/alert.mp3'],
+                });
+                const inventory_sound = new Howl({
+                    src: ['./assets/sounds/inventory.mp3'],
+                    volume: 0.1
+                });
+                const notification_sound = new Howl({
+                    src: ['./assets/sounds/notification.mp3'],
+                    volume: 0.2
                 });
 
                 this.dataSocket = new WebSocket(`wss://pokemon.para-mada.com/ws/data/${streamer_name}`);
@@ -99,28 +107,28 @@ export const useGameStore = defineStore('game', {
                                 title: '¡Nuevo Evento!',
                                 message: `¡Un nuevo evento está por comenzar!`
                             });
-                            sound.play();
+                            ded_sound.play();
                             break;
                         case 'attack_notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Te han atacado!',
                                 message: `¡${data.data.user_name} te ha atacado!`
                             });
-                            sound.play();
+                            ded_sound.play();
                             break;
                         case 'stolen_attack_notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Te han atacado!',
                                 message: `¡${data.data.user_name} te ha atacado! \n¡Pero robaste el comodin ${data.data.wildcard.name} con tu reversa!`
                             });
-                            sound.play();
+                            ded_sound.play();
                             break;
                         case 'shielded_attack_notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Te has protegido de un ataque!',
                                 message: `¡${data.data.user_name} te ha intentado atacar!`
                             });
-                            sound.play();
+                            ded_sound.play();
                             break;
                         case 'coins_notification':
                             emitter.emit('coins_updated', data.data)
@@ -136,37 +144,61 @@ export const useGameStore = defineStore('game', {
                                 title: '¡Notificacion!',
                                 message: data.data
                             });
+                            inventory_sound.play()
+                            break;
+                        case 'alert-notification':
+                            window.electron.sendMessage('notify', {
+                                title: '¡Notificacion!',
+                                message: data.data
+                            });
+                            notification_sound.play()
                             break;
                         case 'help_notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Notificacion!',
                                 message: `¡${data.data.user_name} te ha ayudado!`
                             });
+                            notification_sound.play()
                             break;
                         case 'start_timer_notification':
                             window.electron.sendMessage('notify', {
                                 title: '¡Empieza!',
                                 message: `Ya puedes recibir ayuda de tu coach`
                             });
+                            notification_sound.play()
 
                             setTimeout(() => {
                                 window.electron.sendMessage('notify', {
                                     title: '¡Se acabó el tiempo!',
                                     message: `Ya no puedes recibir ayuda del coach`
                                 });
-                                sound.play();
+                                ded_sound.play();
                             }, data.data * 1000)
                             break;
                     }
                 }
 
                 this.dataSocket.onopen = async () => {
+                    setInterval(async () => {
+                        let response = await getAxios().get(`api/trainers/get_economy/`);
+                        emitter.emit('coins_updated', response.data);
+                    }, 30000);
                     let response = await getAxios().get(`api/trainers/get_economy/`);
-                    emitter.emit('coins_updated', response.data)
+                    emitter.emit('coins_updated', response.data);
+
+                    setInterval(async () => {
+                        let kresponse = await getAxios().get(`api/trainers/get_karma/`);
+                        emitter.emit('karma_updated', kresponse.data);
+                    }, 30000);
                     let kresponse = await getAxios().get(`api/trainers/get_karma/`);
-                    emitter.emit('karma_updated', kresponse.data)
+                    emitter.emit('karma_updated', kresponse.data);
+
+                    setInterval(async () => {
+                        let eresponse = await getAxios().get(`api/trainers/get_exp/`);
+                        emitter.emit('exp_updated', eresponse.data);
+                    }, 30000);
                     let eresponse = await getAxios().get(`api/trainers/get_exp/`);
-                    emitter.emit('exp_updated', eresponse.data)
+                    emitter.emit('exp_updated', eresponse.data);
                 }
             }
         },

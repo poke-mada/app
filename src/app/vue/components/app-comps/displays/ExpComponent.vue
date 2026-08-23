@@ -26,8 +26,8 @@ export default {
           return './assets/shields/shield-super.png'
         case 1.5:
         case 1:
-          return './assets/shields/shield-ultra.png'
         case 0.5:
+          return './assets/shields/shield-ultra.png'
         case 0:
           return './assets/shields/shield-master.png'
       }

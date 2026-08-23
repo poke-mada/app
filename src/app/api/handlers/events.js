@@ -74,6 +74,7 @@ async function downloadShowdownClient(ipc) {
             });
         });
     } else {
+        ipc.reply('enable-showdown-module')
         console.log('[SHOWDOWN-APP] showdown client already downloaded!')
     }
 }
@@ -140,6 +141,7 @@ async function exchangeRewardBundle(ipc, data) {
         const itemRewards = rewards.filter(i => i.reward_type === 0);
         const pokemonRewards = rewards.filter(i => i.reward_type === 3);
         if (itemRewards.length > 0) {
+            const citra = new CitraClient();
             ipc.reply('show_save_dialog')
             for (const reward of itemRewards) {
                 getOrCreatePokemonItem(reward.bag, reward.item, reward.quantity, true, citra).then(() => {
@@ -147,6 +149,7 @@ async function exchangeRewardBundle(ipc, data) {
                 });
             }
             emmiter.on('perform_save', async () => {
+                ipc.reply('perform_save');
                 emmiter.removeAllListeners('perform_save')
             })
         }
@@ -185,7 +188,11 @@ async function joinEvent(ipc, data) {
     const https = require("https");
 
     const zipfile = fs.createWriteStream('mod_zip.zip');
-    const event_response = await axios.get(`${SERVER_URL}/api/events/${event_id}/mod_file/`)
+    const event_response = await axios.get(`${SERVER_URL}/api/events/${event_id}/mod_file/`, {
+        headers: {
+            Authorization: `Token ${data.token}`
+        }
+    })
     const s3_url = event_response.data;
     https.get(s3_url, (response) => {
         const total = parseInt(response.headers["content-length"], 10);
@@ -220,8 +227,15 @@ async function joinEvent(ipc, data) {
 
 }
 
-async function leaveEvent(ipc) {
+async function leaveEvent(ipc, data) {
+    const event_id = data.event_id;
+    const token = data.token_id;
 
+    await session.post(`/api/events/${event_id}/leave/`, null, {
+        headers: {
+            Authorization: `Token ${token}`
+        }
+    })
     try {
         const items = fs.readdirSync(MODS_FILE_LIME3, {withFileTypes: true});
 
